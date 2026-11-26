@@ -3609,3 +3609,155 @@ describe('template synthesis with various configurations', () => {
     });
   });
 });
+
+describe('SelfManagedKafkaEventSource consumptionMode', () => {
+  const bootstrapServers = ['kafka-broker:9092'];
+
+  test('QUEUE renders ConsumptionMode and no StartingPosition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+
+    // WHEN
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'some-topic',
+      secret,
+      consumerGroupId: 'my-share-group',
+      consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      // retryAttempts is only available in provisioned mode
+      retryAttempts: 5,
+      provisionedPollerConfig: { minimumPollers: 1, maximumPollers: 3 },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedKafkaEventSourceConfig: {
+        ConsumerGroupId: 'my-share-group',
+        ConsumptionMode: 'Queue',
+      },
+      StartingPosition: Match.absent(),
+      MaximumRetryAttempts: 5,
+      ProvisionedPollerConfig: { MinimumPollers: 1, MaximumPollers: 3 },
+    });
+  });
+
+  test('STREAM renders ConsumptionMode', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+
+    // WHEN
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'some-topic',
+      secret,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      consumptionMode: lambda.KafkaConsumptionMode.STREAM,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedKafkaEventSourceConfig: { ConsumptionMode: 'Stream' },
+      StartingPosition: 'TRIM_HORIZON',
+    });
+  });
+
+  test('omitting consumptionMode renders no SelfManagedKafkaEventSourceConfig', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+
+    // WHEN
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'some-topic',
+      secret,
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedKafkaEventSourceConfig: Match.absent(),
+      StartingPosition: 'TRIM_HORIZON',
+    });
+  });
+
+  test('a custom mode passes through without startingPosition checks', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3030', reason: 'Custom consumption mode is only for tests' });
+
+    // WHEN
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'some-topic',
+      secret,
+      consumptionMode: lambda.KafkaConsumptionMode.of('Future'),
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedKafkaEventSourceConfig: { ConsumptionMode: 'Future' },
+    });
+  });
+
+  test.each([
+    ['no consumptionMode', undefined],
+    ['STREAM', lambda.KafkaConsumptionMode.STREAM],
+  ])('fails without startingPosition in stream mode (%s)', (_name, consumptionMode) => {
+    const stack = new cdk.Stack();
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+
+    expect(() => new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'some-topic',
+      secret,
+      consumptionMode,
+    })).toThrow(/startingPosition must be set for SelfManagedKafkaEventSource when consumptionMode is STREAM \(the default\)/);
+  });
+
+  test.each([
+    ['startingPosition', { startingPosition: lambda.StartingPosition.LATEST }],
+    ['AT_TIMESTAMP with startingPositionTimestamp', { startingPosition: lambda.StartingPosition.AT_TIMESTAMP, startingPositionTimestamp: 1730270400 }],
+  ])('fails in queue mode with %s', (_name, positionProps) => {
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+
+    expect(() => fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'some-topic',
+      secret,
+      consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      ...positionProps,
+    }))).toThrow(/startingPosition and startingPositionTimestamp are not supported when kafkaConsumptionMode is QUEUE/);
+  });
+
+  test('fails in queue mode with infinite retries', () => {
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+
+    expect(() => fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'some-topic',
+      secret,
+      consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      retryAttempts: -1,
+      provisionedPollerConfig: { minimumPollers: 1, maximumPollers: 3 },
+    }))).toThrow(/retryAttempts must be between 0 and 10000 when kafkaConsumptionMode is QUEUE/);
+  });
+
+  test('fails for ManagedKafkaEventSource without startingPosition', () => {
+    expect(() => new sources.ManagedKafkaEventSource({
+      clusterArn: dummyClusterArn,
+      topic: 'some-topic',
+    })).toThrow(/startingPosition must be set for ManagedKafkaEventSource/);
+  });
+});

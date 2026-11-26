@@ -35,7 +35,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n      exports.handler = async (event, context) => {\n        return {\n          PhysicalResourceId: '1234',\n          NoEcho: true,\n          Data: {\n            mySecret: 'secret-value',\n          },\n        };\n      };"
+     "ZipFile": "\n  exports.handler = async () => ({\n    PhysicalResourceId: '1234',\n    NoEcho: true,\n    Data: { mySecret: 'secret-value' },\n  });"
     },
     "Handler": "index.handler",
     "Role": {
@@ -130,7 +130,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-no-echo/my-provider)",
     "Environment": {
@@ -145,7 +145,7 @@
     },
     "Handler": "framework.onEvent",
     "LoggingConfig": {
-     "ApplicationLogLevel": "FATAL",
+     "ApplicationLogLevel": "INFO",
      "LogFormat": "JSON"
     },
     "Role": {
@@ -209,6 +209,822 @@
      ]
     }
    }
+  },
+  "mycr": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "myproviderframeworkonEvent97E4361B",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myiscompleteServiceRole50AEE6F1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myiscompleteFC70B144": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => ({ IsComplete: true });"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "myiscompleteServiceRole50AEE6F1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "myiscompleteServiceRole50AEE6F1"
+   ]
+  },
+  "myasyncproviderframeworkonEventServiceRoleE8905E64": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkonEventServiceRoleDefaultPolicyE7F654CA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "myhandler42A6C3AB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "myiscompleteFC70B144",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myhandler42A6C3AB",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myiscompleteFC70B144",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "myasyncproviderwaiterstatemachine78780B36"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkonEventServiceRoleDefaultPolicyE7F654CA",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkonEventServiceRoleE8905E64"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkonEvent4B87183E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (integ-provider-no-echo/my-async-provider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "myhandler42A6C3AB",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "myiscompleteFC70B144",
+        "Arn"
+       ]
+      },
+      "WAITER_STATE_MACHINE_ARN": {
+       "Ref": "myasyncproviderwaiterstatemachine78780B36"
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "INFO",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myasyncproviderframeworkonEventServiceRoleE8905E64",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "myasyncproviderframeworkonEventServiceRoleDefaultPolicyE7F654CA",
+    "myasyncproviderframeworkonEventServiceRoleE8905E64"
+   ]
+  },
+  "myasyncproviderframeworkonEventinlinePolicyAddedToExecutionRole0DF808BFC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myhandler42A6C3AB",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkonEventinlinePolicyAddedToExecutionRole0DF808BFC",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkonEventServiceRoleE8905E64"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkonEventinlinePolicyAddedToExecutionRole1A884D787": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myiscompleteFC70B144",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkonEventinlinePolicyAddedToExecutionRole1A884D787",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkonEventServiceRoleE8905E64"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkonEventLogRetention70E423B5": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "myasyncproviderframeworkonEvent4B87183E"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "myasyncproviderframeworkisCompleteServiceRole7F28E230": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkisCompleteServiceRoleDefaultPolicyBF3498D1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "myhandler42A6C3AB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "myiscompleteFC70B144",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myhandler42A6C3AB",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myiscompleteFC70B144",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkisCompleteServiceRoleDefaultPolicyBF3498D1",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkisCompleteServiceRole7F28E230"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkisCompleteAEA4560D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
+    },
+    "Description": "AWS CDK resource provider framework - isComplete (integ-provider-no-echo/my-async-provider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "myhandler42A6C3AB",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "myiscompleteFC70B144",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.isComplete",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "INFO",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myasyncproviderframeworkisCompleteServiceRole7F28E230",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "myasyncproviderframeworkisCompleteServiceRoleDefaultPolicyBF3498D1",
+    "myasyncproviderframeworkisCompleteServiceRole7F28E230"
+   ]
+  },
+  "myasyncproviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DB799817": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myhandler42A6C3AB",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DB799817",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkisCompleteServiceRole7F28E230"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkisCompleteinlinePolicyAddedToExecutionRole1C8B80CEC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myiscompleteFC70B144",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkisCompleteinlinePolicyAddedToExecutionRole1C8B80CEC",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkisCompleteServiceRole7F28E230"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkisCompleteLogRetentionC374A742": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "myasyncproviderframeworkisCompleteAEA4560D"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "myasyncproviderframeworkonTimeoutServiceRole6C34920C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkonTimeoutServiceRoleDefaultPolicy94204F43": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "myhandler42A6C3AB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "myiscompleteFC70B144",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myhandler42A6C3AB",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myiscompleteFC70B144",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkonTimeoutServiceRoleDefaultPolicy94204F43",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkonTimeoutServiceRole6C34920C"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkonTimeout1151CE1C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-no-echo/my-async-provider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "myhandler42A6C3AB",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "myiscompleteFC70B144",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onTimeout",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "INFO",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "myasyncproviderframeworkonTimeoutServiceRole6C34920C",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "myasyncproviderframeworkonTimeoutServiceRoleDefaultPolicy94204F43",
+    "myasyncproviderframeworkonTimeoutServiceRole6C34920C"
+   ]
+  },
+  "myasyncproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0FAEA65D9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myhandler42A6C3AB",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0FAEA65D9",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkonTimeoutServiceRole6C34920C"
+     }
+    ]
+   }
+  },
+  "myasyncproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole1358ACC2C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "myiscompleteFC70B144",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole1358ACC2C",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderframeworkonTimeoutServiceRole6C34920C"
+     }
+    ]
+   }
+  },
+  "myasyncproviderwaiterstatemachineRoleB7F4A7D3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "myasyncproviderwaiterstatemachineRoleDefaultPolicy314C8B5C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "myasyncproviderframeworkisCompleteAEA4560D",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "myasyncproviderframeworkonTimeout1151CE1C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myasyncproviderframeworkisCompleteAEA4560D",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "myasyncproviderframeworkonTimeout1151CE1C",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "myasyncproviderwaiterstatemachineRoleDefaultPolicy314C8B5C",
+    "Roles": [
+     {
+      "Ref": "myasyncproviderwaiterstatemachineRoleB7F4A7D3"
+     }
+    ]
+   }
+  },
+  "myasyncproviderwaiterstatemachine78780B36": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":180,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "myasyncproviderframeworkisCompleteAEA4560D",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "myasyncproviderframeworkonTimeout1151CE1C",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "myasyncproviderwaiterstatemachineRoleB7F4A7D3",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "myasyncproviderwaiterstatemachineRoleDefaultPolicy314C8B5C",
+    "myasyncproviderwaiterstatemachineRoleB7F4A7D3"
+   ]
+  },
+  "myasynccr": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "myasyncproviderframeworkonEvent4B87183E",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
    "Type": "AWS::IAM::Role",
@@ -289,30 +1105,203 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
    ]
   },
-  "mycr": {
-   "Type": "AWS::CloudFormation::CustomResource",
+  "LogCheckerServiceRoleEF36F89D": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "ServiceToken": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LogChecker145EDFD3": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n      const { CloudWatchLogsClient, FilterLogEventsCommand } = require('@aws-sdk/client-cloudwatch-logs');\n      const client = new CloudWatchLogsClient({});\n      exports.handler = async () => {\n        let markerEverywhere = true;\n        let secret = false;\n        for (const logGroupName of JSON.parse(process.env.LOG_GROUPS)) {\n          let marker = false;\n          let nextToken;\n          try {\n            do {\n              const page = await client.send(new FilterLogEventsCommand({ logGroupName, nextToken }));\n              for (const event of page.events ?? []) {\n                // with the JSON log format, the logged text is the record's message field\n                let text = event.message;\n                try { const record = JSON.parse(text); if (typeof record.message === 'string') { text = record.message; } } catch { }\n                if (text.includes(process.env.MARKER)) { marker = true; }\n                if (event.message.includes(process.env.SECRET) || text.includes(process.env.SECRET)) { secret = true; }\n              }\n              nextToken = page.nextToken;\n            } while (nextToken);\n          } catch (e) {\n            if (e.name !== 'ResourceNotFoundException') { throw e; }\n          }\n          markerEverywhere = markerEverywhere && marker;\n        }\n        return (markerEverywhere ? 'marker-found' : 'marker-missing') + '/' + (secret ? 'secret-logged' : 'no-secret');\n      };"
+    },
+    "Environment": {
+     "Variables": {
+      "LOG_GROUPS": {
+       "Fn::Join": [
+        "",
+        [
+         "[\"",
+         {
+          "Fn::GetAtt": [
+           "myproviderframeworkonEventLogRetentionA3431778",
+           "LogGroupName"
+          ]
+         },
+         "\",\"",
+         {
+          "Fn::GetAtt": [
+           "myasyncproviderframeworkonEventLogRetention70E423B5",
+           "LogGroupName"
+          ]
+         },
+         "\",\"",
+         {
+          "Fn::GetAtt": [
+           "myasyncproviderframeworkisCompleteLogRetentionC374A742",
+           "LogGroupName"
+          ]
+         },
+         "\"]"
+        ]
+       ]
+      },
+      "MARKER": "\"mySecret\": \"*****\"",
+      "SECRET": "secret-value"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
      "Fn::GetAtt": [
-      "myproviderframeworkonEvent97E4361B",
+      "LogCheckerServiceRoleEF36F89D",
       "Arn"
      ]
-    }
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 60
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DependsOn": [
+    "LogCheckerServiceRoleEF36F89D"
+   ]
+  },
+  "LogCheckerinlinePolicyAddedToExecutionRole05FA4E000": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:FilterLogEvents",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Fn::GetAtt": [
+             "myasyncproviderframeworkisCompleteLogRetentionC374A742",
+             "LogGroupName"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Fn::GetAtt": [
+             "myasyncproviderframeworkonEventLogRetention70E423B5",
+             "LogGroupName"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Fn::GetAtt": [
+             "myproviderframeworkonEventLogRetentionA3431778",
+             "LogGroupName"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogCheckerinlinePolicyAddedToExecutionRole05FA4E000",
+    "Roles": [
+     {
+      "Ref": "LogCheckerServiceRoleEF36F89D"
+     }
+    ]
+   }
   }
  },
  "Outputs": {
-  "ExportsOutputFnGetAttmyproviderframeworkonEventLogRetentionA3431778LogGroupNameE0A0B461": {
+  "ExportsOutputRefLogChecker145EDFD307A6FA6F": {
    "Value": {
-    "Fn::GetAtt": [
-     "myproviderframeworkonEventLogRetentionA3431778",
-     "LogGroupName"
-    ]
+    "Ref": "LogChecker145EDFD3"
    },
    "Export": {
-    "Name": "integ-provider-no-echo:ExportsOutputFnGetAttmyproviderframeworkonEventLogRetentionA3431778LogGroupNameE0A0B461"
+    "Name": "integ-provider-no-echo:ExportsOutputRefLogChecker145EDFD307A6FA6F"
    }
   }
  },

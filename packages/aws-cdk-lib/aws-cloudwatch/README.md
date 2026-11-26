@@ -119,6 +119,34 @@ const problemPercentage = new cloudwatch.MathExpression({
 });
 ```
 
+Like `Metric`, a `MathExpression` can be hidden from a graph by setting
+`visible: false`. This keeps the expression available (for example, as an input
+to another expression) while removing its line from the widget:
+
+```ts
+declare const fn: lambda.Function;
+declare const dashboard: cloudwatch.Dashboard;
+
+const errorRate = new cloudwatch.MathExpression({
+  expression: "errors / invocations * 100",
+  usingMetrics: {
+    errors: fn.metricErrors(),
+    invocations: fn.metricInvocations(),
+  },
+  visible: false,
+});
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  left: [fn.metricInvocations(), errorRate],
+}));
+```
+
+The array form of `MAX`, `MIN`, `AVG` and `SUM` (for example `MAX([m1, m2])`)
+only accepts time series. CloudWatch rejects an array that mixes a metric with a
+scalar number, so an alarm using it fails to deploy.
+See [Metric math syntax and functions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax-functions-list)
+for the arguments each function accepts.
+
 ### Metric ID Usage in Math Expressions
 
 When metrics have custom IDs, you can reference them directly in math expressions.
@@ -172,6 +200,24 @@ const crossAccountSearch = new cloudwatch.SearchExpression({
   searchRegion: 'us-west-2',
   label: 'Production Lambda Invocations',
 });
+```
+
+Like `Metric` and `MathExpression`, a `SearchExpression` can be hidden from a
+graph by setting `visible: false`. The time series stay on the widget without
+being rendered, so they can still be toggled on in the CloudWatch console:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+const hiddenSearch = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+  label: 'EC2 CPU Utilization',
+  visible: false,
+});
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  left: [hiddenSearch],
+}));
 ```
 
 ### Aggregation
@@ -401,6 +447,16 @@ const alarmRule = cloudwatch.AlarmRule.anyOf(
       alarm3,
     ),
     cloudwatch.AlarmRule.not(cloudwatch.AlarmRule.fromAlarm(alarm4, cloudwatch.AlarmState.INSUFFICIENT_DATA)),
+    // AT_LEAST with count: at least 2 of these alarms must be in ALARM state
+    cloudwatch.AlarmRule.atLeast(cloudwatch.AlarmState.ALARM, {
+      operands: [alarm1, alarm2, alarm3],
+      threshold: cloudwatch.AtLeastThreshold.count(2),
+    }),
+    // AT_LEAST with percentage and NOT: at least 60% must NOT be in OK state
+    cloudwatch.AlarmRule.atLeastNot(cloudwatch.AlarmState.OK, {
+      operands: [alarm1, alarm2, alarm3],
+      threshold: cloudwatch.AtLeastThreshold.percentage(60),
+    }),
   ),
   cloudwatch.AlarmRule.fromBoolean(false),
 );
@@ -906,6 +962,18 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [ /* ... */ ],
 
   period: Duration.minutes(15),
+}));
+```
+
+The widget can show live data published within the last minute that has not been fully aggregated.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
+
+  liveData: true,
 }));
 ```
 

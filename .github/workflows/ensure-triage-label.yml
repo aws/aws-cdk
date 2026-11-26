@@ -6,6 +6,8 @@ on:
   issues:
     types: [opened]
 
+cache-mode: read
+
 jobs:
   ensure-triage-label:
     if: join(github.event.issue.labels.*.name, '') == ''

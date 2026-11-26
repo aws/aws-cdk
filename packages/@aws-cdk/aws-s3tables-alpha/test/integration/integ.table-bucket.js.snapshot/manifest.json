@@ -71,6 +71,41 @@
       "additionalMetadataFile": "UnreferencedFileRemovalTestStack.metadata.json",
       "displayName": "UnreferencedFileRemovalTestStack"
     },
+    "AutoNamedTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AutoNamedTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AutoNamedTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AutoNamedTestStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/856fb9045dd3038544dce85359eb158f48fec0ed789294177cbad91e0eb3b554.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AutoNamedTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AutoNamedTestStack.assets"
+      ],
+      "additionalMetadataFile": "AutoNamedTestStack.metadata.json",
+      "displayName": "AutoNamedTestStack"
+    },
     "TableBucketIntegTestDefaultTestDeployAssertA1204D2E.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -88,7 +123,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a4a69e8aa1d7c1e390821341a7cb88e2df494c9fece9774d9f09e7c23a64d60.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1f4563c9203982a93a3e3860a578c96d6f4a85a7f81178daa041c7af1b2bf0d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -101,6 +136,7 @@
         }
       },
       "dependencies": [
+        "AutoNamedTestStack",
         "UnreferencedFileRemovalTestStack",
         "TableBucketIntegTestDefaultTestDeployAssertA1204D2E.assets"
       ],
@@ -625,17 +661,6 @@
           "@aws-cdk/aws-batch:defaultToAL2023": {
             "recommendedValue": true,
             "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
-          },
-          "@aws-cdk/core:annotationsInValidationReport": {
-            "recommendedValue": true,
-            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
-          },
-          "@aws-cdk/core:defaultCrossStackReferences": {
-            "recommendedValue": "strong",
-            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
-            "unconfiguredBehavesLike": {
-              "v2": "strong"
-            }
           }
         }
       }

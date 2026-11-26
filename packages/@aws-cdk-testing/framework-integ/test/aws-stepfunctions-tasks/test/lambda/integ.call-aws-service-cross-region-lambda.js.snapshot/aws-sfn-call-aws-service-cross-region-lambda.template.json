@@ -94,6 +94,27 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:states:us-west-2:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"

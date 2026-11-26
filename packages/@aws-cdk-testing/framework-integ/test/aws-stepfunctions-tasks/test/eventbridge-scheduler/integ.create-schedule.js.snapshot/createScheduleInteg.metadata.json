@@ -1,0 +1,226 @@
+{
+  "/createScheduleInteg/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/ScheduleGroup": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ScheduleGroup"
+    }
+  ],
+  "/createScheduleInteg/TargetQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/DeadLetterQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/SchedulerRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/stateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/createScheduleInteg/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/createScheduleInteg/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    }
+  ],
+  "/createScheduleInteg/TargetQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TargetQueue08AD2B3C"
+    }
+  ],
+  "/createScheduleInteg/DeadLetterQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeadLetterQueue9F481546"
+    }
+  ],
+  "/createScheduleInteg/SchedulerRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerRole59E73443"
+    }
+  ],
+  "/createScheduleInteg/SchedulerRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/stateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/stateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "stateMachineE926C166"
+    }
+  ],
+  "/createScheduleInteg/Exports/Output{\"Ref\":\"stateMachineE926C166\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefstateMachineE926C166F9564C73"
+    }
+  ],
+  "/createScheduleInteg/SchedulerRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerRoleDefaultPolicy66F774B8"
+    }
+  ],
+  "/createScheduleInteg/stateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "stateMachineRole64DF9B42"
+    }
+  ],
+  "/createScheduleInteg/stateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/createScheduleInteg/stateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "stateMachineRoleDefaultPolicy9579E9AD"
+    }
+  ]
+}

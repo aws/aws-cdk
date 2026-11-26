@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "ab1615b5a3d59738cfc7d1cddc438a1802ed455d2d62938bd64dd728e5bf233b": {
+      "displayName": "aws-cdk-rds-instance-metrics Template",
+      "source": {
+        "path": "aws-cdk-rds-instance-metrics.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9ddc7f9b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ab1615b5a3d59738cfc7d1cddc438a1802ed455d2d62938bd64dd728e5bf233b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

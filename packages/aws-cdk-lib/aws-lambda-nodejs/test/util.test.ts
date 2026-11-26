@@ -2,7 +2,7 @@ import child_process from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray, tscRequiresIgnoreConfig } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -307,5 +307,22 @@ describe('getTsconfigCompilerOptionsArray', () => {
     const libIdx = arrayResult.indexOf('--lib');
     expect(libIdx).toBeGreaterThanOrEqual(0);
     expect(arrayResult[libIdx + 1]).toBe('es2022,dom');
+  });
+});
+
+describe('tscRequiresIgnoreConfig', () => {
+  test.each([
+    ['3.9.10', false],
+    ['5.9.3', false],
+    ['Version 5.9.3', false],
+    ['6.0.3', true],
+    ['6.0.0-beta', true],
+    ['Version 6.0.3', true],
+    ['7.0.2', true],
+    ['10.1.0', true],
+    ['', false],
+    ['garbage', false],
+  ])('for %j returns %s', (version, expected) => {
+    expect(tscRequiresIgnoreConfig(version)).toBe(expected);
   });
 });

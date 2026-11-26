@@ -76,7 +76,7 @@ export namespace Created {
 // @ts-ignore TS6133
 function convertCreatedResourceToEventPattern(obj?: Created.Resource, iRef?: service.IResourceRef): any {
   const ret = ({
-    id: (obj?.id ?? [iRef?.resourceRef.resourceId])
+    id: (obj?.id ?? ((iRef === undefined) ? undefined : [iRef.resourceRef.resourceId]))
   } as any);
   for (const [key, value] of Object.entries(ret)) {
     if ((value === undefined)) delete ret[key];
@@ -217,7 +217,7 @@ export namespace Deleted {
 // @ts-ignore TS6133
 function convertDeletedResourceToEventPattern(obj?: Deleted.Resource, iRef?: service.IResourceRef): any {
   const ret = ({
-    id: (obj?.id ?? [iRef?.resourceRef.resourceId])
+    id: (obj?.id ?? ((iRef === undefined) ? undefined : [iRef.resourceRef.resourceId]))
   } as any);
   for (const [key, value] of Object.entries(ret)) {
     if ((value === undefined)) delete ret[key];
@@ -350,7 +350,7 @@ export namespace Created {
 // @ts-ignore TS6133
 function convertCreatedResourceRefToEventPattern(obj?: Created.ResourceRef, iRef?: service.IResourceRef): any {
   const ret = ({
-    id: (obj?.id ?? [iRef?.resourceRef.resourceId])
+    id: (obj?.id ?? ((iRef === undefined) ? undefined : [iRef.resourceRef.resourceId]))
   } as any);
   for (const [key, value] of Object.entries(ret)) {
     if ((value === undefined)) delete ret[key];
@@ -622,7 +622,7 @@ export namespace Created {
 // @ts-ignore TS6133
 function convertCreatedResourceRefToEventPattern(obj?: Created.ResourceRef, iRef?: service.IResourceRef): any {
   const ret = ({
-    resourceId: (obj?.resourceId ?? [iRef?.resourceRef.resourceId])
+    resourceId: (obj?.resourceId ?? ((iRef === undefined) ? undefined : [iRef.resourceRef.resourceId]))
   } as any);
   for (const [key, value] of Object.entries(ret)) {
     if ((value === undefined)) delete ret[key];

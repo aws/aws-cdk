@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
-    "f53f3d58f01698f534025f858096fd8b96f12d5d405a83b5d7e78073793601e1": {
+    "6aa74f51583fb9408ead9fe13ae00b12ca3589d383f4be16e3614774af2d9a91": {
       "displayName": "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet Template",
       "source": {
         "path": "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ed8f746c": {
+        "current_account-current_region-ed5cb89c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f53f3d58f01698f534025f858096fd8b96f12d5d405a83b5d7e78073793601e1.json",
+          "objectKey": "6aa74f51583fb9408ead9fe13ae00b12ca3589d383f4be16e3614774af2d9a91.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.pricingplanmanager"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.PricingPlanManager"
+    },
+    "python": {
+      "module": "aws_cdk.aws_pricingplanmanager"
+    }
+  }
+}

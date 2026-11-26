@@ -1,11 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
+import { Cluster, ClusterLogging, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, LogExport, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -446,7 +446,13 @@ test('publicly accessible cluster', () => {
   });
 });
 
-test('availability zone relocation enabled', () => {
+test.each([
+  NodeType.RA3_XLPLUS,
+  NodeType.RG_LARGE,
+  NodeType.RG_XLARGE,
+  NodeType.RG_4XLARGE,
+  NodeType.RG_12XLARGE,
+])('availability zone relocation enabled for node type %s', (nodeType) => {
   // WHEN
   new Cluster(stack, 'Redshift', {
     masterUser: {
@@ -454,12 +460,13 @@ test('availability zone relocation enabled', () => {
     },
     vpc,
     availabilityZoneRelocation: true,
-    nodeType: NodeType.RA3_XLPLUS,
+    nodeType,
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     AvailabilityZoneRelocation: true,
+    NodeType: nodeType,
   });
 });
 
@@ -476,7 +483,7 @@ test.each([
       availabilityZoneRelocation: true,
       nodeType,
     });
-  }).toThrow(`Availability zone relocation is supported for only RA3 node types, got: ${nodeType}`);
+  }).toThrow(`Availability zone relocation is supported for only RA3 and RG node types, got: ${nodeType}`);
 });
 
 test('imported cluster with imported security group honors allowAllOutbound', () => {
@@ -501,28 +508,292 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
   });
 });
 
-test('can create a cluster with logging enabled', () => {
-  // GIVEN
-  const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
+describe('logging', () => {
+  test('CloudWatch logging', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudWatch(),
+    });
 
-  // WHEN
-  new Cluster(stack, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    loggingProperties: {
-      loggingBucket: bucket,
-      loggingKeyPrefix: 'prefix',
-    },
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 'cloudwatch',
+        LogExports: ['connectionlog', 'userlog', 'useractivitylog'],
+      },
+    });
   });
 
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-    LoggingProperties: {
-      BucketName: 'logging-bucket',
-      S3KeyPrefix: 'prefix',
-    },
+  test('no logging', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: Match.absent(),
+    });
+  });
+
+  test('CloudWatch logging with log exports', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudWatch({
+        logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG, LogExport.USER_ACTIVITY_LOG],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 'cloudwatch',
+        LogExports: ['connectionlog', 'userlog', 'useractivitylog'],
+      },
+    });
+  });
+
+  test('adds warning when USER_ACTIVITY_LOG is specified', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudWatch({
+        logExports: [LogExport.USER_ACTIVITY_LOG],
+      }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('adds warning for CloudWatch logging when logExports is omitted (defaults to all log types)', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudWatch(),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('does not add user-activity-logging warning when only non-user-activity logs are exported', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudWatch({
+        logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG],
+      }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('does not add user-activity-logging warning when enable_user_activity_logging is set', () => {
+    // WHEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudWatch(),
+    });
+    cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('adds warning when an imported parameter group is used', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'ParameterGroup', 'imported-parameter-group'),
+      logging: ClusterLogging.cloudWatch(),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('adds warning for S3 logging (all log types are enabled together)', () => {
+    // GIVEN
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({ bucket }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('S3 logging', () => {
+    // GIVEN
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({
+        bucket,
+        keyPrefix: 'logs/',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 's3',
+        BucketName: { Ref: 'Bucket83908E77' },
+        S3KeyPrefix: 'logs/',
+        LogExports: Match.absent(),
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      DependsOn: Match.arrayWith(['BucketPolicyE9A3008A']),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['s3:GetBucketAcl', 's3:PutObject'],
+            Principal: {
+              Service: 'redshift.amazonaws.com',
+            },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '12345',
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('S3 logging with imported bucket adds warning', () => {
+    // GIVEN
+    const bucket = s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'my-bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({ bucket }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Redshift',
+      Match.stringLikeRegexp(
+        'Could not add bucket policy for Redshift logging\\. If you are using an imported bucket, ' +
+        'ensure that your bucket policy contains the following permissions:[\\s\\S]*' +
+        '\\[ack: @aws-cdk/aws-redshift-alpha:clusterLoggingBucketPolicyNotAdded\\]',
+      ),
+    );
+  });
+
+  test('fails when CloudWatch logExports is empty', () => {
+    // WHEN/THEN
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        logging: ClusterLogging.cloudWatch({
+          logExports: [],
+        }),
+      });
+    }).toThrow('logExports must not be empty');
+  });
+
+  test('fails when CloudWatch logExports contains duplicate values', () => {
+    // WHEN/THEN
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        logging: ClusterLogging.cloudWatch({
+          logExports: [LogExport.CONNECTION_LOG, LogExport.CONNECTION_LOG],
+        }),
+      });
+    }).toThrow('logExports must not contain duplicates, got ["connectionlog","connectionlog"]');
   });
 });
 
@@ -770,6 +1041,29 @@ describe('multi AZ cluster', () => {
     });
   });
 
+  test.each([
+    NodeType.RG_LARGE,
+    NodeType.RG_XLARGE,
+    NodeType.RG_4XLARGE,
+    NodeType.RG_12XLARGE,
+  ])('create a multi AZ cluster with RG node type %s', (nodeType) => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      nodeType,
+      multiAz: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      NodeType: nodeType,
+      MultiAZ: true,
+    });
+  });
+
   test('throw error for invalid node type', () => {
     expect(() => {
       new Cluster(stack, 'Redshift', {
@@ -780,7 +1074,7 @@ describe('multi AZ cluster', () => {
         nodeType: NodeType.DS2_XLARGE,
         multiAz: true,
       });
-    }).toThrow('Multi-AZ cluster is only supported for RA3 node types, got: ds2.xlarge');
+    }).toThrow('Multi-AZ cluster is only supported for RA3 and RG node types, got: ds2.xlarge');
   });
 
   test('throw error for single node cluster', () => {

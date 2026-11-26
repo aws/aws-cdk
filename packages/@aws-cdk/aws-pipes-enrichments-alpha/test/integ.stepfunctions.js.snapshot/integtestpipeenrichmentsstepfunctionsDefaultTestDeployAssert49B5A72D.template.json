@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSQSsendMessage3ae92c051be48a4f94cc809483263f7a": {
+  "AwsApiCallSQSsendMessage81489e85093332ed3d7eed015bcdb060": {
    "Type": "Custom::DeployAssert@SdkCallSQSsendMessage",
    "Properties": {
     "ServiceToken": {
@@ -24,10 +24,10 @@
        ]
       ]
      },
-     "MessageBody": "\"7fb58cf9-b656-4618-9feb-aa0257df1a64\""
+     "MessageBody": "\"3330e175-cdb8-4ec9-a69d-b1898ae32803\""
     },
     "flattenResponse": "false",
-    "salt": "1779368597911"
+    "salt": "1791813180576"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,7 +99,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "13c53d1af041ac32db1c99c5bae43b3bd7d29a12d9113921a925efd959ba10dc.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -108,6 +108,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -122,7 +126,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"7fb58cf9-b656-4618-9feb-aa0257df1a64-enriched\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"3330e175-cdb8-4ec9-a69d-b1898ae32803-enriched\"}]}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE"
     },
@@ -141,10 +145,10 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1779368597913"
+    "salt": "1791813180578"
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage3ae92c051be48a4f94cc809483263f7a"
+    "AwsApiCallSQSsendMessage81489e85093332ed3d7eed015bcdb060"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -167,7 +171,7 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage3ae92c051be48a4f94cc809483263f7a"
+    "AwsApiCallSQSsendMessage81489e85093332ed3d7eed015bcdb060"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForTimeoutProviderInvokeD92624FF": {
@@ -188,7 +192,7 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage3ae92c051be48a4f94cc809483263f7a"
+    "AwsApiCallSQSsendMessage81489e85093332ed3d7eed015bcdb060"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForRoleF8FA8111": {
@@ -236,7 +240,7 @@
     ]
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage3ae92c051be48a4f94cc809483263f7a"
+    "AwsApiCallSQSsendMessage81489e85093332ed3d7eed015bcdb060"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE": {
@@ -273,7 +277,7 @@
    },
    "DependsOn": [
     "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForRoleF8FA8111",
-    "AwsApiCallSQSsendMessage3ae92c051be48a4f94cc809483263f7a"
+    "AwsApiCallSQSsendMessage81489e85093332ed3d7eed015bcdb060"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -325,7 +329,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "13c53d1af041ac32db1c99c5bae43b3bd7d29a12d9113921a925efd959ba10dc.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -334,6 +338,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -367,7 +375,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "13c53d1af041ac32db1c99c5bae43b3bd7d29a12d9113921a925efd959ba10dc.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -376,6 +384,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   }

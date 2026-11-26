@@ -104,8 +104,9 @@ function collectStackMetadata(stack: Stack) {
 
   let next;
   while (next = queue.shift()) {
-    // break off if we reached a Stack construct that is not a NestedStack
-    if (STACK_TYPE.isMarked(next) && next !== stack && next.nestedStackParent === undefined) {
+    // break off if we reached a Stack construct that is going to have its own artifact with its own metadata. Otherwise recurse.
+    // (always do the requested Stack)
+    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
       continue;
     }
 

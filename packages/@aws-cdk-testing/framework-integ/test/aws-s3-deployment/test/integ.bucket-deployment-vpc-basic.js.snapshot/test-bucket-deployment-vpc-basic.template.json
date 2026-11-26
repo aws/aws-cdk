@@ -281,7 +281,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -308,28 +308,6 @@
    },
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
-  "DeployWithBasicVpcAwsCliLayerA5CAF41E": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   },
-   "DependsOn": [
-    "BasicVpcIsolatedSubnet1RouteTable388379FA",
-    "BasicVpcIsolatedSubnet1RouteTableAssociation1298F645",
-    "BasicVpcIsolatedSubnet1SubnetE36D13CE",
-    "BasicVpcIsolatedSubnet2RouteTableFA3C04A7",
-    "BasicVpcIsolatedSubnet2RouteTableAssociation06653C75",
-    "BasicVpcIsolatedSubnet2SubnetC5099AAE",
-    "BasicVpcAB60CDE5",
-    "BasicVpcS3Endpoint0075F35F"
    ]
   },
   "DeployWithBasicVpcCustomResourcec8ddc0c0caafac39aa01171290176e33e251915a8873D19772": {
@@ -539,11 +517,14 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8ddc0c0caafac39aa01171290176e33e251915a88850A95B3": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip"
     },
     "Environment": {
      "Variables": {
@@ -551,18 +532,14 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "DeployWithBasicVpcAwsCliLayerA5CAF41E"
-     }
-    ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8ddc0c0caafac39aa01171290176e33e251915a88ServiceRole2F2B0908",
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [

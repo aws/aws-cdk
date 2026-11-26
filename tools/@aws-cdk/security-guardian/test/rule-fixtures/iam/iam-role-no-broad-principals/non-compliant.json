@@ -1,0 +1,20 @@
+{
+  "Description": "IAM_ROLE_NO_BROAD_PRINCIPALS fires: a role with this name in any AWS account can assume the role",
+  "Resources": {
+    "AnyAccountTrustRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::*:role/Deployer" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

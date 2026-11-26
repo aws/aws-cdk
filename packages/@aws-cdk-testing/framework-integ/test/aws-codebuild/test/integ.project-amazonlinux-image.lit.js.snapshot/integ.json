@@ -1,13 +1,15 @@
 {
-  "version": "32.0.0",
+  "version": "53.0.0",
   "testCases": {
-    "amazon-linux-2-5-codebuild/DefaultTest": {
+    "amazon-linux-codebuild/DefaultTest": {
       "stacks": [
-        "codebuild-project-amazonlinux-2-5"
+        "codebuild-project-amazonlinux-2-5",
+        "codebuild-project-amazonlinux-2023-6"
       ],
-      "stackUpdateWorkflow": false,
-      "assertionStack": "amazon-linux-2-5-codebuild/DefaultTest/DeployAssert",
-      "assertionStackName": "amazonlinux25codebuildDefaultTestDeployAssertB1E0750B"
+      "stackUpdateWorkflow": true,
+      "assertionStack": "amazon-linux-codebuild/DefaultTest/DeployAssert",
+      "assertionStackName": "amazonlinuxcodebuildDefaultTestDeployAssertD4385892"
     }
-  }
+  },
+  "minimumCliVersion": "2.1108.0"
 }

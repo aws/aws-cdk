@@ -96,6 +96,28 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+### Customizing target input
+
+By default a target receives the whole matched event. Use `RuleTargetInput` to send
+something else: `fromEventPath()` sends one part of the event, and `fromObject()`,
+`fromText()` and `fromMultilineText()` send a value you build. Use `EventField`
+inside that value to insert fields from the matched event.
+
+```ts
+declare const rule: events.Rule;
+declare const fn: lambda.Function;
+
+rule.addTarget(new targets.LambdaFunction(fn, {
+  event: events.RuleTargetInput.fromObject({
+    instance: events.EventField.fromPath('$.detail.instance-id'),
+    account: events.EventField.account,
+  }),
+}));
+```
+
+The prop that takes a `RuleTargetInput` depends on the target: `event` on
+`LambdaFunction`, `message` on `SnsTopic` and `SqsQueue`.
+
 ### Role
 You can specify an IAM Role:
 

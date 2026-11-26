@@ -7,7 +7,7 @@ import type { AmazonLinux2ImageSsmParameterProps } from './amazon-linux2';
 import { AmazonLinux2ImageSsmParameter, AmazonLinux2Kernel } from './amazon-linux2';
 import type { IMachineImage, MachineImageConfig } from './common';
 import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, OperatingSystemType } from './common';
-import { lookupImage } from './utils';
+import { acknowledgeAmiLookupWarning, lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ContextProvider, CfnMapping, Aws, Stack, Token, UnscopedValidationError, ValidationError } from '../../../core';
@@ -719,6 +719,11 @@ export class LookupMachineImage implements IMachineImage {
     if (typeof value !== 'string') {
       throw new ValidationError(lit`ResponseLookupInvalid`, `Response to AMI lookup invalid, got: ${value}`, scope);
     }
+
+    // The looked-up AMI ID is baked into the template as a literal `ami-xxxx` value,
+    // which is the intended behavior of a lookup-based machine image. Silence the
+    // W9010 "hardcoded AMI" warning on the consuming construct.
+    acknowledgeAmiLookupWarning(scope);
 
     const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;
 

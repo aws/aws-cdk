@@ -117,7 +117,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -146,47 +146,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "TestSecret16AF87B1": {
-   "Type": "AWS::SecretsManager::Secret",
-   "Properties": {
-    "GenerateSecretString": {
-     "GenerateStringKey": "password",
-     "SecretStringTemplate": "{\"value\":\"test\\\"with\\\"quotes\"}"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SecretParam0C31D215": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Type": "String",
-    "Value": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "TestSecret16AF87B1"
-       },
-       ":SecretString:value::}}"
-      ]
-     ]
-    }
-   }
-  },
-  "DeployWithLargeFilesAwsCliLayer2B9E5351": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployWithLargeFilesCustomResourceB9F4A04D": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -202,65 +161,11 @@
      },
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      }
     ],
     "SourceObjectKeys": [
-     "5fafef40d71df227043af704c42aa861306f2ed62dbc77b0aaebac3bc184fa02.zip",
-     "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
-     "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
-     "28993f893d6ff78d86a5b8265321158c6da4719974a8aa757202f429679cc7e6.zip"
-    ],
-    "SourceMarkers": [
-     {},
-     {},
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     }
-    ],
-    "SourceMarkersConfig": [
-     {},
-     {},
-     {
-      "jsonEscape": true
-     },
-     {}
+     "676db8d9e79867dd7030b0efed5c50293e559480570d5a72249b08fed25bfd08.zip",
+     "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip"
     ],
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
@@ -401,11 +306,14 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip"
     },
     "Environment": {
      "Variables": {
@@ -413,18 +321,14 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "DeployWithLargeFilesAwsCliLayer2B9E5351"
-     }
-    ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [

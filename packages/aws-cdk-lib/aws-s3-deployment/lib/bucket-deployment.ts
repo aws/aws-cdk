@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import type { ISource, SourceConfig } from './source';
+import type { ISource, MarkersConfig, SourceConfig } from './source';
 import { Source } from './source';
 import type * as cloudfront from '../../aws-cloudfront';
 import type * as ec2 from '../../aws-ec2';
@@ -19,6 +19,8 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
   BucketDeploymentSingletonFunction,
 } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import { BucketDeploymentTsSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-ts-provider.generated';
+import { BUCKET_DEPLOYMENT_MODERN_RESOURCE } from '../../cx-api/lib/features';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -159,7 +161,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 128
+   * @default 1024
    */
   readonly memoryLimit?: number;
 
@@ -206,6 +208,20 @@ export interface BucketDeploymentProps {
   readonly contentDisposition?: string;
   /**
    * System-defined content-encoding metadata to be set on all objects in the deployment.
+   *
+   * This constrols the HTTP `Content-Encoding` header when S3 serves the file.
+   *
+   * The only correct use is on a deployment where all the files are already
+   * compressed with the indicated encoding (`gzip`, `br`, `deflate`, `zstd`).
+   *
+   * If unset, `Content-Type` will be guessed from the second extension, so
+   * files uploaded as `app.js.gz` will be served with:
+   *
+   * ```
+   * Content-Type: text/javascript
+   * Content-Encoding: gzip
+   * ```
+   *
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
@@ -218,7 +234,10 @@ export interface BucketDeploymentProps {
   readonly contentLanguage?: string;
   /**
    * System-defined content-type metadata to be set on all objects in the deployment.
-   * @default - Not set.
+   *
+   * If not set, `Content-Type` will be guessed from the file extension.
+   *
+   * @default - Guessed from the file extension.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentType?: string;
@@ -286,6 +305,15 @@ export interface BucketDeploymentProps {
    * If set to true, uploads will precompute the value of `x-amz-content-sha256`
    * and include it in the signed S3 request headers.
    *
+   * Use this if the bucket has been configured to require file content
+   * to be part of the SigV4 signature.
+   *
+   * `BucketDeployment` does not currently support signed streaming
+   * (`STREAMING-AWS4-HMAC-SHA256-PAYLOAD`), so switching this on requires
+   * in-memory buffering of every file that is being copied, which increases
+   * memory usage and upload latency.
+   *
+   *
    * @default - `x-amz-content-sha256` will not be computed
    */
   readonly signContent?: boolean;
@@ -325,8 +353,11 @@ export class BucketDeployment extends Construct {
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: IBox<boolean> = Box.fromValue(false);
+  private requestObjectVersionIds: IBox<boolean> = Box.fromValue(false);
   private readonly destinationBucket: s3.IBucket;
   private readonly sources: IArrayBox<SourceConfig>;
+  private readonly extract: boolean;
+  private readonly outputObjectKeys: boolean;
 
   /**
    * Execution role of the Lambda function behind the custom CloudFormation resource of type `Custom::CDKBucketDeployment`.
@@ -352,6 +383,8 @@ export class BucketDeployment extends Construct {
     }
 
     this.destinationBucket = props.destinationBucket;
+    this.extract = props.extract ?? true;
+    this.outputObjectKeys = props.outputObjectKeys ?? true;
 
     const accessPointPath = '/lambda';
     let accessPoint;
@@ -382,10 +415,28 @@ export class BucketDeployment extends Construct {
       this.node.addDependency(props.vpc);
     }
 
+    // Pick between the two BucketDeployment implementations based on the feature flag. Read at
+    // stack scope: the handler is a per-stack singleton, so all deployments in a stack must agree.
+    let customResourceConstructor: typeof BucketDeploymentSingletonFunction | typeof BucketDeploymentTsSingletonFunction;
+    let layers: lambda.ILayerVersion[] = [];
+    const useModernBucketDeployment = cdk.FeatureFlags.of(cdk.Stack.of(this)).isEnabled(BUCKET_DEPLOYMENT_MODERN_RESOURCE);
+    if (useModernBucketDeployment) {
+      // The modern BucketDeployment resource has no dependencies.
+      customResourceConstructor = BucketDeploymentTsSingletonFunction;
+      layers = [];
+    } else {
+      // The original BucketDeployment resource uses the AWS CLI v1 layer.
+      customResourceConstructor = BucketDeploymentSingletonFunction;
+      layers.push(new AwsCliLayer(this, 'AwsCliLayer'));
+    }
+
     const mountPath = `/mnt${accessPointPath}`;
-    const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
+    const handler = new customResourceConstructor(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
-      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
+      // The deployment handler is CDK-managed internal code, not user code, so the architecture is
+      // fixed rather than configurable. We pick ARM because it's cheaper to run for customers.
+      architecture: lambda.Architecture.ARM_64,
+      layers,
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
         // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
@@ -395,7 +446,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit,
+      memorySize: props.memoryLimit ?? 1024,
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -450,23 +501,19 @@ export class BucketDeployment extends Construct {
       properties: {
         SourceBucketNames: this.sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: this.sources.map(source => source.zipObjectKey),
-        SourceMarkers: sanitize(this.sources.map((source) => {
-          if (source.markers) {
-            return source.markers;
-            // if there are more than 1 source, then all sources
-            // require markers (custom resource will throw an error otherwise)
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+        SourceMarkers: removeTrailingEmptyObjects(this.sources.map((source) => {
+          return source.markers ?? {};
         })),
-        SourceMarkersConfig: sanitize(this.sources.map((source) => {
-          if (source.markersConfig) {
-            return source.markersConfig;
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+        SourceMarkersConfig: removeTrailingEmptyObjects(this.sources.map((source): MarkersConfig => {
+          // Normalize to an object with only defined properties
+          return {
+            ...dropEmpty({
+              // Only render a 'true', omit if falsy
+              ...source.markersConfig?.jsonEscape ? { jsonEscape: true } : {},
+              // Make the list of encodings undefined if it ends up empty
+              markerEncodings: dropEmpty(source.markersConfig?.markerEncodings),
+            } satisfies MarkersConfig),
+          };
         })),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
@@ -484,6 +531,9 @@ export class BucketDeployment extends Construct {
         OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: this.requestDestinationArn.derive(v => v ? this.destinationBucket.bucketArn : undefined),
+        // Only threaded through (and only queried by the handler) when `objectVersionIds` is read.
+        // Deriving to `undefined` keeps the property out of the template for existing users.
+        OutputObjectVersionIds: this.requestObjectVersionIds.derive(v => v ? true : undefined),
       },
     });
 
@@ -580,6 +630,42 @@ export class BucketDeployment extends Construct {
   public get objectKeys(): string[] {
     const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
     return objectKeys;
+  }
+
+  /**
+   * The S3 version IDs of the objects deployed to the destination bucket.
+   *
+   * Returns a list of tokenized version IDs, positionally matching `objectKeys`: the version ID at
+   * a given index corresponds to the object key at the same index.
+   *
+   * This is useful when a consumer must reference a specific, immutable version of a deployed
+   * object — for example a Lambda function that references its code in S3 by version rather than
+   * copying it.
+   *
+   * Requires versioning to be enabled on the destination bucket; otherwise the returned version IDs
+   * will be empty strings. Only supported with `extract` set to `false`, where each source zip maps
+   * 1:1 to a destination object. Reading this accessor with `extract` set to `true` (the default)
+   * throws. It also requires `outputObjectKeys` to remain enabled (the default), since the returned
+   * list is defined to be positionally aligned with `objectKeys`; reading it with
+   * `outputObjectKeys` set to `false` throws.
+   *
+   * @remarks
+   * `objectVersionIds` is positionally aligned with `objectKeys`: the version ID at index `i`
+   * corresponds to the object key at index `i`. The handler builds both lists in a single
+   * deterministic pass over the sources, in `sources` order.
+   *
+   * For example, use `Fn.select(0, deployment.objectVersionIds)` to reference the version ID of the
+   * first source file in your bucket deployment.
+   */
+  public get objectVersionIds(): string[] {
+    if (this.extract) {
+      throw new ValidationError(lit`ObjectVersionIdsRequiresExtractFalse`, "'objectVersionIds' is only supported when 'extract' is set to false", this);
+    }
+    if (!this.outputObjectKeys) {
+      throw new ValidationError(lit`ObjectVersionIdsRequiresOutputObjectKeys`, "'objectVersionIds' requires 'outputObjectKeys' to be enabled (the default), so it stays positionally aligned with 'objectKeys'", this);
+    }
+    this.requestObjectVersionIds.set(true);
+    return cdk.Token.asList(this.cr.getAtt('SourceObjectVersionIds'));
   }
 
   /**
@@ -737,6 +823,14 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
 
   public get bucket(): s3.IBucket {
     return this.deployedBucket;
+  }
+
+  /**
+   * `objectVersionIds` is not supported for `DeployTimeSubstitutedFile`, which always extracts its
+   * file (`extract` is forced to `true`), so there is no single deployed object to version.
+   */
+  public get objectVersionIds(): string[] {
+    throw new ValidationError(lit`ObjectVersionIdsNotSupportedForSubstitutedFile`, "'objectVersionIds' is not supported for 'DeployTimeSubstitutedFile' since its file is always extracted", this);
   }
 }
 
@@ -986,7 +1080,35 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
     && a.markers === undefined && b.markers === undefined);
 }
 
-function sanitize<A>(box: IReadableBox<Array<A>>) {
-  return box.derive(arr => arr.filter(Boolean))
-    .derive(arr => arr.length === 0 ? undefined : arr);
+/**
+ * Remove trailing empty objects from an array box, returning `undefined` if the array ends up empty
+ */
+function removeTrailingEmptyObjects<A extends object>(box: IReadableBox<Array<A>>) {
+  return box.derive(arr => {
+    const ret = [...arr];
+    while (ret.length > 0 && Object.keys(ret[ret.length - 1]).length === 0) {
+      ret.pop();
+    }
+    return ret.length > 0 ? ret : undefined;
+  });
+}
+
+/**
+ * Drop `undefined` values from the object, drop the object entirely if it is empty after that
+ */
+function dropEmpty<A extends object>(obj: A | undefined): A | undefined {
+  if (obj === undefined) {
+    return undefined;
+  }
+
+  const ret: any = {};
+  for (const key of Object.keys(obj)) {
+    if (!obj.hasOwnProperty(key)) { continue; }
+
+    const value = (obj as any)[key];
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return Object.keys(ret).length === 0 ? undefined : ret;
 }

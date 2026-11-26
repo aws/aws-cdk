@@ -1,0 +1,76 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4": {
+      "displayName": "LambdaS3ObjectStorageModeStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9a78531b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "a99a19974707f69ec1fcc8c3de916795ee4cf5b9d411eafa6690c09ccef25dec": {
+      "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
+      "source": {
+        "path": "asset.a99a19974707f69ec1fcc8c3de916795ee4cf5b9d411eafa6690c09ccef25dec",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-6bf4f264": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a99a19974707f69ec1fcc8c3de916795ee4cf5b9d411eafa6690c09ccef25dec.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d48aac32b23adb22c66a00d01ba33fd5e07e2a4989d4bd1a9518ff8a5a8f5794": {
+      "displayName": "DeployLambdaCode/Asset1",
+      "source": {
+        "path": "asset.d48aac32b23adb22c66a00d01ba33fd5e07e2a4989d4bd1a9518ff8a5a8f5794.zip",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-17fad7f8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d48aac32b23adb22c66a00d01ba33fd5e07e2a4989d4bd1a9518ff8a5a8f5794.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "107fad8963264825cc449bcfac9d72effef186dd868b2c29670e8eb13ddcaee0": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.107fad8963264825cc449bcfac9d72effef186dd868b2c29670e8eb13ddcaee0",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-67deae4d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "107fad8963264825cc449bcfac9d72effef186dd868b2c29670e8eb13ddcaee0.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "ca9a002698933c092f8f090d6eceaf69cc773c1ea16422d3941f4817018e0918": {
+      "displayName": "LambdaS3ObjectStorageModeStack Template",
+      "source": {
+        "path": "LambdaS3ObjectStorageModeStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c88b7291": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ca9a002698933c092f8f090d6eceaf69cc773c1ea16422d3941f4817018e0918.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

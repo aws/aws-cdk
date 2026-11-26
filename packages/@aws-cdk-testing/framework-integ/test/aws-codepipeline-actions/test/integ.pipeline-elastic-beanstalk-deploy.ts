@@ -68,7 +68,7 @@ const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', 
 
 const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', {
   applicationName: beanstalkApp.ref,
-  solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
+  solutionStackName: SOLUTION_STACK_NAME.NODEJS_22,
   optionSettings: [
     {
       namespace: 'aws:autoscaling:launchconfiguration',
@@ -93,8 +93,8 @@ const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', 
   ],
 });
 
-beanstalkEnv.addDependency(instanceProfile);
-beanstalkEnv.addDependency(beanstalkApp);
+beanstalkEnv.addResourceDependency(instanceProfile);
+beanstalkEnv.addResourceDependency(beanstalkApp);
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,

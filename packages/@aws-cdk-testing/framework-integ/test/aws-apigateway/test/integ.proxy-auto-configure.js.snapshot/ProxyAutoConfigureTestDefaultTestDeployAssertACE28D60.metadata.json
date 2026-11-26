@@ -1,0 +1,97 @@
+{
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:165:54)",
+        "resolveReferences (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/Users/goto/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:163:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)"
+      ]
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/HttpApiCalldafa261b9f21820f507c6f3f498afcc9/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/HttpApiCalldafa261b9f21820f507c6f3f498afcc9/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsHttpApiCalldafa261b9f21820f507c6f3f498afcc9"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/HttpApiCall7506a28c8f6601554a520d1658c70aec/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/HttpApiCall7506a28c8f6601554a520d1658c70aec/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsHttpApiCall7506a28c8f6601554a520d1658c70aec"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/HttpApiCalldafa261b9f21820f507c6f3f498afcc9/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCalldafa261b9f21820f507c6f3f498afcc9"
+    }
+  ],
+  "/ProxyAutoConfigureTest/DefaultTest/DeployAssert/HttpApiCall7506a28c8f6601554a520d1658c70aec/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCall7506a28c8f6601554a520d1658c70aec"
+    }
+  ]
+}

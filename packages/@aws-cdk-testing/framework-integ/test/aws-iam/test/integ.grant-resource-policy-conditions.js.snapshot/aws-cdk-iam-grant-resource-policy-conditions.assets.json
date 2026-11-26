@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "8db712ac52660dea2741d0b920f80972836ad82ed86931a0716629f79e3a9be2": {
+      "displayName": "aws-cdk-iam-grant-resource-policy-conditions Template",
+      "source": {
+        "path": "aws-cdk-iam-grant-resource-policy-conditions.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a67a99f3": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8db712ac52660dea2741d0b920f80972836ad82ed86931a0716629f79e3a9be2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

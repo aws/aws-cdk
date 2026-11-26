@@ -1,0 +1,1057 @@
+{
+  "/aws-cdk-sfn-evaluate-expression-execution-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-sfn-evaluate-expression-execution-integ.template.json"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/ImmutableRoleEvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Sum/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Product/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Overlap/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Greeting/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Template/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Max/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Rounded/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/DayObj/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Dash/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Joined/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Parsed/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Iso/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Iife/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Ternary/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/HelloGreeting/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Replaced/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Sum/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SumEvalFunctionF2909C56"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Product/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProductEvalFunction9FBC78E7"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Overlap/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OverlapEvalFunctionA8230216"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Greeting/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GreetingEvalFunctionDB9E606D"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Template/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TemplateEvalFunctionB45F3DAC"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Max/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MaxEvalFunctionDC2950B5"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Rounded/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RoundedEvalFunction989139E9"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/DayObj/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DayObjEvalFunction74507B24"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Dash/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DashEvalFunction55C6E9D5"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Joined/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "JoinedEvalFunction8ECBBD6C"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Parsed/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParsedEvalFunction3B20BD65"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Iso/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsoEvalFunction6212976A"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Iife/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IifeEvalFunction02819D1B"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Ternary/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TernaryEvalFunction80A0104E"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/HelloGreeting/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HelloGreetingEvalFunction000639A5"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Replaced/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplacedEvalFunctionB75CE4AE"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Sum/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Product/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Overlap/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Greeting/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Template/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Max/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Rounded/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/DayObj/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Dash/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Joined/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Parsed/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Iso/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Iife/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Ternary/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/HelloGreeting/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/Replaced/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-execution-integ/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ]
+}

@@ -32,6 +32,7 @@ Principles:
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
 | Lint with auto-fix | `yarn lint --fix` | repo root |
+| Check skills | `node scripts/check-skills.js` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
 | Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
@@ -53,12 +54,13 @@ Principles:
 | Mixin guidelines | `docs/MIXINS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | Facade & Trait guidelines | `docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | New construct guide | `docs/NEW_CONSTRUCTS_GUIDE.md` | Human-oriented; prefer `docs/AGENTS_*` files |
+| Review skills | [`skills/cdk-review/`](./skills/cdk-review/README.md) | Skills for reviewing changes to AWS CDK code, locally or on a pull request, with any agent |
 
 ## Architecture — The Layer Model
 
 - **L1 (`Cfn*`)**: Auto-generated from CloudFormation spec. Never manually edit.
 - **L2**: Hand-written intent-based API with defaults. Where most work happens.
-- **L3 (Patterns)**: Multi-resource compositions. Legacy L3s exist in `aws-ecs-patterns` and `aws-route53-patterns`. New L3s should NOT be added to this repo.
+- **L3 (Patterns)**: Multi-resource compositions. Legacy L3s exist in `aws-ecs-patterns` and `aws-route53-patterns`. New L3s SHOULD NOT be added to this repo.
 
 L2 design rules:
 - You SHOULD design for the user's mental model, not the CloudFormation API — allow multiple paths to the same outcome when they serve different mental models
@@ -134,7 +136,7 @@ public static isFoo(x: any): x is Foo {
 ## Props Design
 
 - Name: `FooProps` — always a struct (readonly properties only)
-- Flat — no artificial nesting, use shared prefixes for related props
+- Flat — no artificial nesting, use shared prefixes for related props. Exception: group **co-dependent** props (only valid together) into a required-together value object when it makes incomplete combinations unrepresentable — e.g. `workerConfiguration: { workerType, numberOfWorkers }`. Litmus: if flattening would need a synth-time throw for partial input, nest; mutually *exclusive* props use factory methods instead
 - Every optional prop needs `@default` tag:
   - Simple: `@default true`
   - Context-dependent: `@default - uses the account default encryption`
@@ -171,6 +173,7 @@ public static isFoo(x: any): x is Foo {
 - Error messages: lowercase, no period, include wrong value via `JSON.stringify()`, expected values, what to change
 - Three mechanisms: (1) eagerly throw for API misuse, (2) `node.addValidation()` for post-init checks, (3) `Annotations.of(construct).addError()` for environmental issues
 - Never catch exceptions — all CDK errors are unrecoverable. Model recoverable errors in return values instead.
+- Don't pre-check-and-swallow either: when a value self-identifies as a type (e.g. a string starting with `arn:`), a malformed instance is a caller error — let the parse/validation fail fast. A hand-rolled check that returns `undefined` for both "not that type" and "malformed" hides the bug. Branch on the discriminator (`startsWith('arn:')`, then `Token.isUnresolved`) to decide whether the value is yours to parse
 
 ### Token Safety
 
@@ -230,7 +233,7 @@ Required when a change alters observable behavior of existing API.
 
 - Use correct `FlagType`: `BugFix` when old behavior was wrong, `ApiDefault` when old behavior is valid but not recommended. `ApiDefault` requires `compatibilityWithOldBehaviorMd` field.
 - New flags: set `introducedIn: { v2: 'V2NEXT' }`, `recommendedValue: true`, `unconfiguredBehavesLike: { v2: false }` — ensures existing apps keep old behavior
-- Flags should tighten security (reduce trust/permissions), never loosen it. If you need broader permissions, make it an explicit API option
+- Flags SHOULD tighten security (reduce trust/permissions), never loosen it. If you need broader permissions, make it an explicit API option
 - Don't use flags when a new construct replaces an old one — deprecate the old construct instead
 - Flag variables: `is`/`has` prefix — `const isReducedScope = FeatureFlags.of(this).isEnabled(cxapi.MY_FLAG)`
 - Warn about behavior changes via `Annotations.of(this).addWarningV2()` — not custom props. Users suppress via `acknowledgeWarning()`
@@ -264,16 +267,16 @@ if (FeatureFlags.of(this).isEnabled(cxapi.MY_NEW_FLAG)) { ... }
    */
   readonly bucketArn: string;
   ```
-- Attribute names must begin with the type name: `bucketArn` not `arn`, `functionName` not `name`
+- Attribute names MUST begin with the type name: `bucketArn` not `arn`, `functionName` not `name`
 - Copy prop documentation from official AWS docs when available
 - Don't add docs on overrides — they inherit from the base interface
 
 ### Module READMEs
 
 - Each `aws-cdk-lib/aws-{service}` has a README that renders as official API docs
-- Must include: maturity level, simple example near top, examples per use case
-- README code blocks (` ```ts `) must compile — verified by Rosetta. Use ` ```ts nofixture ` to skip
-- All `feat()` PRs must include README updates
+- MUST include: maturity level, simple example near top, examples per use case
+- README code blocks (` ```ts `) MUST compile — verified by Rosetta. Use ` ```ts nofixture ` to skip
+- All `feat()` PRs MUST include README updates
 
 ## Testing
 
@@ -292,7 +295,7 @@ if (FeatureFlags.of(this).isEnabled(cxapi.MY_NEW_FLAG)) { ... }
 - Error tests: assert on specific error message, prefix test name with "fails"
 - Test utility functions separately from constructs (e.g. `util.test.ts`)
 - Grant methods: test with `new iam.Role()`, `Role.fromRoleArn()`, `new iam.User()`, `new iam.ServicePrincipal()`
-- Include backward-compatibility tests when adding new optional props — default behavior must be preserved
+- Include backward-compatibility tests when adding new optional props — default behavior MUST be preserved
 - Preserve deprecated API tests with `testDeprecated` (from `@aws-cdk/cdk-build-tools`)
 - Avoid `overrideLogicalId` in tests — couples tests to internal naming
 
@@ -332,7 +335,7 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 
 - Module scope optional for repo-wide changes: `chore: update dependencies`
 - Lowercase, no period at end
-- `feat` and `fix` PRs MUST reference an issue: `fixes #<issue>` or `closes #<issue>`
+- You SHOULD reference an issue in every `feat` and `fix` PR: `fixes #<issue>` or `closes #<issue>`. A PR with no linked issue is routed to a lower-priority review queue, so link one to keep the PR in the normal queue. If no issue exists, open one before raising the PR.
 - `feat()` PRs require unit tests, integration snapshots, and README updates
 - Breaking changes are only allowed in `-alpha` libraries. Declare with `BREAKING CHANGE:` in the PR body before the `---` line
 - One concern per PR — submit cosmetic changes separately
@@ -340,10 +343,13 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 ## Anti-Patterns — Things NOT To Do
 
 - **MUST NOT use jsii-incompatible patterns** — mapped types, conditional types, overloaded functions, TypeScript namespaces, `export const` objects (use `public static readonly` on classes). MUST NOT move public types between files — file location is part of the external contract in jsii bindings
-- **MUST NOT use fluent API patterns** (method chaining returning `this`) — jsii languages can't chain methods that return `this`, and it hides mutation behind a return value ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
+- **SHOULD NOT use fluent API patterns** (method chaining returning `this`) - this is a consistency rule, not a jsii limitation (chaining works in all jsii languages): the library configures through props objects, and returning `this` both hides mutation behind a return value and permanently reserves the method's return type. A fluent API that is present MUST come with a written justification, and accepting it is at the maintainer's discretion. When you find one, notify the human that it is present as a warning, not as a blocking issue. ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
 - **MUST NOT add speculative abstractions** — add what customers need today; unused abstractions become maintenance burden and API surface that can't be removed ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
 - **MUST NOT change construct IDs** — logical IDs derive from the full construct path; any change replaces all resources in scope, causing data loss ([DESIGN_GUIDELINES.md#construct-ids](./docs/DESIGN_GUIDELINES.md#construct-ids))
-- **MUST NOT leave commented-out code, dead code, or `eslint-disable` directives** — they rot, confuse future contributors, and mask real lint violations
+- **MUST NOT leave commented-out code or dead code** — they rot, confuse future contributors, and mask real lint violations
+- **MUST ask for user confirmation to add `eslint-disable` directives** - you should avoid using structures that lead to linting violations. If it is not possible to avoid (some
+rules are written such that they must be silenced explicitly), ask for user confirmation
+first.
 - **MUST NOT add validation to existing constructs without considering backwards compatibility** — adding validation that rejects previously accepted input is a breaking change. Two cases apply:
   - **Input that previously deployed successfully** → MUST gate behind a feature flag so existing apps continue to synthesize
   - **Input that was accepted by synth but always failed at deploy time** (e.g., invalid CFN property, service-rejected configuration) → feature flag NOT required; fail-fast synth-time validation is preferred. The PR MUST document why the breaking change is justified (e.g., "this input always caused CloudFormation error X")
@@ -364,4 +370,4 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 | [`INTEGRATION_TESTS.md`](./INTEGRATION_TESTS.md) | Human reference | Integration test deep-dive | When writing, running, or debugging integration tests |
 
 All code is TypeScript compiled via [jsii](https://github.com/aws/jsii/) to other languages.
-Every public API must be jsii-compatible.
+Every public API MUST be jsii-compatible.

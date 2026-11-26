@@ -17,12 +17,13 @@ import type { AgentRuntimeArtifact } from './runtime-artifact';
 import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
+import type { BuildLifecycleHooks, LifecycleConfiguration, PlatformVersion, RequestHeaderConfiguration } from './types';
 import { ProtocolType } from './types';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from '../../../core';
+import type { Size } from '../../../core';
+import { Duration, SizeRoundingBehavior, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
@@ -95,6 +96,16 @@ export interface RuntimeProps {
   readonly protocolConfiguration?: ProtocolType;
 
   /**
+   * The platform version of the runtime.
+   *
+   * When omitted, the property is not rendered and the AgentCore service applies
+   * its own default platform version.
+   *
+   * @default - the AgentCore service default platform version
+   */
+  readonly platformVersion?: PlatformVersion;
+
+  /**
    * Environment variables for the agent runtime
    * - Maximum 50 environment variables
    * - Key: Must be 1-100 characters, start with letter or underscore, contain only letters, numbers, and underscores
@@ -130,10 +141,31 @@ export interface RuntimeProps {
   readonly lifecycleConfiguration?: LifecycleConfiguration;
 
   /**
+   * Hooks the AgentCore service calls on the agent's container while it builds the runtime.
+   *
+   * @default - no build hooks
+   */
+  readonly buildHooks?: BuildLifecycleHooks;
+
+  /**
+   * The minimum memory for each runtime session.
+   *
+   * Must be a whole number of MiB. The service validates which values are allowed.
+   *
+   * @default - the service default
+   */
+  readonly minimumMemory?: Size;
+
+  /**
    * Whether to enable X-Ray tracing for this runtime.
    * When enabled, traces will be delivered to AWS X-Ray.
    *
+   * Tracing requires CloudWatch Transaction Search to be enabled in the account and
+   * Region, so that the X-Ray trace segment destination is CloudWatch Logs.
+   * Without it the deploy fails. This is a one-time, account-wide setting.
+   *
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-get-started.html
    * @default false
    */
   readonly tracingEnabled?: boolean;
@@ -146,6 +178,29 @@ export interface RuntimeProps {
    * @default - No logging configured
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * Whether to create resource policies for log/trace delivery.
+   *
+   * When `false`, the `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy`
+   * are not created. This is useful when deploying many runtimes per account/Region,
+   * as each resource policy consumes an account-level quota slot (CloudWatch Logs: 10,
+   * X-Ray: lower).
+   *
+   * Setting `false` means you are responsible for ensuring delivery permissions exist.
+   * There are two safe ways to use this:
+   * - Same-account delivery to a `/aws/vendedlogs/` log group, where the log-delivery
+   *   service-linked role grants write access implicitly.
+   * - Attaching the delivery resource policy yourself.
+   *
+   * Otherwise delivery silently fails: synthesis and deploy succeed, but nothing is delivered.
+   * Per the [vended-logs delivery docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-CloudWatchLogs.html),
+   * a resource policy is required for CloudWatch Logs delivery outside the `/aws/vendedlogs/` same-account case.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html
+   * @default true
+   */
+  readonly manageDeliveryResourcePolicy?: boolean;
 }
 
 /**
@@ -361,10 +416,13 @@ export class Runtime extends RuntimeBase {
       agentRuntimeArtifact: Lazy.any({ produce: () => this.renderAgentRuntimeArtifact() }),
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration._render(this._connections) }),
       protocolConfiguration: Lazy.string({ produce: () => this.protocolConfiguration.value }),
+      platformVersion: props.platformVersion?.value,
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables(props.environmentVariables) }),
       tags: props.tags ?? {},
       lifecycleConfiguration: this.renderLifecycleConfiguration(),
+      hooksConfiguration: this.renderHooksConfiguration(props.buildHooks),
+      resourceConfigurations: this.renderResourceConfigurations(props.minimumMemory),
     };
     if (props.requestHeaderConfiguration) {
       cfnProps.requestHeaderConfiguration = this.renderRequestHeaderConfiguration(props.requestHeaderConfiguration);
@@ -387,12 +445,16 @@ export class Runtime extends RuntimeBase {
     this.lastUpdatedAt = this.runtimeResource.attrLastUpdatedAt;
 
     // Configure observability (tracing and logging)
+    const observabilityOptions = {
+      manageDeliveryResourcePolicy: props.manageDeliveryResourcePolicy,
+    };
+
     if (props.tracingEnabled) {
-      configureTracingDelivery(this, this.agentRuntimeArn);
+      configureTracingDelivery(this, this.agentRuntimeArn, observabilityOptions);
     }
 
     if (props.loggingConfigs && props.loggingConfigs.length > 0) {
-      configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs);
+      configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs, observabilityOptions);
     }
   }
 
@@ -519,6 +581,28 @@ export class Runtime extends RuntimeBase {
       idleRuntimeSessionTimeout: this.lifecycleConfiguration?.idleRuntimeSessionTimeout?.toSeconds(),
       maxLifetime: this.lifecycleConfiguration?.maxLifetime?.toSeconds(),
     };
+  }
+
+  /**
+   * Renders the build hooks for CloudFormation
+   * @internal
+   */
+  private renderHooksConfiguration(buildHooks?: BuildLifecycleHooks): bedrockagentcore.CfnRuntime.RuntimeHooksConfigurationProperty | undefined {
+    if (!buildHooks?.warmup) {
+      return undefined;
+    }
+    return { buildProperty: { warmup: buildHooks.warmup._render() } };
+  }
+
+  /**
+   * Renders the minimum memory for CloudFormation
+   * @internal
+   */
+  private renderResourceConfigurations(minimumMemory?: Size): bedrockagentcore.CfnRuntime.ResourceConfigurationProperty[] | undefined {
+    if (!minimumMemory) {
+      return undefined;
+    }
+    return [{ minimumMemoryInMiB: minimumMemory.toMebibytes({ rounding: SizeRoundingBehavior.FAIL }) }];
   }
 
   /**
@@ -768,7 +852,8 @@ export class Runtime extends RuntimeBase {
     // Skip validation if the URI contains CDK tokens (unresolved values)
     if (Token.isUnresolved(uri)) {
       // Add a warning that validation will be skipped for token-based URIs
-      Annotations.of(this).addInfo(
+      Annotations.of(this).addInfoV2(
+        'aws-cdk-lib.aws-bedrockagentcore:containerUriValidationSkipped',
         'Container URI validation skipped as it contains unresolved CDK tokens. ' +
         'The URI will be validated at deployment time.',
       );
@@ -776,11 +861,11 @@ export class Runtime extends RuntimeBase {
     }
 
     // Only validate if the URI is a concrete string (not a token)
-    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
+    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com(?:\.cn)?\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
     if (!pattern.test(uri)) {
       throw new ValidationError(
         lit`InvalidContainerUri`,
-        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest)`,
+        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest or 123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/my-agent:latest)`,
         this,
       );
     }
@@ -837,7 +922,8 @@ export class Runtime extends RuntimeBase {
 
     const stackAccount = Stack.of(this).account;
     if (!Token.isUnresolved(stackAccount) && accountId !== stackAccount) {
-      Annotations.of(this).addWarning(
+      Annotations.of(this).addWarningV2(
+        'aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossAccount',
         `IAM role is from a different account (${accountId}) than the stack account (${stackAccount}). ` +
         'Ensure cross-account permissions are properly configured.',
       );
@@ -847,7 +933,8 @@ export class Runtime extends RuntimeBase {
     const region = arnComponents.region;
     const stackRegion = Stack.of(this).region;
     if (region && region !== '' && region !== stackRegion && !Token.isUnresolved(stackRegion)) {
-      Annotations.of(this).addWarning(
+      Annotations.of(this).addWarningV2(
+        'aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossRegion',
         `IAM role ARN contains a region (${region}) that doesn't match the stack region (${stackRegion}). ` +
         'IAM is a global service, so this might be intentional.',
       );

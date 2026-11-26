@@ -1,0 +1,22 @@
+{
+  "Description": "S3_NO_WORLD_READABLE passes: only one named role can read objects",
+  "Resources": {
+    "ScopedReadBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "example-bucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:role/Reader" },
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::example-bucket/*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "dee5f7b8d2a09506c7da9e933fb65c389bcfc45146608ba393507eb8e732e363": {
+      "displayName": "cloudfront-origin-access-control-sigv4a-always-amz-auth Template",
+      "source": {
+        "path": "cloudfront-origin-access-control-sigv4a-always-amz-auth.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-007c328c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dee5f7b8d2a09506c7da9e933fb65c389bcfc45146608ba393507eb8e732e363.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

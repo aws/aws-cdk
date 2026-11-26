@@ -2,7 +2,7 @@
  * Targeted tests to improve branch coverage
  */
 
-import { Template, Match } from '../../../../assertions';
+import { Annotations, Template, Match } from '../../../../assertions';
 import * as apigateway from '../../../../aws-apigateway';
 import * as cloudwatch from '../../../../aws-cloudwatch';
 import * as iam from '../../../../aws-iam';
@@ -18,6 +18,7 @@ import {
   OAuth2CredentialProvider,
 } from '../../../lib';
 import { CustomClaimOperator } from '../../../lib/common/types';
+import { PolicyEngineMode } from '../../../lib/gateway/gateway';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
 import { GatewayCustomClaim } from '../../../lib/gateway/inbound-auth/custom-claim';
 import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
@@ -25,6 +26,7 @@ import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api
 import { GatewayProtocol, MCPProtocolVersion, McpGatewaySearchType } from '../../../lib/gateway/protocol';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
 import { ApiGatewayHttpMethod } from '../../../lib/gateway/targets/target-configuration';
+import { PolicyEngine } from '../../../lib/policy/policy-engine';
 
 /**
  * Helper: wraps a Metric in a minimal Alarm so we can assert on the
@@ -44,22 +46,6 @@ describe('Gateway Coverage Tests', () => {
   beforeEach(() => {
     const app = new cdk.App();
     stack = new cdk.Stack(app, 'TestStack');
-  });
-
-  test('Should create a ServiceRole when no custom role is provided', () => {
-    new Gateway(stack, 'Gateway');
-
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::IAM::Role', 1);
-    template.hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
-          }),
-        ]),
-      },
-    });
   });
 
   test('Should use the provided role and not create a ServiceRole', () => {
@@ -467,6 +453,141 @@ describe('Gateway Coverage Tests', () => {
         ]),
       },
     });
+  });
+});
+
+describe('Gateway default service role trust policy', () => {
+  const account = '123456789012';
+  const region = 'us-east-1';
+  const trustWarning = Match.stringLikeRegexp('aws-cdk-lib.aws-bedrockagentcore:wildcardGatewayServiceRoleTrust');
+
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TrustStack', { env: { account, region } });
+  });
+
+  function gatewayArn(resourceName: string) {
+    return {
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, `:bedrock-agentcore:${region}:${account}:gateway/${resourceName}`]],
+    };
+  }
+
+  // The role must carry exactly one statement for the service: a second statement without
+  // conditions would let the service assume the role regardless of the conditions on this one.
+  function expectOnlyTrustStatement(template: Template, sourceArn: object) {
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          Match.objectEquals({
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': account },
+              ArnLike: { 'aws:SourceArn': sourceArn },
+            },
+          }),
+        ],
+      },
+    });
+  }
+
+  test('trusts the service only for this gateway, matching its auto-generated name in lowercase', () => {
+    new Gateway(stack, 'Gateway');
+
+    const template = Template.fromStack(stack);
+    const gatewayName: string = Object.values(template.findResources('AWS::BedrockAgentCore::Gateway'))[0].Properties.Name;
+    // Auto-generated names keep the construct path's case, while the gateway ARN carries the
+    // name lowercased followed by a hyphen and ten generated characters.
+    expect(gatewayName).toMatch(/[A-Z]/);
+    expectOnlyTrustStatement(template, gatewayArn(`${gatewayName.toLowerCase()}-??????????`));
+  });
+
+  test('trusts the service only for this gateway, matching its explicit name in lowercase', () => {
+    new Gateway(stack, 'Gateway', { gatewayName: 'My-Gateway01' });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('my-gateway01-??????????'));
+  });
+
+  test('trusts the service only for this gateway when a token name resolves during synthesis', () => {
+    new Gateway(stack, 'Gateway', { gatewayName: cdk.Lazy.string({ produce: () => 'My-Gateway01' }) });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('my-gateway01-??????????'));
+  });
+
+  test('trusts the service for any gateway in the account and region, with a warning, when the name is only known at deployment', () => {
+    const nameParam = new cdk.CfnParameter(stack, 'GatewayName', { type: 'String' });
+    new Gateway(stack, 'Gateway', { gatewayName: nameParam.valueAsString });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('*'));
+    Annotations.fromStack(stack).hasWarning('/TrustStack/Gateway', trustWarning);
+  });
+
+  // A dynamic reference resolves to its `{{resolve:...}}` text during synthesis, but CloudFormation
+  // substitutes the actual name only at deployment, so the name cannot be lowercased either.
+  test.each([
+    ['is a dynamic reference', (ref: string) => ref],
+    ['contains a dynamic reference', (ref: string) => `gw-${ref}`],
+  ])('trusts the service for any gateway in the account and region, with a warning, when the name %s', (_description, nameFor) => {
+    const ref = cdk.Token.asString(new cdk.CfnDynamicReference(cdk.CfnDynamicReferenceService.SSM, '/My/GatewayName'));
+    new Gateway(stack, 'Gateway', { gatewayName: nameFor(ref) });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('*'));
+    Annotations.fromStack(stack).hasWarning('/TrustStack/Gateway', trustWarning);
+  });
+
+  // A dynamic reference written as a plain string is not a token, so name validation rejects it
+  // before any trust policy is built.
+  test('fails for a literal name that contains a dynamic reference', () => {
+    expect(() => new Gateway(stack, 'Gateway', { gatewayName: 'gw-{{resolve:ssm:/My/GatewayName}}' }))
+      .toThrow(/Gateway name must contain only alphanumeric characters and hyphens/);
+  });
+
+  // The construct never changes a caller-supplied role, so the warning must say which conditions
+  // that role needs for the trust to be limited to this gateway.
+  test('warns that a supplied role needs its own source account and source ARN conditions', () => {
+    const nameParam = new cdk.CfnParameter(stack, 'GatewayName', { type: 'String' });
+    new Gateway(stack, 'Gateway', { gatewayName: nameParam.valueAsString });
+
+    Annotations.fromStack(stack).hasWarning('/TrustStack/Gateway', Match.stringLikeRegexp(
+      'use a literal gatewayName, or supply a role whose trust policy limits aws:SourceAccount and aws:SourceArn to this gateway',
+    ));
+  });
+
+  test.each([
+    ['an auto-generated name', undefined],
+    ['a literal name', 'my-gateway'],
+    ['a token name that resolves during synthesis', cdk.Lazy.string({ produce: () => 'my-gateway' })],
+  ])('does not warn about the trust policy for %s', (_description, gatewayName) => {
+    new Gateway(stack, 'Gateway', { gatewayName });
+
+    Annotations.fromStack(stack).hasNoWarning('*', trustWarning);
+  });
+
+  test('leaves the trust policy of a caller-supplied role unchanged, without a warning', () => {
+    const role = new iam.Role(stack, 'CallerRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+    const nameParam = new cdk.CfnParameter(stack, 'GatewayName', { type: 'String' });
+    new Gateway(stack, 'Gateway', { gatewayName: nameParam.valueAsString, role });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          Match.objectEquals({
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+          }),
+        ],
+      },
+    });
+    Annotations.fromStack(stack).hasNoWarning('*', trustWarning);
   });
 });
 
@@ -1307,6 +1428,41 @@ describe('MCPProtocolVersion.of() escape hatch', () => {
   });
 });
 
+describe('MCPProtocolVersion constants', () => {
+  test('renders versions 2025-11-25 and 2026-07-28 in the template', () => {
+    const stack = new cdk.Stack();
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-new-versions',
+      protocolConfiguration: GatewayProtocol.mcp({
+        supportedVersions: [MCPProtocolVersion.MCP_2025_11_25, MCPProtocolVersion.MCP_2026_07_28],
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ProtocolConfiguration: Match.objectLike({
+        Mcp: Match.objectLike({
+          SupportedVersions: ['2025-11-25', '2026-07-28'],
+        }),
+      }),
+    });
+  });
+
+  test('default protocol configuration keeps version 2025-03-26', () => {
+    const stack = new cdk.Stack();
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-default-version',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ProtocolConfiguration: Match.objectLike({
+        Mcp: Match.objectLike({
+          SupportedVersions: ['2025-03-26'],
+        }),
+      }),
+    });
+  });
+});
+
 describe('McpGatewaySearchType.of() escape hatch', () => {
   test('renders custom search type in the template', () => {
     const stack = new cdk.Stack();
@@ -1426,6 +1582,158 @@ describe('SchemaDefinitionType.of() escape hatch', () => {
           }),
         }),
       }),
+    });
+  });
+});
+
+describe('PolicyEngineMode.of() escape hatch', () => {
+  test('renders custom policy engine mode in the template', () => {
+    // `Mode` is an enumerated CFN property, so an unmodelled value synthesizes with a warning.
+    const app = new cdk.App({ postCliContext: { '@aws-cdk/core:strictCfnValidateErrors': false } });
+    const stack = new cdk.Stack(app, 'PolicyEngineModeOfStack');
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine', {
+      policyEngineName: 'of_mode_engine',
+    });
+
+    new Gateway(stack, 'Gateway', {
+      gatewayName: 'of-mode-gateway',
+      policyEngineConfiguration: {
+        policyEngine,
+        mode: PolicyEngineMode.of('FUTURE_MODE'),
+      },
+    });
+
+    Template.fromStack(stack, { skipCyclicalDependenciesCheck: true }).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'of-mode-gateway',
+      PolicyEngineConfiguration: Match.objectLike({
+        Mode: 'FUTURE_MODE',
+      }),
+    });
+  });
+});
+
+describe('Gateway PolicyEngine association', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+  });
+
+  test('Should automatically grant GetPolicyEngine to gateway role scoped to policy engine ARN', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine', {
+      policyEngineName: 'test_policy_engine',
+    });
+
+    new Gateway(stack, 'Gateway', {
+      policyEngineConfiguration: { policyEngine },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetPolicyEngine',
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine.*'), 'PolicyEngineArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should automatically grant AuthorizeAction and PartiallyAuthorizeActions to both policy engine and gateway ARNs', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine2', {
+      policyEngineName: 'test_policy_engine_2',
+    });
+
+    new Gateway(stack, 'Gateway2', {
+      policyEngineConfiguration: {
+        policyEngine,
+        mode: PolicyEngineMode.ENFORCE,
+      },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:AuthorizeAction',
+              'bedrock-agentcore:PartiallyAuthorizeActions',
+            ]),
+            Effect: 'Allow',
+            Resource: Match.arrayWith([
+              Match.objectLike({
+                'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine2.*'), 'PolicyEngineArn']),
+              }),
+              Match.objectLike({
+                'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp(':gateway/.+-\\?{10}')])],
+              }),
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should set PolicyEngineConfiguration on the CfnGateway with ENFORCE as default mode', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine3', {
+      policyEngineName: 'test_policy_engine_3',
+    });
+
+    new Gateway(stack, 'Gateway3', {
+      gatewayName: 'test-gateway-3',
+      policyEngineConfiguration: { policyEngine },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway-3',
+      PolicyEngineConfiguration: {
+        Arn: Match.objectLike({
+          'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine3.*'), 'PolicyEngineArn']),
+        }),
+        Mode: 'ENFORCE',
+      },
+    });
+  });
+
+  test('Should set PolicyEngineConfiguration with ENFORCE mode when specified', () => {
+    const policyEngine = new PolicyEngine(stack, 'PolicyEngine4', {
+      policyEngineName: 'test_policy_engine_4',
+    });
+
+    new Gateway(stack, 'Gateway4', {
+      gatewayName: 'test-gateway-4',
+      policyEngineConfiguration: {
+        policyEngine,
+        mode: PolicyEngineMode.ENFORCE,
+      },
+    });
+
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'test-gateway-4',
+      PolicyEngineConfiguration: {
+        Mode: 'ENFORCE',
+      },
+    });
+  });
+
+  test('Should not set PolicyEngineConfiguration when not provided', () => {
+    new Gateway(stack, 'GatewayNoPolicyEngine', {
+      gatewayName: 'no-policy-engine-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'no-policy-engine-gateway',
+      PolicyEngineConfiguration: Match.absent(),
     });
   });
 });
