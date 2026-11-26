@@ -117,10 +117,9 @@ for which template changes are breaking.
 stable module, such as a changed default, with no feature flag. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
 
-**[REG-EXPERIMENTAL-BREAK] (RECOMMENDED)** — A breaking change in an experimental (`-alpha`) module.
-The finding asks whether the break can be avoided and, when the PR body lacks it, for an explicit
-`BREAKING CHANGE:` callout (before the `---` line). For a mitigation, prefer opt-in via a new API element
-(add it and mark the old one `@deprecated` with a descriptive error) over a feature flag, whose effects
-are non-local. See
+**[REG-EXPERIMENTAL-BREAK] (RECOMMENDED)** — A breaking change in an experimental module. The finding
+asks whether the break can be avoided and, when the PR body lacks it, for an explicit `BREAKING CHANGE:`
+callout (before the `---` line). For a mitigation, prefer opt-in via a new API element (add it and mark
+the old one `@deprecated` with a descriptive error) over a feature flag, whose effects are non-local. See
 [`CONTRIBUTING.md § Breaking Changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#breaking-changes)
 and [`AGENTS.md § PR Conventions`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#pr-conventions).

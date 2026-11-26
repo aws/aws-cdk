@@ -118,7 +118,7 @@ public surface. See
 
 **[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
-- **Tier:** RECOMMENDED in an experimental (`-alpha`) module.
+- **Tier:** RECOMMENDED in an experimental module.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
 capability lands additively. See
