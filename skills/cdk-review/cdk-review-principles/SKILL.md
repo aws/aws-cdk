@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule or guide line it cites, including a rule's Tier line; when a defect is a finding; which modules are stable or experimental; how to verify a fact before posting and which source to cite for it; when to offer a fix; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, taking a finding's tier from its rule or guide line, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule or guide line it cites, including a rule's Tier line; when a defect is a finding; which modules are stable or experimental; how to verify a fact before posting and which source to cite for it; when to offer a fix; the fields each finding carries, including its rule ID and cited source; and the guides a finding can rest on. Apply whenever conducting a CDK PR review, taking a finding's tier from its rule or guide line, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -21,9 +21,9 @@ A finding's tier comes from what backs it:
 
 A defect is a finding when all of these hold:
 
-- **A rule or a guide requires it** — one of your rules states this case, or a line in a guide under
-  "Sources" requires what the finding asks for, and the finding quotes that line. Cite a rule only for
-  the case it states.
+- **A rule or a guide requires it** — one of your rules states this case, or a line in a guide listed
+  under "Guides" requires what the finding asks for, and the finding quotes that line. Cite a rule only
+  for the case it states.
 - **Impact** — you can state what goes wrong for a user or a maintainer if it ships: something
   fails, does the wrong thing, or costs later work. Judge the change by its effect.
 - **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved counts
@@ -59,17 +59,13 @@ concise and easy to understand.
 The fields each finding carries and how to write its `message` are in
 [`references/pr-comment-format.md`](references/pr-comment-format.md).
 
-## Sources
+## Guides
 
-Public aws/aws-cdk `main` guidance:
+A finding can rest on a line in one of these guides:
 
-- [`AGENTS.md`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md) — the agent-facing
-  repo guide.
-- [`CONTRIBUTING.md`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) — PR
-  conventions and breaking-change guidance.
-- [`docs/DESIGN_GUIDELINES.md`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md),
-  and the agent-optimized
-  [`docs/AGENTS_CONSTRUCT_DESIGN.md`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md)
-  / [`docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md) — CDK API design conventions.
-- [`INTEGRATION_TESTS.md`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md) — when
-  integration tests are required and how to write them.
+- [`AGENTS.md`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md)
+- [`CONTRIBUTING.md`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md)
+- [`docs/DESIGN_GUIDELINES.md`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+- [`docs/AGENTS_CONSTRUCT_DESIGN.md`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md)
+- [`docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md)
+- [`INTEGRATION_TESTS.md`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md)
