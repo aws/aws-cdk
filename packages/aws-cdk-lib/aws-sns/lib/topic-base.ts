@@ -57,7 +57,16 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   readonly fifo: boolean;
 
   /**
-   * Subscribe some endpoint to this topic
+   * Subscribe some endpoint to this topic.
+   *
+   * Creates an `AWS::SNS::Subscription` resource. The endpoint and protocol
+   * come from the given `ITopicSubscription` (for example an SQS queue, a
+   * Lambda function or an email address). For some subscribers the
+   * subscription also waits for a related resource; for example, an SQS
+   * subscription is created only after the queue policy that lets the topic
+   * send to the queue.
+   *
+   * Subscribing the same subscriber to this topic twice throws an error.
    */
   addSubscription(subscription: ITopicSubscription): Subscription;
 
@@ -150,7 +159,16 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Subscribe some endpoint to this topic
+   * Subscribe some endpoint to this topic.
+   *
+   * Creates an `AWS::SNS::Subscription` resource. The endpoint and protocol
+   * come from the given `ITopicSubscription` (for example an SQS queue, a
+   * Lambda function or an email address). For some subscribers the
+   * subscription also waits for a related resource; for example, an SQS
+   * subscription is created only after the queue policy that lets the topic
+   * send to the queue.
+   *
+   * Subscribing the same subscriber to this topic twice throws an error.
    */
   public addSubscription(topicSubscription: ITopicSubscription): Subscription {
     const subscriptionConfig = topicSubscription.bind(this);

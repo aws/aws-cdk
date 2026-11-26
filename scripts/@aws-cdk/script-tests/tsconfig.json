@@ -3,6 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "esModuleInterop": true,
+    "isolatedModules": true,
     "types": [
       "jest"
     ],

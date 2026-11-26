@@ -5,6 +5,7 @@ import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ScheduledEc2Task } from '../../lib';
 import { acknowledgeTestValidationRules } from '../util';
@@ -557,6 +558,42 @@ test('Can create a scheduled Ec2 Task - with customized container name', () => {
         },
         Memory: 512,
         Name: 'ScheduledContainer2',
+      },
+    ],
+  });
+});
+
+test('Scheduled Ec2 Task - with custom role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = iam.Role.fromRoleArn(stack, 'CustomRole', 'arn:aws:iam::123456789012:role/CustomRole');
+
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    role,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        RoleArn: 'arn:aws:iam::123456789012:role/CustomRole',
       },
     ],
   });
