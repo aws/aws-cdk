@@ -14,9 +14,8 @@ missing a test the change needs, and demanding one it does not. Weigh each again
 ## The review process
 
 1. **Unit tests.** State what the PR adds or changes for a user, read the tests it adds or changes, and
-   ask: if that broke, would a test fail? A test can run the code and still assert nothing, cover only the
-   happy path, or test one of two flag states. The rules in
-   [`testing-rules.md`](references/testing-rules.md) name and tier the cases they describe.
+   ask: if that broke, would a test fail? Judge them by the unit-test rules in
+   [`testing-rules.md`](references/testing-rules.md).
 
 2. **Integration tests.** Judge the integ tests and snapshots the PR adds or changes, and any it needs but
    lacks, by the integration rules.
