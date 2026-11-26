@@ -11,8 +11,9 @@ prop. See
 on a scoped resource. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
-**[SEC-IAM-CONFUSED-DEPUTY-SERVICE] (BLOCKING)** — Missing confused-deputy condition
-(`aws:SourceAccount`/`aws:SourceArn`) on a cross-*service* trust policy (a trusted `ServicePrincipal`). See
+**[SEC-IAM-CONFUSED-DEPUTY-SERVICE] (BLOCKING)** — A trust policy for a `ServicePrincipal` with neither an
+`aws:SourceAccount` nor an `aws:SourceArn` condition, where the service's documentation shows one for
+that role. The fix uses the keys that documentation shows. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
 **[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** — A refactor that drops scoping, such as a conversion from
