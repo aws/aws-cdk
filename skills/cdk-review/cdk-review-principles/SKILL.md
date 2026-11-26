@@ -31,7 +31,10 @@ A defect is a finding when all of these hold:
 - **On a line** — it points at a specific line of the diff.
 - **Beyond the build** — the PR's build or PR linter does not already fail on it (see
   [`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint) and
-  [`prlint/lint.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/lint.ts)).
+  [`prlint/lint.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/lint.ts)). Unless the PR
+  carries the matching `pr-linter/exempt-*` label, the PR linter fails a `feat` with no README change,
+  a `feat` or `fix` with no test change or with no change to an integ test or to its snapshot, and a
+  breaking change the PR declares for a stable module.
 
 Raise every defect that meets these, and only those; a PR with nothing wrong gets no findings.
 
