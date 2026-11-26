@@ -14,9 +14,8 @@ A finding's tier comes from what backs it:
 
 - **A rule** — the tier in its header, or the tier of its Tier line once you have confirmed that line's
   condition.
-- **A guide line alone** — BLOCKING for MUST or MUST NOT in capitals; RECOMMENDED otherwise. A guide line
-  in a section that one of your rules links stays within that rule's scope and at or below that rule's
-  tier; when several of your rules link the section, the rule closest to the finding sets the bound.
+- **A guide line alone** — BLOCKING for MUST or MUST NOT in capitals; RECOMMENDED otherwise. Where one of
+  your rules covers what the line requires, that rule's case, scope and tier apply.
 
 ## When a defect is a finding
 

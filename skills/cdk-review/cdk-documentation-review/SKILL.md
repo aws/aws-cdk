@@ -45,8 +45,8 @@ out is not this rule.
 **[DOC-README-MISSING-EXAMPLE] (BLOCKING)** — A new L2 construct (or substantial new feature) with no
 README usage example. See
 [`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes).
-- **Tier:** RECOMMENDED for a new prop on an existing construct with no README mention, and for a new mixin
-  with no `## Mixins` README entry.
+- **Tier:** RECOMMENDED for a new prop on an existing construct with no README mention, for a new use case
+  the README does not show, and for a new mixin with no `## Mixins` README entry.
 
 **[DOC-MIXIN-MERGE-UNDOCUMENTED] (RECOMMENDED)** — A mixin the PR adds, or an existing mixin whose way of
 writing L1 properties the PR changes, with no JSDoc saying how it merges with L1 properties already set. See
