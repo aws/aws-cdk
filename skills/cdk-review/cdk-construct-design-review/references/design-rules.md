@@ -29,10 +29,6 @@ for each block.
   and for props that exclude each other (factory methods or an enum-like class). See
   [`AGENTS_CONSTRUCT_DESIGN.md § Property Structure`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-structure-flat-vs-nested).
 
-**[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token or secret, is typed
-`SecretValue`, so a plaintext secret can't pass through the API. See
-[`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
-
 **[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
 and derive its resource interface name (`IFoo`). See
 [`AGENTS_CONSTRUCT_DESIGN.md § Property Naming`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-naming).

@@ -33,6 +33,5 @@ users into mistakes, and open to extension later without breaking its users? App
 - **Regression risk** — input/token/edge-case breakage of working code, and breaking changes to the
   pre-existing API. Designing the *new* surface well is yours; classifying an existing-surface break is
   outside your scope.
-- **Security exposure** — over-broad IAM, public resources, leaked secrets. The design type-choice that a
-  secret prop is typed `SecretValue` stays yours; whether a policy is over-broad is outside your scope.
+- **Security exposure** — over-broad IAM, public resources, leaked secrets — outside your scope.
 - **Tests and docs** — test design, README examples, `@default` text and doc wording — outside your scope.
