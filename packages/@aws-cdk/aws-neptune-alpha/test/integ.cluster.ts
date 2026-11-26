@@ -60,5 +60,3 @@ new cloudwatch.Alarm(stack, 'Alarm', {
 new integ.IntegTest(app, 'ClusterTest', {
   testCases: [stack],
 });
-
-app.synth();

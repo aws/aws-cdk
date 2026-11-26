@@ -149,5 +149,3 @@ empChannel.grants.ingest(role);
 new IntegTest(app, 'cdk-integ-medialive-e2e-pipeline', {
   testCases: [stack],
 });
-
-app.synth();

@@ -21,5 +21,3 @@ taskDefinition.addContainer('Container', {
 new IntegTest(app, 'TaskDefinitionContainerUlimits', {
   testCases: [stack],
 });
-
-app.synth();

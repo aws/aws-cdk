@@ -37,5 +37,3 @@ class TestStack extends Stack {
 const app = new App();
 
 new TestStack(app, 'integ-sfn-start-execution');
-
-app.synth();

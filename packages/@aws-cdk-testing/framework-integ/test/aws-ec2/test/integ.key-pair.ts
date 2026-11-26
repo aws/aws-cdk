@@ -20,5 +20,3 @@ new ec2.Instance(stack, 'TestInstance', {
 new integ.IntegTest(app, 'KeyPairTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -28,5 +28,3 @@ new sfn.StateMachine(stack, 'StateMachineWithLoggingOFF', {
 new IntegTest(app, 'IntegTest', {
   testCases: [stack],
 });
-
-app.synth();

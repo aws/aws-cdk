@@ -164,5 +164,3 @@ const lambdaStack = new LambdaStack(app, 'aws-cdk-lambda', {
 new integ.IntegTest(app, 'aws-efs-lambda-test', {
   testCases: [efsStack, lambdaStack],
 });
-
-app.synth();

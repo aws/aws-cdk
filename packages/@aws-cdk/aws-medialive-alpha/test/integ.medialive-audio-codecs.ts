@@ -83,5 +83,3 @@ new cdk.CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new IntegTest(app, 'cdk-integ-medialive-audio-codecs', {
   testCases: [stack],
 });
-
-app.synth();

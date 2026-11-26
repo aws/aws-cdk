@@ -30,5 +30,3 @@ new IntegTest(app, 'OpenSearchUnsignedBasicAuthInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

@@ -81,5 +81,3 @@ new events.Rule(stack, 'rule', {
     retryAttempts: 2,
   })],
 });
-
-app.synth();

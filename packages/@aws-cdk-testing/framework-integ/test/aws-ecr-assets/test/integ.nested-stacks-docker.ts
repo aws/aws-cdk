@@ -30,4 +30,3 @@ class TheParentStack extends Stack {
 
 const app = new App();
 new TheParentStack(app, 'nested-stacks-docker');
-app.synth();

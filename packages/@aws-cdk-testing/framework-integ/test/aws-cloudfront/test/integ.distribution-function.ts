@@ -27,5 +27,3 @@ new cdk.CfnOutput(stack, 'FunctionStage', { value: cfFunction.functionStage });
 new IntegTest(app, 'DistributionFunction', {
   testCases: [stack],
 });
-
-app.synth();

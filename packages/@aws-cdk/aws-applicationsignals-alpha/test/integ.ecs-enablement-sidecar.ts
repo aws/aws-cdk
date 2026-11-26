@@ -191,5 +191,3 @@ const nodeStack = new NodeStack(app, 'ApplicationSignalsNodeApp-Sidecar', {
 new integ.IntegTest(app, 'ApplicationSignalsECSSidecarTest', {
   testCases: [infraStack, javaStack, pythonStack, dotnetStack, nodeStack],
 });
-
-app.synth();

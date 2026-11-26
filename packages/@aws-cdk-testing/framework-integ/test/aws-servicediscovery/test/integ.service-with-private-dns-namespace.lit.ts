@@ -30,5 +30,3 @@ const arnService = namespace.createService('ArnService', {
 arnService.registerNonIpInstance('NonIpInstance', {
   customAttributes: { arn: 'arn://' },
 });
-
-app.synth();

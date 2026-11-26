@@ -73,5 +73,3 @@ new medialive.Channel(stack, 'RtmpChannel', {
 new IntegTest(app, 'cdk-integ-medialive-channel-rtmp', {
   testCases: [stack],
 });
-
-app.synth();

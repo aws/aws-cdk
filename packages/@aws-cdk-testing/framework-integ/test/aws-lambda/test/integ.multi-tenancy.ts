@@ -21,5 +21,3 @@ new Function(stack, 'MultiTenantFunction', {
 new integ.IntegTest(app, 'lambda-multi-tenancy', {
   testCases: [stack],
 });
-
-app.synth();

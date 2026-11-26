@@ -21,5 +21,3 @@ new codebuild.PipelineProject(stack, 'Project', {
     },
   },
 });
-
-app.synth();

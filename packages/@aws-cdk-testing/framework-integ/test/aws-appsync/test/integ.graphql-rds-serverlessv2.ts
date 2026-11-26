@@ -132,5 +132,3 @@ const testCase = new TestStack(app);
 new IntegTest(app, 'rds-serverlessV2-stack', {
   testCases: [testCase],
 });
-
-app.synth();

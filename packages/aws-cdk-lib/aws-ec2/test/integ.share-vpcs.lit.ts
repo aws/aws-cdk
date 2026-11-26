@@ -59,5 +59,3 @@ const stack2 = new Stack2(app, 'Stack2', {
 /// !hide
 
 Array.isArray(stack2);
-
-app.synth();

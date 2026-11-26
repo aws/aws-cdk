@@ -40,5 +40,3 @@ const app = new App({
 new integ.IntegTest(app, 'EmailIdentityInteg', {
   testCases: [new TestStack(app, 'cdk-ses-email-identity-integ')],
 });
-
-app.synth();

@@ -18,5 +18,3 @@ const event = new events.Rule(stack, 'EveryMinute', {
 event.addTarget(new targets.KinesisStream(stream, {
   partitionKeyPath: events.EventField.eventId,
 }));
-
-app.synth();

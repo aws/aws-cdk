@@ -92,5 +92,3 @@ new integ.IntegTest(app, 'BedrockAgentCoreGatewayIdentityOutbound', {
     'ap-southeast-2',
   ],
 });
-
-app.synth();

@@ -65,4 +65,3 @@ class StartBuildStack extends cdk.Stack {
 
 const app = new cdk.App();
 new StartBuildStack(app, 'aws-stepfunctions-tasks-codebuild-start-build-integ');
-app.synth();

@@ -23,5 +23,3 @@ new UnmanagedComputeEnvironment(stack, 'maximalProps', {
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
   testCases: [stack],
 });
-
-app.synth();

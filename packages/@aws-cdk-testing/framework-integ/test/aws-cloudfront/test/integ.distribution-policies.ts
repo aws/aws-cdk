@@ -122,5 +122,3 @@ new cloudfront.Distribution(stack, 'Dist-ManagedPolicy', {
 new IntegTest(app, 'DistributionPolicies', {
   testCases: [stack],
 });
-
-app.synth();

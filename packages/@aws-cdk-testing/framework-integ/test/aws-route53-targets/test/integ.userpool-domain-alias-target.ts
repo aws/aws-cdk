@@ -32,4 +32,3 @@ const stack = new TestStack(app, 'userpool-domain-alias-target');
 new IntegTest(app, 'userpool-domain-alias-target-integ', {
   testCases: [stack],
 });
-app.synth();

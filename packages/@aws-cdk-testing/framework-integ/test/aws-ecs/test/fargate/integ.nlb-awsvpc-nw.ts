@@ -54,5 +54,3 @@ new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName });
 new integ.IntegTest(app, 'NlbAwsvpcNwTest', {
   testCases: [stack],
 });
-
-app.synth();

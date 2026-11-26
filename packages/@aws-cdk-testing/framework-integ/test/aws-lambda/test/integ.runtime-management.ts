@@ -20,5 +20,3 @@ new Function(stack, 'Lambda', {
 new integ.IntegTest(app, 'lambda-runtime-management', {
   testCases: [stack],
 });
-
-app.synth();

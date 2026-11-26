@@ -35,5 +35,3 @@ new integ.IntegTest(app, 'EcsCustomTaskRevision', {
   testCases: [stack],
 });
 
-app.synth();
-

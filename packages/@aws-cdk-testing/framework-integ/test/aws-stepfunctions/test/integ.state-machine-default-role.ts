@@ -33,5 +33,3 @@ const start = test.assertions.awsApiCall('StepFunctions', 'startExecution', {
 test.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   executionArn: start.getAttString('executionArn'),
 }).expect(ExpectedResult.objectLike({ status: 'SUCCEEDED' }));
-
-app.synth();

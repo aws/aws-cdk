@@ -24,5 +24,3 @@ const queue = new sqs.Queue(queueStack, 'MyQueue');
 
 topic.addSubscription(new subs.SqsSubscription(queue));
 /// !hide
-
-app.synth();

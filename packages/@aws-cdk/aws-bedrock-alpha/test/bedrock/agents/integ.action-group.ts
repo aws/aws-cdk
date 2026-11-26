@@ -109,5 +109,3 @@ new integ.IntegTest(app, 'BedrockActionGroup', {
   // https://docs.aws.amazon.com/bedrock/latest/userguide/agents-code-interpretation.html
   regions: ['us-east-1', 'us-west-2', 'eu-central-1'],
 });
-
-app.synth();

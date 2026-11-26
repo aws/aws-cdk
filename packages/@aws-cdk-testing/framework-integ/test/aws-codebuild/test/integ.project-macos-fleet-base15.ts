@@ -58,5 +58,3 @@ const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
 listFleets.expect(integ.ExpectedResult.objectLike({
   fleets: integ.Match.arrayWith([fleet.fleetArn]),
 }));
-
-app.synth();

@@ -68,5 +68,3 @@ new integ.IntegTest(app, 'integ-test-bucket-deployment-vpc-security-groups', {
   testCases: [testCase],
   diffAssets: false,
 });
-
-app.synth();

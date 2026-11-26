@@ -23,5 +23,3 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
 new integ.IntegTest(app, 'cpuAndMemoryAreSpecifiedTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -310,5 +310,3 @@ httpDS.createResolver('MutationDoPostOnAws', {
     #end
   `),
 });
-
-app.synth();

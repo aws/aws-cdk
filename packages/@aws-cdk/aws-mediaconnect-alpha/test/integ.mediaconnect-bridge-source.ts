@@ -108,5 +108,3 @@ new BridgeSource(stack, 'EgressAdditionalSource', {
 new IntegTest(app, 'cdk-integ-emx-bridge-source', {
   testCases: [stack],
 });
-
-app.synth();

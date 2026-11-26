@@ -59,4 +59,3 @@ const integrationTest = new IntegTest(app, 'codepipeline-integ-test', {
 
 const awsApiCall1 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: pipelineName });
 awsApiCall1.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp(pipelineName));
-app.synth();

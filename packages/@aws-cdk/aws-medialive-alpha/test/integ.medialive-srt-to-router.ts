@@ -99,5 +99,3 @@ new medialive.Channel(stack, 'Channel', {
 new IntegTest(app, 'cdk-integ-medialive-srt-to-router', {
   testCases: [stack],
 });
-
-app.synth();

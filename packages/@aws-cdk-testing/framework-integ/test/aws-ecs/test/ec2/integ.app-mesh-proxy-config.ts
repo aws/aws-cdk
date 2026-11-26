@@ -50,5 +50,3 @@ new ecs.Ec2Service(stack, 'Service', {
   cluster,
   taskDefinition,
 });
-
-app.synth();

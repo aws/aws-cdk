@@ -42,5 +42,3 @@ const stack = new StepFunctionsTaskCreateTransformJobIntegStack(app, 'aws-cdk-st
 new integ.IntegTest(app, 'SqsTest', {
   testCases: [stack],
 });
-
-app.synth();

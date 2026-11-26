@@ -33,4 +33,3 @@ new IntegTest(app, 'LambdaEventSourceS3Integ', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

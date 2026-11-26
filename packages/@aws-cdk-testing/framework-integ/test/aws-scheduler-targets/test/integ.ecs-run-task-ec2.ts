@@ -108,5 +108,3 @@ integ.assertions.awsApiCall('ECS', 'describeTasks', {
     Match.objectLike({ lastStatus: 'STOPPED' }),
   ]),
 }));
-
-app.synth();

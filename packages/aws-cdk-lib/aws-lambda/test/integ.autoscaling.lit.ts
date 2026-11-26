@@ -8,6 +8,7 @@ import * as lambda from '../lib';
  * aws application-autoscaling describe-scalable-targets --service-namespace lambda --resource-ids function:<function name>:prod
  * has a minCapacity of 3 and maxCapacity of 50
  */
+/// !show
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
@@ -46,6 +47,7 @@ class TestStack extends cdk.Stack {
     });
   }
 }
+/// !hide
 
 const app = new cdk.App();
 
@@ -54,5 +56,3 @@ const stack = new TestStack(app, 'aws-lambda-autoscaling');
 // Changes the function description when the feature flag is present
 // to validate the changed function hash.
 cdk.Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
-
-app.synth();

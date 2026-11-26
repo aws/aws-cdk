@@ -83,5 +83,3 @@ new medialive.Channel(stack, 'LiveChannel', {
 new IntegTest(app, 'cdk-integ-medialive-camera-to-mediapackage', {
   testCases: [stack],
 });
-
-app.synth();

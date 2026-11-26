@@ -16,5 +16,3 @@ api.root.addMethod('GET');
 new IntegTest(app, 'apigateway-restapi-cloudwatch-removal-policy', {
   testCases: [stack],
 });
-
-app.synth();

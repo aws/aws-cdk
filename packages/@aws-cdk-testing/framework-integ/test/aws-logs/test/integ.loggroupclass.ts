@@ -60,5 +60,3 @@ describeInfrequentAccess.expect(ExpectedResult.objectLike({
     },
   ],
 }));
-
-app.synth();

@@ -107,5 +107,3 @@ testCases.forEach((testCase) => {
     }),
   );
 });
-
-app.synth();

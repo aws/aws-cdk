@@ -55,4 +55,3 @@ const testCase = new StepFunctionsRestApiDeploymentStack(app);
 new IntegTest(app, 'step-functions-restapi', {
   testCases: [testCase],
 });
-app.synth();

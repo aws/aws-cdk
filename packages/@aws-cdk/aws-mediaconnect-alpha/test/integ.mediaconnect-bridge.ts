@@ -72,5 +72,3 @@ new Bridge(stack, 'bridgeWithOutput', {
 new IntegTest(app, 'cdk-integ-emx-bridge', {
   testCases: [stack],
 });
-
-app.synth();

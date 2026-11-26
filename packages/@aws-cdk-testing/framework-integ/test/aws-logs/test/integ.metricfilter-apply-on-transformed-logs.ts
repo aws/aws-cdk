@@ -27,4 +27,3 @@ const testCase = new TestStack(app, 'aws-cdk-metricfilter-apply-on-transformed-l
 new IntegTest(app, 'metricfilter-apply-on-transformed-logs', {
   testCases: [testCase],
 });
-app.synth();

@@ -64,5 +64,3 @@ new medialive.Channel(stack, 'Channel', {
 new IntegTest(app, 'cdk-integ-medialive-channel-srt-outputs', {
   testCases: [stack],
 });
-
-app.synth();

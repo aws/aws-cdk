@@ -24,5 +24,3 @@ new codebuild.Project(stack, 'MyProject', {
       identifier: 'AddArtifact1',
     }),
 });
-
-app.synth();

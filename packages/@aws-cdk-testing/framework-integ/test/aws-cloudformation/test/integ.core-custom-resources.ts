@@ -51,4 +51,3 @@ class TestStack extends Stack {
 
 const app = new App();
 new TestStack(app, 'custom-resource-test');
-app.synth();

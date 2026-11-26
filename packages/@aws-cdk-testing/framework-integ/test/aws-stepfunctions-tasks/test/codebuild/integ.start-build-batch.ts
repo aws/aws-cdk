@@ -90,5 +90,3 @@ const stack = new TestStack(app, 'StartBuildBatch');
 new IntegTest(app, 'StartBuildBatchInteg', {
   testCases: [stack],
 });
-
-app.synth();

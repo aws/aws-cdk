@@ -195,5 +195,3 @@ new integ.IntegTest(app, 'EksKubectlSecurityGroupsTest', {
     },
   },
 });
-
-app.synth();

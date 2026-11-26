@@ -31,5 +31,3 @@ new IntegTest(app, 'integ-project-windows-images', {
   // WINDOWS_SERVER_2022_CONTAINER is not available in all regions
   regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
 });
-
-app.synth();

@@ -61,5 +61,3 @@ new integ.IntegTest(app, 'BedrockOrchestration', {
   testCases: [stack],
   regions: BEDROCK_AGENT_INTEG_TEST_REGIONS,
 });
-
-app.synth();

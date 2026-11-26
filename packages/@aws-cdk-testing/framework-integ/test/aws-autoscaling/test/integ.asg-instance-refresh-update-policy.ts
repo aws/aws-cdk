@@ -30,5 +30,3 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 new integ.IntegTest(app, 'AutoScalingInstanceRefreshUpdatePolicyTest', {
   testCases: [stack],
 });
-
-app.synth();

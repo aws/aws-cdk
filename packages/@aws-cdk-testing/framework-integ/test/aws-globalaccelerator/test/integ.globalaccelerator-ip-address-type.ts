@@ -14,5 +14,3 @@ new ga.Accelerator(stack, 'Accelerator', {
 new IntegTest(app, 'GlobalAcceleratorIpAddressType', {
   testCases: [stack],
 });
-
-app.synth();

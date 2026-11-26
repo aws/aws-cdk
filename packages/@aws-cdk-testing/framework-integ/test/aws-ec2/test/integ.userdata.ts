@@ -16,5 +16,3 @@ new ec2.Instance(stack, 'WindowsInstance', {
   machineImage: new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE),
   userData: ec2.UserData.forWindows({ persist: true }),
 });
-
-app.synth();

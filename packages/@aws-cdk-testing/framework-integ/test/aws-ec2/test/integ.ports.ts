@@ -30,5 +30,3 @@ new IntegTest(app, 'Ports', {
     new TestStack(app, 'PortsTestStack', {}),
   ],
 });
-
-app.synth();

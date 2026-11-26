@@ -51,5 +51,3 @@ new ecs.FargateService(stack, 'FargateServiceGraviton2Runtime', {
   cluster,
   taskDefinition: taskDefinitiongraviton2,
 });
-
-app.synth();

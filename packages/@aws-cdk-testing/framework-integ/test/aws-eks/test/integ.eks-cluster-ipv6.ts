@@ -395,5 +395,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-ipv6', {
     },
   },
 });
-
-app.synth();

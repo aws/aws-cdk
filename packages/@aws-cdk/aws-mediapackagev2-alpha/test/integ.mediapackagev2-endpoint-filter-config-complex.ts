@@ -40,5 +40,3 @@ new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
 new IntegTest(app, 'cdk-integ-mediapackage-endpoint-filter-config-complex', {
   testCases: [stack],
 });
-
-app.synth();

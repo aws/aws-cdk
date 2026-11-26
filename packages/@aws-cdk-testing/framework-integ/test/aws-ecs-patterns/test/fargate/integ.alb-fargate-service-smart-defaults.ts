@@ -139,5 +139,3 @@ integTest.assertions.awsApiCall('EC2', 'describeSecurityGroups', {
 })).waitForAssertions({
   totalTimeout: Duration.minutes(5),
 });
-
-app.synth();

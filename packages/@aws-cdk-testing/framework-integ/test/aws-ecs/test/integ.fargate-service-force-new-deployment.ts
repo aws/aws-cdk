@@ -44,5 +44,3 @@ integTest.assertions.awsApiCall('ECS', 'describeServices', {
   services: [service.serviceName],
 })
   .assertAtPath('services.0.status', ExpectedResult.stringLikeRegexp('ACTIVE'));
-
-app.synth();

@@ -314,5 +314,3 @@ function assertLambdaPasses(fn: lambda.Function) {
 assertLambdaPasses(readFn);
 assertLambdaPasses(adminFn);
 assertLambdaPasses(fullAccessFn);
-
-app.synth();

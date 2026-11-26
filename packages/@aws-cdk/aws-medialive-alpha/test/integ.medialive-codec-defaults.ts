@@ -79,5 +79,3 @@ new medialive.Channel(stack, 'H265Channel', {
 new IntegTest(app, 'cdk-integ-medialive-codec-defaults', {
   testCases: [stack],
 });
-
-app.synth();

@@ -33,5 +33,3 @@ new RouterInput(stack, 'routerInput', {
 new IntegTest(app, 'cdk-integ-emx-router-input-minimal', {
   testCases: [stack],
 });
-
-app.synth();

@@ -18,5 +18,3 @@ new medialive.Input(stack, 'RouterInputDefaultAz', {
 new IntegTest(app, 'cdk-integ-medialive-input-router-default-az', {
   testCases: [stack],
 });
-
-app.synth();

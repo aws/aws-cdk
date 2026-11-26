@@ -14,5 +14,3 @@ method.grantExecute(user);
 new integ.IntegTest(app, 'GrantExecuteTest', {
   testCases: [stack],
 });
-
-app.synth();

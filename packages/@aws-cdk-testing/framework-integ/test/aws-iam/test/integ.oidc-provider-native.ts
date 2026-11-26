@@ -90,5 +90,3 @@ getMinimalProvider.expect(ExpectedResult.objectLike({
 getMinimalProvider.expect(ExpectedResult.objectLike({
   ThumbprintList: ['aa00aa1122aa00aa1122aa00aa1122aa00aa1122'],
 }));
-
-app.synth();

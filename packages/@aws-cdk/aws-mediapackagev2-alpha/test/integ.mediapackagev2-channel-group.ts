@@ -11,5 +11,3 @@ new mediapackagev2.ChannelGroup(stack, 'Group');
 new IntegTest(app, 'cdk-integ-mediapackage-channel-group', {
   testCases: [stack],
 });
-
-app.synth();

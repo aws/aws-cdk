@@ -68,5 +68,3 @@ sourceStage.onStateChange('OnSourceStateChange', new targets.SnsTopic(topic));
 sourceAction.onStateChange('OnActionStateChange', new targets.SnsTopic(topic)).addEventPattern({
   detail: { state: ['STARTED'] },
 });
-
-app.synth();

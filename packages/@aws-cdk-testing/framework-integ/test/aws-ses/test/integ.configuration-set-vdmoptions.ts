@@ -75,5 +75,3 @@ test.assertions.awsApiCall('SESV2', 'GetConfigurationSet', { ConfigurationSetNam
   .expect(integ.ExpectedResult.objectLike({
     VdmOptions: undefined,
   }));
-
-app.synth();

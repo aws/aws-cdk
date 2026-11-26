@@ -29,5 +29,3 @@ nacl1.addEntry('AllowDNSIngress', {
   direction: ec2.TrafficDirection.INGRESS,
   cidr: ec2.AclCidr.anyIpv4(),
 });
-
-app.synth();

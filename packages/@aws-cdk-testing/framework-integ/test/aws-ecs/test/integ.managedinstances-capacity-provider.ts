@@ -88,5 +88,3 @@ new integ.IntegTest(app, 'ManagedInstancesCapacityProviders', {
     },
   },
 });
-
-app.synth();

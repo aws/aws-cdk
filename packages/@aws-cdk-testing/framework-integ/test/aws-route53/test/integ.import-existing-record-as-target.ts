@@ -32,4 +32,3 @@ Arecord.node.addDependency(target);
 new IntegTest(app, 'AwsCdkARecordDnsIntegTest', {
   testCases: [stack],
 });
-app.synth();

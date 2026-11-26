@@ -81,5 +81,3 @@ new ecs.Ec2Service(stack, 'Service', {
     dnsRecordType: cloudmap.DnsRecordType.SRV,
   },
 });
-
-app.synth();

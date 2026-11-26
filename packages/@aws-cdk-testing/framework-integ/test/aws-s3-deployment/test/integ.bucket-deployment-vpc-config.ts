@@ -62,5 +62,3 @@ new integ.IntegTest(app, 'integ-test-bucket-deployment-vpc-config', {
   testCases: [testCase],
   diffAssets: false,
 });
-
-app.synth();

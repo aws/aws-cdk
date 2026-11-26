@@ -39,5 +39,3 @@ new cdk.CfnOutput(stack, 'ResponseFunctionStage', { value: cfFunctionResponse.fu
 new IntegTest(app, 'CF2Runtime', {
   testCases: [stack],
 });
-
-app.synth();

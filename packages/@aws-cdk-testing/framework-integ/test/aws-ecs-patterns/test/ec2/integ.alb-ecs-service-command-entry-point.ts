@@ -81,5 +81,3 @@ new integ.IntegTest(app, 'AlbEc2ServiceWithCommandAndEntryPoint', {
     },
   },
 });
-
-app.synth();

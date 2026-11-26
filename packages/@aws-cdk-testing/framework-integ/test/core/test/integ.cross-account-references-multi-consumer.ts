@@ -66,5 +66,3 @@ new IntegTest(app, 'CrossAccountMultiConsumerTest', {
   regions: ['eu-central-1'],
   diffAssets: true,
 });
-
-app.synth();

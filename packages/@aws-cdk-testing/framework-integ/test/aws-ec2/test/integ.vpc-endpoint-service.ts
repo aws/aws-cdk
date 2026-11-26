@@ -28,5 +28,3 @@ const stack = new TestStack(app, 'TestStackLoadBalancer');
 new integ.IntegTest(app, 'VpcEndpointservice', {
   testCases: [stack],
 });
-
-app.synth();

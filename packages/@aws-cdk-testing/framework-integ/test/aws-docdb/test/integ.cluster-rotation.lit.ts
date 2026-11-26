@@ -27,5 +27,3 @@ const cluster = new docdb.DatabaseCluster(stack, 'Database', {
 
 cluster.addRotationSingleUser();
 /// !hide
-
-app.synth();

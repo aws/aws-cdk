@@ -37,5 +37,3 @@ const testCase = new TestBucketDeploymentEmptySources(app, 'test-bucket-deployme
 new integ.IntegTest(app, 'integ-test-bucket-deployment-empty-sources', {
   testCases: [testCase],
 });
-
-app.synth();

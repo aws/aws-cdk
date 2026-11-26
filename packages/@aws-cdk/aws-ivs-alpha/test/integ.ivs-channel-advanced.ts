@@ -54,5 +54,3 @@ test.assertions.awsApiCall('IVS', 'GetChannel', {
       type: 'STANDARD',
     },
   }));
-
-app.synth();

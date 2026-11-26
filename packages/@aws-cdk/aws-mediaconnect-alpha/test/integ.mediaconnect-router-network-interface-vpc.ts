@@ -34,5 +34,3 @@ new RouterNetworkInterface(stack, 'network', {
 new IntegTest(app, 'cdk-integ-emx-router-network-interface-vpc', {
   testCases: [stack],
 });
-
-app.synth();

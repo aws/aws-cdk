@@ -65,5 +65,3 @@ new integ.IntegTest(app, 'integ-test-bucket-deployment-security-groups-empty', {
   testCases: [testCase],
   diffAssets: false,
 });
-
-app.synth();

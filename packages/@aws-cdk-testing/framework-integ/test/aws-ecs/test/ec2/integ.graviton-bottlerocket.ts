@@ -18,4 +18,3 @@ cluster.addCapacity('graviton-cluster', {
   instanceType: new ec2.InstanceType('c6g.large'),
   machineImageType: ecs.MachineImageType.BOTTLEROCKET,
 });
-app.synth();

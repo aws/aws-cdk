@@ -38,4 +38,3 @@ const stack = new EcsStack(app, 'aws-cdk-ecs-integ-test-with-empty-placement-con
 new IntegTest(app, 'Integ', {
   testCases: [stack],
 });
-app.synth();

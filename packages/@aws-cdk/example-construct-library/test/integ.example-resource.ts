@@ -21,5 +21,3 @@ new er.ExampleResource(stack, 'ExampleResource', {
   // we don't want to leave trash in the account after running the deployment of this
   removalPolicy: core.RemovalPolicy.DESTROY,
 });
-
-app.synth();

@@ -34,5 +34,3 @@ new Role(stack, 'TestRole3', {
 new IntegTest(app, 'integ-iam-role', {
   testCases: [stack],
 });
-
-app.synth();

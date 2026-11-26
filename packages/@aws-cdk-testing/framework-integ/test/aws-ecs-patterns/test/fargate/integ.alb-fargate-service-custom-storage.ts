@@ -30,5 +30,3 @@ new ApplicationLoadBalancedFargateService(stack, 'ALBServiceWithCustomStorage', 
 new integ.IntegTest(app, 'ApplicationLoadBalancedFargateServiceCustomStorageTest', {
   testCases: [stack],
 });
-
-app.synth();

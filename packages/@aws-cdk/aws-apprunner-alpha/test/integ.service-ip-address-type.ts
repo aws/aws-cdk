@@ -25,5 +25,3 @@ new integ.IntegTest(app, 'AppRunnerIpAddressType', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
-
-app.synth();

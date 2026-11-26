@@ -32,5 +32,3 @@ const stack = new TestStack(app, 'lambda-test-current-version');
 // Changes the function description when the feature flag is present
 // to validate the changed function hash.
 Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
-
-app.synth();

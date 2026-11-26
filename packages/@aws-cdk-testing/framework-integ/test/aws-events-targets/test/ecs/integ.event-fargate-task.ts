@@ -92,5 +92,3 @@ const test = new integ.IntegTest(app, 'EcsFargateTest', {
 test.assertions.awsApiCall('EventBridge', 'disableRule', {
   Name: rule.ruleName,
 });
-
-app.synth();

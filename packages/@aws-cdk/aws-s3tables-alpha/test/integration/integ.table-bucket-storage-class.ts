@@ -211,5 +211,3 @@ new IntegTest(app, 'TableBucketStorageClassIntegTest', {
 // Note: GetTableBucketStorageClassCommand and GetTableStorageClassCommand are not yet
 // available in the SDK used by integ-tests-alpha. The deployment itself verifies that
 // the StorageClassConfiguration property works correctly with CloudFormation.
-
-app.synth();

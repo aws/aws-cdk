@@ -33,5 +33,3 @@ ecsJob.grantSubmitJob(user, queue);
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

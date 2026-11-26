@@ -292,5 +292,3 @@ methodTestPrompt2.createVersion('Version 2.2 - Another method-created version');
 new integ.IntegTest(app, 'BedrockPromptVersion', {
   testCases: [stack],
 });
-
-app.synth();

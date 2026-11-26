@@ -91,5 +91,3 @@ const describe = integTest.assertions.awsApiCall('CloudFormation', 'describeStac
 
 describe.assertAtPath('Stacks.0.Outputs.0.OutputKey', ExpectedResult.stringLikeRegexp('customResourceData'));
 describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', ExpectedResult.stringLikeRegexp('Object Keys are'));
-
-app.synth();

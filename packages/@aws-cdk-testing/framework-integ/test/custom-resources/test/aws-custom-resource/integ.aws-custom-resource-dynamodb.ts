@@ -63,5 +63,3 @@ new integ.IntegTest(app, 'AwsCustomResourceDynamoDBTest', {
   ],
   diffAssets: true,
 });
-
-app.synth();

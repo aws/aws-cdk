@@ -36,5 +36,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-default-capacity', {
   testCases: [stack],
   diffAssets: false,
 });
-
-app.synth();

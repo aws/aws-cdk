@@ -26,5 +26,3 @@ new Function(stack, 'DotNet10Lambda', {
 new integ.IntegTest(app, 'lambda-runtime-management', {
   testCases: [stack],
 });
-
-app.synth();

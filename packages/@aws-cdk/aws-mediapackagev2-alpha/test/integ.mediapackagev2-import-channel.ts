@@ -48,5 +48,3 @@ new cdk.CfnOutput(stack, 'ImportedChannelRegion', {
 new IntegTest(app, 'cdk-integ-mediapackagev2-import-channel', {
   testCases: [stack],
 });
-
-app.synth();

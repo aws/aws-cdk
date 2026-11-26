@@ -74,4 +74,3 @@ class InvokeActivityStack extends cdk.Stack {
 
 const app = new cdk.App();
 new InvokeActivityStack(app, 'aws-stepfunctions-integ');
-app.synth();

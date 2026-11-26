@@ -86,5 +86,3 @@ const stack = new KafkaObservabilityTest(
 new integ.IntegTest(app, 'KafkaObservabilityIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

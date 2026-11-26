@@ -18,5 +18,3 @@ new ec2.Volume(stack, 'TestVolume', {
 new integ.IntegTest(app, 'VolumeTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -24,5 +24,3 @@ const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
 });
 
 asg.addWarmPool();
-
-app.synth();

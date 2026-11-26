@@ -62,5 +62,3 @@ new mediapackagev2.OriginEndpointPolicy(stack, 'myNamedEndpointPolicy', {
 new IntegTest(app, 'cdk-integ-mediapackage-endpoint-policy', {
   testCases: [stack],
 });
-
-app.synth();

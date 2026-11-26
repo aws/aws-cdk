@@ -55,5 +55,3 @@ new ecs.Ec2Service(stack, 'Ec2Service', {
   taskDefinition,
   enableExecuteCommand: true,
 });
-
-app.synth();

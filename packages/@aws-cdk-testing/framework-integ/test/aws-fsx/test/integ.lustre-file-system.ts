@@ -32,5 +32,3 @@ const inst = new Instance(stack, 'inst', {
   },
 });
 fs.connections.allowDefaultPortFrom(inst);
-
-app.synth();

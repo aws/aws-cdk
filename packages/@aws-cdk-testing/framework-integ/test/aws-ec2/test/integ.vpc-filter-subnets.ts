@@ -38,5 +38,3 @@ class TestStack extends Stack {
 new IntegTest(app, 'VPCFilterSubnets', {
   testCases: [new TestStack(app, 'VPCFilterSubnetsTestStack')],
 });
-
-app.synth();

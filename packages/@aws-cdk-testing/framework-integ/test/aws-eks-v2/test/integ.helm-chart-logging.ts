@@ -53,5 +53,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-v2-alpha-helm-logging', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-
-app.synth();

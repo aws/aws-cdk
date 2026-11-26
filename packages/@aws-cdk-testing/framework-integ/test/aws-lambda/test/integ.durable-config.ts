@@ -15,5 +15,3 @@ new lambda.Function(stack, 'DurableFunction', {
 new IntegTest(app, 'lambda-durable-config', {
   testCases: [stack],
 });
-
-app.synth();

@@ -63,5 +63,3 @@ for (const testCase of [mtsEntryTestCase, ctsEntryTestCase, cjsEntryTestCase]) {
     Payload: 'null',
   }));
 }
-
-app.synth();

@@ -183,5 +183,3 @@ pythonStack.addStackDependency(cwaStack);
 new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSReplicaTest', {
   testCases: [infraStack, cwaStack, pythonStack],
 });
-
-app.synth();

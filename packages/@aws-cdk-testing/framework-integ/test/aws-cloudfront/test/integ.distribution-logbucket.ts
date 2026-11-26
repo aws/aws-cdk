@@ -22,5 +22,3 @@ new cloudfront.Distribution(stack, 'MyDist', {
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
-
-app.synth();

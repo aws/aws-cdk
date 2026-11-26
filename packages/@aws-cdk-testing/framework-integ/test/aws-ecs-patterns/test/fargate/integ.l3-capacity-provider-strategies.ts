@@ -66,5 +66,3 @@ new integ.IntegTest(app, 'l3CapacityProviderStrategiesTest', {
     },
   },
 });
-
-app.synth();

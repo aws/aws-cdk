@@ -28,4 +28,3 @@ class TestStack extends cdk.Stack {
 }
 
 new TestStack(app, 'test-stack');
-app.synth();

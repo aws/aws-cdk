@@ -18,5 +18,3 @@ taskDefinition.addContainer('Container', {
 new integ.IntegTest(app, 'aws-ecs-container-definition-interactive', {
   testCases: [stack],
 });
-
-app.synth();

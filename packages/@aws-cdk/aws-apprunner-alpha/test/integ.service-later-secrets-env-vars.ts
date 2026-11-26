@@ -34,5 +34,3 @@ new integ.IntegTest(app, 'AppRunnerLaterSecretsEnvVars', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
-
-app.synth();

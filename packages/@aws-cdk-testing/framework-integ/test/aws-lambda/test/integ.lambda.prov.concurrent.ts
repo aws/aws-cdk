@@ -71,5 +71,3 @@ alias2.addPermission('AliasPermission2', {
 // Changes the function description when the feature flag is present
 // to validate the changed function hash.
 cdk.Aspects.of(stack).add(new lambda.FunctionVersionUpgrade(LAMBDA_RECOGNIZE_LAYER_VERSION));
-
-app.synth();

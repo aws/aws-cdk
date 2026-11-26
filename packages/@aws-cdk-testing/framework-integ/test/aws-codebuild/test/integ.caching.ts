@@ -24,5 +24,3 @@ new codebuild.Project(stack, 'MyProject', {
   }),
   grantReportGroupPermissions: false,
 });
-
-app.synth();

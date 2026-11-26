@@ -46,5 +46,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-native-oidc-integ', {
   testCases: [stack],
   diffAssets: false,
 });
-
-app.synth();

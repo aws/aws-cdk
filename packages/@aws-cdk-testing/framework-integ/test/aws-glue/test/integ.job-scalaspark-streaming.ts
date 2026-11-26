@@ -59,5 +59,3 @@ new glue.ScalaSparkStreamingJob(stack, 'OverrideScalaSparkStreamingJob', {
 new integ.IntegTest(app, 'aws-glue-job-scalaspark-streaming-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

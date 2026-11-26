@@ -41,5 +41,3 @@ myService.loadBalancers.forEach(lb => myService.service.connections.allowFrom(lb
 new integ.IntegTest(app, 'networkMultipleTargetGroupsFargateServiceTest', {
   testCases: [CustomHealthStack],
 });
-
-app.synth();

@@ -108,5 +108,3 @@ javaStack.addStackDependency(cwaStack);
 new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSDaemonTest', {
   testCases: [infraStack, cwaStack, javaStack],
 });
-
-app.synth();

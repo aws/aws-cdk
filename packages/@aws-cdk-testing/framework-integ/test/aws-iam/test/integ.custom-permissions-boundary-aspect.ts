@@ -47,5 +47,3 @@ PermissionsBoundary.of(powerRole).apply(ManagedPolicy.fromAwsManagedPolicyName('
 new IntegTest(app, 'integ-test', {
   testCases: [stack],
 });
-
-app.synth();

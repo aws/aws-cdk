@@ -205,8 +205,6 @@ if (textAssertionProvider instanceof AwsApiCall && textAssertionProvider.waiterP
   });
 }
 
-app.synth();
-
 // Clean up the temporary directory after synthesis
 process.on('exit', () => {
   try {

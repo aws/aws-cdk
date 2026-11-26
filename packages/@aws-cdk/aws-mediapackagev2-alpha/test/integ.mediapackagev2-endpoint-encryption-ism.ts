@@ -31,5 +31,3 @@ new mediapackagev2.OriginEndpoint(stack, 'IsmEndpoint', {
 new IntegTest(app, 'cdk-integ-mediapackage-ism-encryption', {
   testCases: [stack],
 });
-
-app.synth();

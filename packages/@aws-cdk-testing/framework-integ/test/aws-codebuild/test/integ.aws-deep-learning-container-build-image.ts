@@ -17,5 +17,3 @@ new codebuild.Project(stack, 'Project', {
     buildImage: codebuild.LinuxGpuBuildImage.DLC_MXNET_1_4_1,
   },
 });
-
-app.synth();

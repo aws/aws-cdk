@@ -90,5 +90,3 @@ new cdk.CfnOutput(stack, 'RouterOutputUpdatedAt', { value: routerOutput.updatedA
 new IntegTest(app, 'cdk-integ-mediaconnect-attributes', {
   testCases: [stack],
 });
-
-app.synth();

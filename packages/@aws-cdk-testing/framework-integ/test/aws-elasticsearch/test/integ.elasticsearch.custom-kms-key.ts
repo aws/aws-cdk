@@ -55,4 +55,3 @@ new IntegTest(app, 'ElasticsearchCustomKmsInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

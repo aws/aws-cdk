@@ -17,5 +17,3 @@ const service = namespace.createService('Service', {
 service.registerCnameInstance('CnameInstance', {
   instanceCname: 'service.pizza',
 });
-
-app.synth();

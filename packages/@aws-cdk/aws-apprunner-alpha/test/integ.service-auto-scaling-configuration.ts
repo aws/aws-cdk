@@ -31,5 +31,3 @@ new integ.IntegTest(app, 'AppRunnerAutoScalingConfiguration', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
-
-app.synth();

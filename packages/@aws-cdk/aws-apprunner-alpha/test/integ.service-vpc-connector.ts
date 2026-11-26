@@ -38,5 +38,3 @@ new integ.IntegTest(app, 'AppRunnerVpcConnector', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
-
-app.synth();

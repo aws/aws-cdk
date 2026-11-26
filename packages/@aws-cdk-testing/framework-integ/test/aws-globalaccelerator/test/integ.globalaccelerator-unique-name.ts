@@ -12,5 +12,3 @@ new ga.Accelerator(stack, 'Accelerator');
 new IntegTest(app, 'GlobalAcceleratorUniqueName', {
   testCases: [stack],
 });
-
-app.synth();

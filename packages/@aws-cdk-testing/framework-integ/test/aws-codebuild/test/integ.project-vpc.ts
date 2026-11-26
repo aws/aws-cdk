@@ -30,5 +30,3 @@ new codebuild.Project(stack, 'MyProject', {
   securityGroups: [securityGroup],
   vpc,
 });
-
-app.synth();

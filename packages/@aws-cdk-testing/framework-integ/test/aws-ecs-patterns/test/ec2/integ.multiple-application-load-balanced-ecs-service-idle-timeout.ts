@@ -99,5 +99,3 @@ service.loadBalancers.forEach(lb => {
 new integ.IntegTest(app, 'multiAlbEcsEc2Test', {
   testCases: [stack],
 });
-
-app.synth();

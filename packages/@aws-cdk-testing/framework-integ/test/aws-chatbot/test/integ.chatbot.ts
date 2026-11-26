@@ -27,5 +27,3 @@ const app = new cdk.App();
 
 new ChatbotInteg(app, 'ChatbotInteg');
 
-app.synth();
-

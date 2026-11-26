@@ -28,5 +28,3 @@ new ec2.Vpc(stack, 'MyVpc', {
 new integ.IntegTest(app, 'aws-cdk-ec2-vpn-two-tunnels-test', {
   testCases: [stack],
 });
-
-app.synth();

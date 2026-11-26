@@ -113,5 +113,3 @@ new Function(stack, 'testFail', {
   runtime: STANDARD_NODEJS_RUNTIME,
   environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
 });
-
-app.synth();

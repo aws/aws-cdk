@@ -26,5 +26,3 @@ new assets.Asset(stack, 'BundledAsset', {
 new integ.IntegTest(app, 'cdk-integ-s3-assets-bundling-docker-opts', {
   testCases: [stack],
 });
-
-app.synth();

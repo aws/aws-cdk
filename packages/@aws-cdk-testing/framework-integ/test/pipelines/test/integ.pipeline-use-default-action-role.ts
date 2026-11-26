@@ -65,5 +65,3 @@ const apiCall = new IntegTest(app, 'UsePipelineRoleForActionsTest', {
   diffAssets: true,
 }).assertions.awsApiCall('CodePipeline', 'getPipeline', { name: pipelineName });
 apiCall.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp(pipelineName));
-
-app.synth();

@@ -94,5 +94,3 @@ maintenanceConfiguration.expect(ExpectedResult.objectLike({
   },
   tableBucketARN: unreferencedFileRemovalTestStack.tableBucket.tableBucketArn,
 }));
-
-app.synth();

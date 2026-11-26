@@ -185,5 +185,3 @@ getTableMaintenanceConfig.expect(ExpectedResult.objectLike({
     },
   },
 }));
-
-app.synth();

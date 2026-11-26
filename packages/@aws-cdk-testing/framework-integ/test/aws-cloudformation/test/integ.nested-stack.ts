@@ -68,4 +68,3 @@ const app = new App({
   },
 });
 new MyTestStack(app, 'nested-stacks-test');
-app.synth();

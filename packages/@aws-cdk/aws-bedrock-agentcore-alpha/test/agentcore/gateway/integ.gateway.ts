@@ -218,5 +218,3 @@ integTest.assertions
       },
     }),
   );
-
-app.synth();

@@ -77,5 +77,3 @@ listNamespaces.expect(ExpectedResult.objectLike({
     },
   ],
 }));
-
-app.synth();

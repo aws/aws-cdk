@@ -16,5 +16,3 @@ new medialive.Input(stack, 'McRouterInput', {
 new IntegTest(app, 'cdk-integ-medialive-input-mc-router', {
   testCases: [stack],
 });
-
-app.synth();

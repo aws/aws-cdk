@@ -81,5 +81,3 @@ integ.assertions.awsApiCall('EC2', 'describeVpcs', {
   ],
 }));
 
-app.synth();
-

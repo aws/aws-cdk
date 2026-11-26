@@ -75,4 +75,3 @@ const stack = new KafkaPollerGroupNameTest(
 new integ.IntegTest(app, 'LambdaEventSourceKafkaPollerGroupNameTest', {
   testCases: [stack],
 });
-app.synth();

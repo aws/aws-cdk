@@ -36,5 +36,3 @@ new bedrock.Agent(stack, 'AgentWithGuardrail', {
 new integ.IntegTest(app, 'BedrockAgentGuardrail', {
   testCases: [stack],
 });
-
-app.synth();

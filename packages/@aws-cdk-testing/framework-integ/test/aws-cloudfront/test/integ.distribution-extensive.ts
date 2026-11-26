@@ -22,5 +22,3 @@ new cloudfront.Distribution(stack, 'MyDist', {
   logIncludesCookies: true,
   priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
 });
-
-app.synth();

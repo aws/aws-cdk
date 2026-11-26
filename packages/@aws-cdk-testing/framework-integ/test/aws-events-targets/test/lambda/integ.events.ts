@@ -41,8 +41,6 @@ timer3.addTarget(new targets.LambdaFunction(fn, {
   retryAttempts: 0,
 }));
 
-app.synth();
-
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

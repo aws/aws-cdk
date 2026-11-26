@@ -79,5 +79,3 @@ new integ.IntegTest(app, 'PreparelessPipelineTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

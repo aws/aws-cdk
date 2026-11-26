@@ -16,5 +16,3 @@ class Test extends cdk.Stack {
 const app = new cdk.App();
 
 new Test(app, 'test-apigateway-usageplan-multikey');
-
-app.synth();

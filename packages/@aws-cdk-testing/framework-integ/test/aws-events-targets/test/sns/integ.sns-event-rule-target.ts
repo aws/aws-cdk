@@ -27,5 +27,3 @@ const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
 event.addTarget(new targets.SnsTopic(topic, {
   deadLetterQueue,
 }));
-
-app.synth();

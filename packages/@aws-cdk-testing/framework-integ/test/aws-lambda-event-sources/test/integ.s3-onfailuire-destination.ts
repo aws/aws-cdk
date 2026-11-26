@@ -135,4 +135,3 @@ const stack3 = new DynamoWithS3OnFailureDestinationStack(app, 'dynamo-with-s3ofd
 new IntegTest(app, 'LambdaEventSourceS3OnFailureDestinationInteg', {
   testCases: [stack, stack2, stack3],
 });
-app.synth();

@@ -83,5 +83,3 @@ new medialive.Channel(stack, 'FrameCaptureChannel', {
 new IntegTest(app, 'cdk-integ-medialive-channel-frame-capture', {
   testCases: [stack],
 });
-
-app.synth();

@@ -11,5 +11,3 @@ const bucket = new s3.Bucket(stack, 'Bucket');
 new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(bucket) },
 });
-
-app.synth();

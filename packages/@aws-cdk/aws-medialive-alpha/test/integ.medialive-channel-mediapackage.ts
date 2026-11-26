@@ -117,5 +117,3 @@ new medialive.Channel(stack, 'LiveChannel', {
 new IntegTest(app, 'cdk-integ-medialive-channel-mediapackage', {
   testCases: [stack],
 });
-
-app.synth();

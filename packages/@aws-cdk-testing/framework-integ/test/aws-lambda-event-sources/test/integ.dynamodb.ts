@@ -35,4 +35,3 @@ const app = new cdk.App({
   },
 });
 new DynamoEventSourceTest(app, 'lambda-event-source-dynamodb');
-app.synth();

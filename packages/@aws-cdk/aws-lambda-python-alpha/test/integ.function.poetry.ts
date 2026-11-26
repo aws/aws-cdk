@@ -226,5 +226,3 @@ testCase.functionNames.forEach(functionName => {
     totalTimeout: Duration.minutes(5),
   });
 });
-
-app.synth();

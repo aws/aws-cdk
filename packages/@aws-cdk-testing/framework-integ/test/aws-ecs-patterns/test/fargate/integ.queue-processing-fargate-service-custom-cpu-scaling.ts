@@ -24,5 +24,3 @@ new QueueProcessingFargateService(stack, 'aws-ecs-patterns-queue-custom-cpu-scal
 new integ.IntegTest(app, 'customCpuScalingQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

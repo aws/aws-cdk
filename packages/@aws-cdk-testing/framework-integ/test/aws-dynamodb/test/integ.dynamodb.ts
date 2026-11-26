@@ -150,5 +150,3 @@ const user = new iam.User(stack, 'User');
 table.grantReadData(user);
 table.grantReadData(new iam.AccountRootPrincipal());
 tableWithGlobalAndLocalSecondaryIndex.grantReadData(user);
-
-app.synth();

@@ -76,5 +76,3 @@ new cdk.CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new IntegTest(app, 'cdk-integ-medialive-input-cdi-vpc', {
   testCases: [stack],
 });
-
-app.synth();

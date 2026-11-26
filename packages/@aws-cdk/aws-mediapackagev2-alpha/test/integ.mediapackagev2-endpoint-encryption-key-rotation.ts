@@ -37,5 +37,3 @@ new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
 new IntegTest(app, 'cdk-integ-mediapackage-key-rotation', {
   testCases: [stack],
 });
-
-app.synth();

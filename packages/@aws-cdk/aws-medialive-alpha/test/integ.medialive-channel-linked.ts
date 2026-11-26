@@ -78,5 +78,3 @@ new cdk.CfnOutput(stack, 'FollowerChannelArn', { value: followerChannel.channelA
 new IntegTest(app, 'cdk-integ-medialive-channel-linked', {
   testCases: [stack],
 });
-
-app.synth();

@@ -38,5 +38,3 @@ new route53.ARecord(stack, 'LocalGlobalAcceleratorAliasWithHealthCheck', {
   recordName: 'test-local-health',
   zone,
 });
-
-app.synth();

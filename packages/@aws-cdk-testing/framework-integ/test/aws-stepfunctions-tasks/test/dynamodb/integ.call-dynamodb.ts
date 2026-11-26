@@ -90,4 +90,3 @@ class CallDynamoDBStack extends cdk.Stack {
 
 const app = new cdk.App();
 new CallDynamoDBStack(app, 'aws-stepfunctions-integ');
-app.synth();

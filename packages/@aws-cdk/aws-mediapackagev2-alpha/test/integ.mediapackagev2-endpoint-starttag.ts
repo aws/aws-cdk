@@ -56,5 +56,3 @@ new mediapackagev2.OriginEndpoint(stack, 'MultiManifestEndpoint', {
 new IntegTest(app, 'cdk-integ-mediapackage-endpoint-starttag', {
   testCases: [stack],
 });
-
-app.synth();

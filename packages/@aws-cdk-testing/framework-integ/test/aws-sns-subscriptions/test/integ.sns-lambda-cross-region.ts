@@ -28,8 +28,6 @@ const fction = new lambda.Function(functionStack, 'Echo', {
 
 topic.addSubscription(new subs.LambdaSubscription(fction));
 
-app.synth();
-
 function handler(event: any, _context: any, callback: any) {
   console.log('====================================================');
   console.log(JSON.stringify(event, undefined, 2));

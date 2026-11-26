@@ -33,5 +33,3 @@ new ecs.FargateService(stack, 'Service', {
 });
 
 container.addEnvironment('nameOne', 'valueOne');
-
-app.synth();

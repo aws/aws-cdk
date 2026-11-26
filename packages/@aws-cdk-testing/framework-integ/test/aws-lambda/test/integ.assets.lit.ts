@@ -23,5 +23,3 @@ const app = new cdk.App({
 });
 
 new TestStack(app, 'lambda-test-assets');
-
-app.synth();

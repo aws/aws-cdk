@@ -19,5 +19,3 @@ new cloudfront.Function(stack, 'TestFunction', {
 new IntegTest(app, 'FunctionKeyValueStoreAssociation', {
   testCases: [stack],
 });
-
-app.synth();

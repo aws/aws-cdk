@@ -107,5 +107,3 @@ new IntegTest(app, 'cdk-integ-emx-router-availability-zone', {
   testCases: [stack],
   regions: ['us-east-1'],
 });
-
-app.synth();

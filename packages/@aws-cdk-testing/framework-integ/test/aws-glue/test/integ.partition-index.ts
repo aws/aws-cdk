@@ -93,5 +93,3 @@ csvIndexes.expect(integ.ExpectedResult.objectLike({
     { IndexName: 'index3', IndexStatus: 'ACTIVE' },
   ],
 }));
-
-app.synth();

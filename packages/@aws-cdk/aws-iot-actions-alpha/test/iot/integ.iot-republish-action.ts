@@ -22,4 +22,3 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 new TestStack(app, 'iot-republish-action-test-stack');
-app.synth();

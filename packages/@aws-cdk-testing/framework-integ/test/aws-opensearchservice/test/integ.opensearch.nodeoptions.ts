@@ -48,4 +48,3 @@ new IntegTest(app, 'OpenSearchNodeOptionsInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

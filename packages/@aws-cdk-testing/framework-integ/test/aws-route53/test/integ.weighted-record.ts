@@ -35,4 +35,3 @@ const stack = new TestStack(app, 'weighted-record');
 new IntegTest(app, 'Route53WeightedRecordInteg', {
   testCases: [stack],
 });
-app.synth();

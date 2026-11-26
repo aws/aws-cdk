@@ -30,4 +30,3 @@ class TestStack extends Stack {
 
 const app = new App();
 new TestStack(app, 'cdk-integ-opensearch-advancedsecurity');
-app.synth();

@@ -33,5 +33,3 @@ const test = new Create(app, 'test-apigateway-usageplan-create');
 new Import(app, 'test-apigateway-usageplan-import', {
   usagePlan: test.usagePlan,
 });
-
-app.synth();

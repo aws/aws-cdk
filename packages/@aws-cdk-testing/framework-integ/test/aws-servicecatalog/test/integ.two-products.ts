@@ -102,5 +102,3 @@ new IntegTest(app, 'integ-product', {
   stackUpdateWorkflow: false,
 });
 
-app.synth();
-

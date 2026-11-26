@@ -64,5 +64,3 @@ endpointServices.expect(ExpectedResult.objectLike({
     }),
   ]),
 }));
-
-app.synth();

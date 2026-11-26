@@ -28,5 +28,3 @@ const domainProps: opensearch.DomainProps = {
 new opensearch.Domain(stack, 'Domain', domainProps);
 
 new IntegTest(app, 'IntegOpenSearchMultiAzWithStandby', { testCases: [stack] });
-
-app.synth();

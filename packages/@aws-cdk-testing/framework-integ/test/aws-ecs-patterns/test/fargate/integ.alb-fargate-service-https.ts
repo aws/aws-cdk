@@ -36,5 +36,3 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
 new integ.IntegTest(app, 'albFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

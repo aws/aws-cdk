@@ -162,5 +162,3 @@ new IntegTest(app, 'integ-product', {
 portfolio.addProduct(product);
 
 new cdk.CfnOutput(stack, 'PortfolioId', { value: portfolio.portfolioId });
-
-app.synth();

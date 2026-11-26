@@ -21,5 +21,3 @@ new Key(stack, 'AsymmetricKey', {
   keyUsage: KeyUsage.SIGN_VERIFY,
   removalPolicy: RemovalPolicy.DESTROY,
 });
-
-app.synth();

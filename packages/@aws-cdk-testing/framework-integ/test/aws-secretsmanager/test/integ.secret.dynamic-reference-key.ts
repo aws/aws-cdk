@@ -34,5 +34,3 @@ const stack = new TestStack(app, 'cdk-integ-secrets-dynamic-reference-key');
 new integ.IntegTest(app, 'cdk-integ-secrets-dynamic-reference-key-test', {
   testCases: [stack],
 });
-
-app.synth();

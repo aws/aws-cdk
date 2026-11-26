@@ -97,5 +97,3 @@ secondRule.addAction(new actions.Stop({
 
 const queue = new sqs.Queue(stack, 'NotificationQueue');
 topic.addSubscription(new subscriptions.SqsSubscription(queue));
-
-app.synth();

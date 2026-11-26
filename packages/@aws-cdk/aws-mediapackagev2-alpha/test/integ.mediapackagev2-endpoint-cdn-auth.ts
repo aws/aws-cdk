@@ -62,5 +62,3 @@ new cdk.CfnOutput(stack, 'EndpointArn', { value: endpoint.originEndpointArn });
 new IntegTest(app, 'cdk-integ-mediapackagev2-endpoint-cdn-auth', {
   testCases: [stack],
 });
-
-app.synth();

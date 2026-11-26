@@ -37,5 +37,3 @@ topicRule.addAction(new actions.DynamoDBv2PutItemAction(table));
 new integ.IntegTest(app, 'dynamodbv2-integtest', {
   testCases: [stack],
 });
-
-app.synth();

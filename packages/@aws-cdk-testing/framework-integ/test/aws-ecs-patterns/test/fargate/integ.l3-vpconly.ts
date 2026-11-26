@@ -34,5 +34,3 @@ nlbFargateService.service.connections.allowFrom(nlbFargateService.loadBalancer, 
 new integ.IntegTest(app, 'vpcOnlyFargateTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -21,5 +21,3 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   ],
   geoRestriction: cloudfront.GeoRestriction.allowlist('US', 'GB'),
 });
-
-app.synth();

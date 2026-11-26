@@ -31,5 +31,3 @@ new mediapackagev2.OriginEndpoint(stack, 'origin', {
 new IntegTest(app, 'cdk-integ-mediapackage-endpoint-hls', {
   testCases: [stack],
 });
-
-app.synth();

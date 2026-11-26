@@ -42,5 +42,3 @@ test.assertions.awsApiCall('eks', 'describeCluster', {
     },
   }),
 })).waitForAssertions();
-
-app.synth();

@@ -83,5 +83,3 @@ new RouterInput(stack, 'routerInputFlowSimple', {
 new IntegTest(app, 'cdk-integ-emx-router-input-flow', {
   testCases: [stack],
 });
-
-app.synth();

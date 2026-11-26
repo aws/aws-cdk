@@ -48,4 +48,3 @@ const app = new App({
   },
 });
 new KinesisWithDLQTest(app, 'lambda-event-source-kinesis-with-dlq');
-app.synth();

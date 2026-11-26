@@ -54,5 +54,3 @@ networkMultipleTargetGroupsFargateService.loadBalancers.forEach(lb =>
   networkMultipleTargetGroupsFargateService.service.connections.allowFrom(lb, Port.allTcp()));
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
-
-app.synth();

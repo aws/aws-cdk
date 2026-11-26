@@ -31,5 +31,3 @@ new integ.IntegTest(app, 'BedrockAgentExistingRole', {
   testCases: [stack],
   regions: BEDROCK_AGENT_INTEG_TEST_REGIONS,
 });
-
-app.synth();

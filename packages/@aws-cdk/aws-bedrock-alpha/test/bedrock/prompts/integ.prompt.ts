@@ -230,5 +230,3 @@ new integ.IntegTest(app, 'BedrockPrompt', {
   },
   regions: ['us-east-1'],
 });
-
-app.synth();

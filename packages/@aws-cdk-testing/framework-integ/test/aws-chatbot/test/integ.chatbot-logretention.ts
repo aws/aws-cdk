@@ -28,5 +28,3 @@ class ChatbotLogRetentionInteg extends cdk.Stack {
 const app = new cdk.App();
 
 new ChatbotLogRetentionInteg(app, 'ChatbotLogRetentionInteg');
-
-app.synth();

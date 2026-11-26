@@ -80,4 +80,3 @@ const stack = new KafkaSelfManagedErrorHandlingTest(
 new integ.IntegTest(app, 'LambdaEventSourceKafkaErrorHandlingTest', {
   testCases: [stack],
 });
-app.synth();

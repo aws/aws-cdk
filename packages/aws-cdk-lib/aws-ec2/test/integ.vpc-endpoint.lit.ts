@@ -44,4 +44,3 @@ class VpcEndpointStack extends cdk.Stack {
 }
 
 new VpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint');
-app.synth();

@@ -44,4 +44,3 @@ class TestStack extends Stack {
 
 const app = new App();
 new TestStack(app, 'cdk-route53-resolver-firewall');
-app.synth();

@@ -39,5 +39,3 @@ new autoscaling.AutoScalingGroup(stack, 'ASG-3', {
 new IntegTest(app, 'AutoScalingGroupCapacity', {
   testCases: [stack],
 });
-
-app.synth();

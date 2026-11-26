@@ -63,5 +63,3 @@ new cdk.CfnOutput(stack, 'FlowArn', { value: flow.flowArn });
 new IntegTest(app, 'cdk-integ-medialive-input-mediaconnect-flow', {
   testCases: [stack],
 });
-
-app.synth();

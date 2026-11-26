@@ -47,5 +47,3 @@ new mediapackagev2.OriginEndpoint(stack, 'OriginEndpoint', {
 new IntegTest(app, 'cdk-integ-mediapackage-endpoint-dash', {
   testCases: [stack],
 });
-
-app.synth();

@@ -80,5 +80,3 @@ new Flow(stack, 'SrtCallerFlow', {
 new IntegTest(app, 'cdk-integ-emx-flow-source-encryption', {
   testCases: [stack],
 });
-
-app.synth();

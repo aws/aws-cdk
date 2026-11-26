@@ -59,5 +59,3 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
     bucket: loggingBucket2,
   },
 });
-
-app.synth();

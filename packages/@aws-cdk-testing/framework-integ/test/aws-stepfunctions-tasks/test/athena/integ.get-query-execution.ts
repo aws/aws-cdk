@@ -37,5 +37,3 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
 });
-
-app.synth();

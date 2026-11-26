@@ -27,5 +27,3 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
 new integ.IntegTest(app, 'queueProcessingFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

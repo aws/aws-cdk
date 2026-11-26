@@ -37,5 +37,3 @@ fn2.addEventSource(eventSource2);
 new integ.IntegTest(app, 'lambda-event-source-sqs-with-metrics', {
   testCases: [stack],
 });
-
-app.synth();

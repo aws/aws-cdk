@@ -85,5 +85,3 @@ lambdaDS.createResolver('PostRelatedPostsMaxBatchSize', {
   responseMappingTemplate,
   maxBatchSize: 2,
 });
-
-app.synth();

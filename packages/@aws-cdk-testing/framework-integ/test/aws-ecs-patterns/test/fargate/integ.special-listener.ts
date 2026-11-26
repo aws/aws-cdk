@@ -36,5 +36,3 @@ fargateNlbService.service.connections.allowFrom(fargateNlbService.loadBalancer, 
 new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

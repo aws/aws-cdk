@@ -53,5 +53,3 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
     `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`,
   ),
 }));
-
-app.synth();

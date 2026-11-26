@@ -41,5 +41,3 @@ new RouterInput(stack, 'routerInputMerge', {
 new IntegTest(app, 'cdk-integ-emx-router-input-merge', {
   testCases: [stack],
 });
-
-app.synth();

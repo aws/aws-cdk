@@ -56,5 +56,3 @@ new integ.IntegTest(app, 'BucketNotificationsSortingTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

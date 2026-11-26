@@ -30,4 +30,3 @@ const app = new App({
   },
 });
 new ParentStack(app, 'nested-stacks-assets');
-app.synth();

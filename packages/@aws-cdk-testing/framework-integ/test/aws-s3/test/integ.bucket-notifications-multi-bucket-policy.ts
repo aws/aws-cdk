@@ -75,5 +75,3 @@ for (const [bucketLabel, policyName] of [
     PolicyDocument: integ.Match.stringLikeRegexp(`.*PutBucketNotification.*${bucketLabel}.*`),
   }));
 }
-
-app.synth();

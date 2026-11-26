@@ -34,5 +34,3 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
     securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1,
   },
 });
-
-app.synth();

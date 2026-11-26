@@ -13,5 +13,3 @@ new dynamodb.Table(stack, 'Table', {
   kinesisStream: stream,
   kinesisPrecisionTimestamp: dynamodb.ApproximateCreationDateTimePrecision.MILLISECOND,
 });
-
-app.synth();

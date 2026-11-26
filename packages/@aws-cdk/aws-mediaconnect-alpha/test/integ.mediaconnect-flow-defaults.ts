@@ -89,5 +89,3 @@ test.assertions
   .expect(ExpectedResult.objectLike({
     Flow: { SourceFailoverConfig: { RecoveryWindow: 200 } },
   }));
-
-app.synth();

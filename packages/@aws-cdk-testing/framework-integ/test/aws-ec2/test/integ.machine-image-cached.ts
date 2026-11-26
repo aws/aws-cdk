@@ -50,4 +50,3 @@ new IntegTest(app, 'integ-ec2-machine-image-cached', {
   testCases: [stack],
   enableLookups: true,
 });
-app.synth();

@@ -18,5 +18,3 @@ new Gateway(stack, 'gateway', {
 new IntegTest(app, 'cdk-integ-emx-gateway', {
   testCases: [stack],
 });
-
-app.synth();

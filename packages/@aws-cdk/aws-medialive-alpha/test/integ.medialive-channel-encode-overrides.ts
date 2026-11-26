@@ -187,5 +187,3 @@ new cdk.CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new IntegTest(app, 'cdk-integ-medialive-encode-overrides', {
   testCases: [stack],
 });
-
-app.synth();

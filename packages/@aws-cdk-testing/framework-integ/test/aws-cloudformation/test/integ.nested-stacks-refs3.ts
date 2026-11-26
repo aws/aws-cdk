@@ -37,5 +37,3 @@ class ParentStack extends Stack {
 const app = new App();
 
 new ParentStack(app, 'nested-stacks-refs3-siblings');
-
-app.synth();

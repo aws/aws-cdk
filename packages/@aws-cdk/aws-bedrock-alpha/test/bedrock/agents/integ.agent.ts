@@ -49,5 +49,3 @@ new bedrock.Agent(stack, 'MyAgent', {
 new integ.IntegTest(app, 'BedrockAgent', {
   testCases: [stack],
 });
-
-app.synth();

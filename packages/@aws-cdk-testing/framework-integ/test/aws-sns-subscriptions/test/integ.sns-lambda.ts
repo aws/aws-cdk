@@ -71,8 +71,6 @@ const app = new cdk.App({
 
 new SnsToLambda(app, 'aws-cdk-sns-lambda');
 
-app.synth();
-
 function handler(event: any, _context: any, callback: any) {
   console.log('====================================================');
   console.log(JSON.stringify(event, undefined, 2));

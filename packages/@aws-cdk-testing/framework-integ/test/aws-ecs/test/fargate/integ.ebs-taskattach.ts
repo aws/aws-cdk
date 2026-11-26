@@ -78,4 +78,3 @@ const stack = new TestStack(app, 'integ-aws-ecs-ebs-task-attach');
 new integ.IntegTest(app, 'EBSTaskAttach', {
   testCases: [stack],
 });
-app.synth();

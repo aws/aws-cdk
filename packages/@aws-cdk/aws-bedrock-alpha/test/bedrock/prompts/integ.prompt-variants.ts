@@ -295,5 +295,3 @@ new bedrock.PromptVersion(stack, 'ChatVariantsVersion', {
 new integ.IntegTest(app, 'BedrockPromptVariants', {
   testCases: [stack],
 });
-
-app.synth();

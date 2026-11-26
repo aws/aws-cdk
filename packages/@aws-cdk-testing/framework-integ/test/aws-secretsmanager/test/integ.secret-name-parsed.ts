@@ -41,4 +41,3 @@ class SecretsManagerStack extends cdk.Stack {
 
 const app = new cdk.App();
 new SecretsManagerStack(app, 'Integ-SecretsManager-ParsedSecretName');
-app.synth();

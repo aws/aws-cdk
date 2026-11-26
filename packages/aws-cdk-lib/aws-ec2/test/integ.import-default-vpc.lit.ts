@@ -34,5 +34,3 @@ new cdk.CfnOutput(stack, 'PrivateSubnets', { value: 'ids:' + vpc.privateSubnets.
 
 // Route table IDs
 new cdk.CfnOutput(stack, 'PublicRouteTables', { value: 'ids: ' + vpc.publicSubnets.map(s => s.routeTable.routeTableId).join(', ') });
-
-app.synth();

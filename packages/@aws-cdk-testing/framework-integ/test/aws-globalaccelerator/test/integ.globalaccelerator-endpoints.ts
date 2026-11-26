@@ -37,5 +37,3 @@ group.connectionsPeer('Peer', vpc);
 new IntegTest(app, 'GlobalAcceleratorEndpoints', {
   testCases: [stack],
 });
-
-app.synth();

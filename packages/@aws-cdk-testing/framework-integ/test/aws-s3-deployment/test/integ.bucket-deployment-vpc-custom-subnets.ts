@@ -62,5 +62,3 @@ new integ.IntegTest(app, 'integ-test-bucket-deployment-vpc-custom-subnets', {
   testCases: [testCase],
   diffAssets: false,
 });
-
-app.synth();

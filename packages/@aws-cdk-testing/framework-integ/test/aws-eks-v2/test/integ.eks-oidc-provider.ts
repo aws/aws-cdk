@@ -35,5 +35,3 @@ new eks.OidcProviderNative(stack, 'OidcProviderNative', {
 new integ.IntegTest(app, 'aws-cdk-eks-v2-alpha-oidc-provider', {
   testCases: [stack],
 });
-
-app.synth();

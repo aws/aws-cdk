@@ -29,4 +29,3 @@ class EventSourceStack extends cdk.Stack {
 }
 
 new EventSourceStack(app, 'event-source-stack');
-app.synth();

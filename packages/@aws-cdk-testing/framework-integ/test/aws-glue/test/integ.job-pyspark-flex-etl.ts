@@ -61,5 +61,3 @@ new glue.PySparkFlexEtlJob(stack, 'OverridePySparkFlexEtlJob', {
 new integ.IntegTest(app, 'aws-glue-job-pysparkflex-etl-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

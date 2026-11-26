@@ -84,5 +84,3 @@ new integ.IntegTest(app, 'applicationLoadBalancedEc2ServiceTest', {
     },
   },
 });
-
-app.synth();

@@ -41,5 +41,3 @@ const testCase = new KafkaZookeeperTest(app, 'KafkaZookeeperTestStack');
 new IntegTest(app, 'KafkaZookeeperIntegTest', {
   testCases: [testCase],
 });
-
-app.synth();

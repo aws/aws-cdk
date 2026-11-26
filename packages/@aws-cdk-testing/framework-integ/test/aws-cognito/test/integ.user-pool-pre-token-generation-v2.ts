@@ -33,5 +33,3 @@ userpool.addClient('client', {
 new integ.IntegTest(app, 'preTokenGenerationIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

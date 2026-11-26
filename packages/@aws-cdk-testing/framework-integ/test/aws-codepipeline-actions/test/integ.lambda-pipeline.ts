@@ -51,5 +51,3 @@ lambdaStage.addAction(new cpactions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: lambdaFun,
 }));
-
-app.synth();

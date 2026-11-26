@@ -17,5 +17,3 @@ new RouterNetworkInterface(stack, 'network', {
 new IntegTest(app, 'cdk-integ-emx-router-minimal', {
   testCases: [stack],
 });
-
-app.synth();

@@ -22,5 +22,3 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   ],
   enableIpV6: false,
 });
-
-app.synth();
