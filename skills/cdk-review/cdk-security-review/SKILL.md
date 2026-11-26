@@ -24,8 +24,8 @@ and secure-by-default. Judge what this change widens, weakens, or leaks for user
    (step 1), check each control the change needs. Confirm the service supports the control before flagging
    its absence.
 
-3. **When to stop.** Stop once you can name the specific exposure, one realistic reach path, and cite
-   its rule or guide line.
+3. **Write the finding.** Name the specific exposure, one realistic reach path, and its rule or guide
+   line.
 
 ## What not to flag
 

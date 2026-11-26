@@ -19,7 +19,7 @@ fix, added validation or an optimization can break that code too. Apply `cdk-rev
    violating, and what is required but missing. The required-but-missing scan catches an omission the
    changed lines don't show. Enumerate what the change needs; flag each required item that is absent.
 
-3. **When to stop.** Stop once you can name the mechanism and cite its rule or guide line.
+3. **Write the finding.** Name the mechanism and its rule or guide line.
 
 ## What not to flag
 
