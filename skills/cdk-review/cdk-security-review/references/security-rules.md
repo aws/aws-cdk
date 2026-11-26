@@ -44,8 +44,7 @@ control. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
 - **Tier:** BLOCKING when the path is currently reachable.
 
-**[SEC-KMS-VIASERVICE] (RECOMMENDED)** — Missing `kms:ViaService` on an otherwise-scoped KMS grant
-(defense-in-depth gap). See
+**[SEC-KMS-VIASERVICE] (RECOMMENDED)** — Missing `kms:ViaService` on an otherwise-scoped KMS grant. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
 **[SEC-IAM-PERMBOUNDARY] (RECOMMENDED)** — Missing `permissionsBoundary` on an IAM-*provisioning* role.
@@ -70,7 +69,7 @@ cross-account root) where a specific `ServicePrincipal` suffices. See
 
 **[SEC-NET-PUBLIC-RESOURCE] (BLOCKING)** — A code path that makes a resource public (or widens a
 resource policy's principal/action set beyond what the feature requires) where the secure default is
-private is a concrete exposure. See
+private. See
 [`AGENTS_CONSTRUCT_DESIGN.md § IAM Resource Policy Integration`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#iam-resource-policy-integration).
 
 **[SEC-NET-PUBLIC-NO-WARNING] (RECOMMENDED)** — Public access introduced without the mandated
@@ -88,8 +87,7 @@ template. `SecretValue` defers resolution and keeps plaintext out of source and 
 
 **[SEC-SECRET-IN-MAP] (BLOCKING)** — A value that is itself a credential, judged by the value and not the
 key name, nested in a `Record<string, string>` map (a Lambda/ECS `environment`, CFN Include parameters, or a
-similar map prop) is the same BLOCKING finding, even though the map's prop is named `environment`.
-The value still lands in the template, recoverable via `cloudformation:GetTemplate` /
+similar map prop). The value still lands in the template, recoverable via `cloudformation:GetTemplate` /
 `lambda:GetFunctionConfiguration`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
@@ -102,8 +100,7 @@ policy downgraded, a secure-private default now defaulting to public/open, or a 
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
 
 **[SEC-DEFAULT-FLAG-LOOSENS] (BLOCKING)** — A new/changed feature flag whose enabled behavior *loosens*
-trust or permissions (widens a policy, opens access, weakens a default) is a *Secure defaults* finding
-here — even though the flag mechanism is otherwise a breaking-change concern outside this dimension. See
+trust or permissions (widens a policy, opens access, weakens a default). See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
 - **Detection:** suspect a flag whose `unconfiguredBehavesLike`/`recommendedValue` defaults
   existing apps to the *looser* behavior rather than the old (tighter) one.

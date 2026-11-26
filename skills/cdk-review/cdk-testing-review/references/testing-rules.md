@@ -33,7 +33,7 @@ the outcome.
   behavior, however important; its missing test stays RECOMMENDED.
 
 **[TEST-UNIT-EDGE-NEGATIVE] (RECOMMENDED)** — The happy path is tested but the boundary value, invalid
-input, failure/error path, or token input the code handles is not — where regressions hide. A branch that
+input, failure/error path, or token input the code handles is not. A branch that
 emits a diagnostic (`addWarningV2` / `addError` / `addInfo`) instead of throwing is also a reject arm: it
 needs a `hasWarning`/`hasError` assertion, because a "does not throw" test passes while the warning silently
 regresses. See
@@ -99,8 +99,7 @@ for the no-`--dry-run` hard rule, and the
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
 code-bundling, or complex-IAM/networking change needs a deploy-time assertion. Independently, a verification
 scaffold that never verifies — a `CfnOutput` declared or an `awsApiCall` set up with no `ExpectedResult`
-asserting on it — is abandoned verification: dead test code claiming a check it never makes. Flag it
-whether or not the change's category needed an assertion. See
+asserting on it. Flag it whether or not the change's category needed an assertion. See
 [`INTEGRATION_TESTS.md § Assertions`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#assertions)
 for the cases that need an assertion and the `awsApiCall` → `ExpectedResult` API. Also assert the
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a

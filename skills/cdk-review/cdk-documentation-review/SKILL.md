@@ -26,7 +26,7 @@ PR adds, or hides the feature in a fixture, so it documents nothing the PR intro
 
 **[DOC-DEFAULT-WRONG] (BLOCKING)** — A `@default` whose stated value or behavior contradicts what the
 code actually does when the prop is omitted (e.g. `@default false` on a prop the constructor defaults to
-`true`). This ships a false statement about real behavior to every consumer. See
+`true`). See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design) for the
 `@default` format rule and
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior)
