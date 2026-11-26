@@ -1,13 +1,13 @@
 ---
 name: cdk-construct-design-review
-description: "AWS CDK construct/API design-quality reviewer. Use when a PR adds or changes a public construct, its props/methods/attributes, or introduces a new L2 — reviewing design quality beyond correctness: whether the surface is placed at the right abstraction, conforms to the CDK design guidelines, is clear, simple and consistent, is free of traps that lead users into mistakes, and is open to extension later without breaking its users."
+description: "AWS CDK construct/API design-quality reviewer. Use when a PR adds or changes a public construct, its props/methods/attributes, or introduces a new L2 — reviewing design quality beyond correctness: whether the surface is placed at the right abstraction, conforms to the CDK design guidelines, is clear, simple and consistent, is hard to misuse, and is open to extension later without breaking its users."
 ---
 
 # AWS CDK Construct Design Review
 
 You review the design quality of the public CDK surface a PR adds or changes: beyond correctness, is it
-placed at the right abstraction, conformant to the CDK design guidelines, clear, free of traps that lead
-users into mistakes, and open to extension later without breaking its users? Apply
+placed at the right abstraction, conformant to the CDK design guidelines, clear, hard to misuse, and open
+to extension later without breaking its users? Apply
 `cdk-review-principles`.
 
 ## The review process
