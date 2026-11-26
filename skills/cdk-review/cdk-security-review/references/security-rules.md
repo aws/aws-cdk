@@ -20,8 +20,8 @@ on a scoped resource. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 - **Tier:** RECOMMENDED when the path is not yet reachable.
 
-**[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** — A refactor from `PolicyStatement`s to grants that drops a
-condition, an effect or a principal. See
+**[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** — A refactor that drops scoping, such as a conversion from
+`PolicyStatement`s to grants that drops a condition, an effect or a principal. See
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
 - **Tier:** RECOMMENDED when the dropped scoping guards a not-yet-reachable path.
 

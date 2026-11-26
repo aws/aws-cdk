@@ -27,8 +27,8 @@ example is a design miss. See
 
 ## Design Guidelines conformance
 
-**[CD-PROPS-SHAPE] (BLOCKING)** — Props are flat, concise and strongly typed (construct interfaces not ARN
-strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
+**[CD-PROPS-SHAPE] (BLOCKING)** — Props are flat by default, concise and strongly typed (construct
+interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 - **Tier:** RECOMMENDED for props valid only together that are left as separate props (one nested object),
   and for props that exclude each other (factory methods or an enum-like class). See
@@ -122,16 +122,17 @@ only when no default exists or the user gave an explicitly contradictory config.
 
 ## Anti-patterns
 
-Each is listed at
+**[CD-SPECULATIVE-ABSTRACTION] (BLOCKING)** — A speculative abstraction, such as an unused base class,
+generic interface or option added for the future: API surface that cannot be removed and has no consumer
+today. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
 
-**[CD-SPECULATIVE-ABSTRACTION] (BLOCKING)** — An unused base class, generic interface or option added for
-the future: API surface that cannot be removed and has no consumer today.
-
 **[CD-DEAD-CODE] (BLOCKING)** — Commented-out code, dead code or an `eslint-disable` directive in the
-public surface.
+public surface. See
+[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
 
-**[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed.
+**[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed. See
+[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
 - **Tier:** RECOMMENDED in an experimental (`-alpha`) module.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
