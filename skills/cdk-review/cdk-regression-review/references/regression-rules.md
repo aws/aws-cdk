@@ -87,7 +87,7 @@ that also changes what working code does is.
 
 ## Library stability & breaking changes
 
-**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change to a stable library (`aws-cdk-lib`). The one
+**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change in a stable module. The one
 legitimate stable break is an existing API that was a bug *blocking* the feature (nobody could use it),
 recorded in `allowed-breaking-changes.txt` at the repo root. A break with an entry there is not a finding
 when the API was unusable before the change; an entry the PR itself adds does not by itself exempt the
