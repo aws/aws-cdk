@@ -44,9 +44,9 @@ token. See
 **[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Extend only `Resource`/`Construct`/`{Foo}Base`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Base Classes & Inheritance`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#base-classes--inheritance).
 
-**[CD-FROM-METHODS] (BLOCKING)** — A resource without a `from{Attribute}` importer, or with an ARN and no
-`fromFooArn`; an importer placed off the concrete class; a `from*` method that changes the identifier it
-is given. See
+**[CD-FROM-METHODS] (BLOCKING)** — A resource construct without a static `from{Attribute}` method, or with
+an ARN and no `fromFooArn`; a `from*` method defined on a class other than the resource construct; a
+`from*` method that changes the identifier it is given. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Import (from*) Methods`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#import-from-methods).
 
 **[CD-REMOVAL-POLICY] (BLOCKING)** — A new stateful resource (database, table, bucket) that lacks a
