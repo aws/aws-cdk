@@ -123,6 +123,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 | [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | 2.278.0 | fix |
+| [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2025](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2025) | Default the Distribution viewer security policy to TLSv1.2_2025 | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -144,6 +145,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025": true,
     "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
@@ -2688,6 +2690,41 @@ that stack is deployed too.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.278.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025
+
+*Default the Distribution viewer security policy to TLSv1.2_2025*
+
+Flag type: New default behavior
+
+When enabled, a `Distribution` configured with a custom `certificate` that does not
+specify an explicit `minimumProtocolVersion` defaults to
+`SecurityPolicyProtocol.TLS_V1_2_2025` instead of `SecurityPolicyProtocol.TLS_V1_2_2021`.
+
+The security policy is selected in this order:
+
+1. An explicit `minimumProtocolVersion`, which always wins.
+2. `TLSv1.2_2025`, if this flag is enabled.
+3. `TLSv1.2_2021`, if `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021` is enabled.
+4. `TLSv1.2_2019` otherwise.
+
+Distributions that use the default `*.cloudfront.net` certificate are unaffected, because
+CloudFront manages the security policy for those.
+
+`TLSv1.2_2025` is chosen rather than `TLSv1.3_2025` because `TLSv1.3_2025` does not
+support TLS 1.2 at all, so making it the default would drop any viewer that cannot
+negotiate TLS 1.3. `TLSv1.2_2025` keeps TLS 1.2 as the floor while still offering TLS 1.3,
+and narrows the cipher list relative to `TLSv1.2_2021`. Choose `TLSv1.3_2025` explicitly
+via `minimumProtocolVersion` if you want to require TLS 1.3.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set `minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021` explicitly on the distribution to keep the old default.
 
 
 <!-- END details -->

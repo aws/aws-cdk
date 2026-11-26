@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "DistributionDefaultSecurityPolicy/DefaultTest": {
+      "stacks": [
+        "integ-distribution-default-security-policy"
+      ],
+      "assertionStack": "integ-distribution-default-security-policy-assertions",
+      "assertionStackName": "integ-distribution-default-security-policy-assertions"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
