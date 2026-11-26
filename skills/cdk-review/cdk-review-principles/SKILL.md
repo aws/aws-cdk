@@ -29,7 +29,7 @@ A defect is a finding when all of these hold:
 - **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved counts
   as unchanged.
 - **On a line** — it points at a specific line of the diff.
-- **Beyond the build** — the PR's build does not already fail on it (see
+- **Beyond the build** — the PR's build or PR linter does not already fail on it (see
   [`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint)).
 
 Raise every defect that meets these, and only those; a PR with nothing wrong gets no findings.
