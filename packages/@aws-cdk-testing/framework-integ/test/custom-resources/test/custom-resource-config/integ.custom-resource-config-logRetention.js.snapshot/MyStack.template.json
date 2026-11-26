@@ -13,18 +13,6 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "s3deployAwsCliLayerD0CD1E6B": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "s3deployCustomResourceDB97D82D": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -192,7 +180,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "815da5705747b4685c56b7d9a7eae6a81e75f489fb8fa7020032ef255f6923be.zip"
+     "S3Key": "a99a19974707f69ec1fcc8c3de916795ee4cf5b9d411eafa6690c09ccef25dec.zip"
     },
     "Environment": {
      "Variables": {
@@ -200,11 +188,6 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "s3deployAwsCliLayerD0CD1E6B"
-     }
-    ],
     "LoggingConfig": {
      "LogGroup": {
       "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756ClogGroupD6937F08"
@@ -217,7 +200,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [

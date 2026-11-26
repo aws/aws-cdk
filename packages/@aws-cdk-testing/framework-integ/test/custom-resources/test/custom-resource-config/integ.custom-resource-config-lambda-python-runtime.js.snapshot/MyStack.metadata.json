@@ -16,9 +16,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -46,9 +44,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -57,7 +53,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/MyStack/nonCrLambda": [
@@ -88,21 +84,13 @@
       "data": "WebsiteBucket75C24D94"
     }
   ],
-  "/MyStack/BucketDeployment/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/MyStack/BucketDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -220,12 +208,6 @@
       "data": "nonCrLambda31AAECAA"
     }
   ],
-  "/MyStack/BucketDeployment/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "BucketDeploymentAwsCliLayerB018DCE1"
-    }
-  ],
   "/MyStack/BucketDeployment/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -292,12 +274,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "nonCrLambdaServiceRole10AF9D14"
-    }
-  ],
-  "/MyStack/BucketDeployment/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/MyStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
