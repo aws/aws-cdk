@@ -370,6 +370,9 @@
              "knowledgeBase": {
               "knowledgeBaseId": {
                "Ref": "KnowledgeBase"
+              },
+              "retrievalOverrides": {
+               "maxNumberOfResults": 8
               }
              }
             }

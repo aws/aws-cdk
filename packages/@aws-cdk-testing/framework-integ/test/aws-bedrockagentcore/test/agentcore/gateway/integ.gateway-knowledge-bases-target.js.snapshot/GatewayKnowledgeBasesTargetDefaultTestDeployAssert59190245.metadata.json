@@ -12,8 +12,8 @@
         "prepareApp (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
         "synthesize (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
         "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
-        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
-        "process.<anonymous> (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "process.<anonymous> (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:181:51)",
         "process.wrapper (node:events:639:12)",
         "process.emit (node:events:514:28)"
       ]

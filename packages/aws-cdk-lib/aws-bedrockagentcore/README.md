@@ -1777,9 +1777,10 @@ use `addKnowledgeBasesTarget()` or `GatewayTarget.forKnowledgeBases()`. The conn
 - `retrieve` configures the `Retrieve` tool, which performs a single search on one knowledge base and returns the most relevant passages
 
 The target exposes only the tools you configure. Agentic retrieval runs with the service-managed foundation model.
-To attach a guardrail or use your own foundation or reranking model, add the fields with a property override on the
-target's `CfnGatewayTarget`. The target keeps the permissions described below, and you grant the gateway role what the
-added fields need. The number in the path is the position of the tool: `AgenticRetrieveStream` comes first when it is configured.
+To attach a guardrail, filter results by metadata, or use your own foundation or reranking model, add the fields with
+a property override on the target's `CfnGatewayTarget`. The target keeps the permissions described below, and you grant
+the gateway role what the added fields need. The first number in the path is the position of the tool:
+`AgenticRetrieveStream` comes first when it is configured. The number after `retrievers` is the position of the retriever.
 
 ```typescript fixture=default
 declare const knowledgeBasesTarget: agentcore.GatewayTarget;
@@ -1788,6 +1789,11 @@ const cfnTarget = knowledgeBasesTarget.node.defaultChild as agentcore.CfnGateway
 cfnTarget.addPropertyOverride(
   "TargetConfiguration.Mcp.Connector.Configurations.0.ParameterValues.agenticRetrieveConfiguration.policyConfiguration",
   { guardrailConfiguration: { guardrailId: "abcdefghijkl", guardrailVersion: "1" } },
+);
+// Only return results from the first retriever whose "team" metadata is "platform"
+cfnTarget.addPropertyOverride(
+  "TargetConfiguration.Mcp.Connector.Configurations.0.ParameterValues.retrievers.0.configuration.knowledgeBase.retrievalOverrides.filter",
+  { equals: { key: "team", value: "platform" } },
 );
 ```
 
@@ -2260,7 +2266,8 @@ const knowledgeBasesTarget = gateway.addKnowledgeBasesTarget("MyKnowledgeBasesTa
   agenticRetrieve: {
     retrievers: [
       { knowledgeBase: productDocs, description: "Product documentation" },
-      { knowledgeBase: runbooks, description: "Engineering runbooks" },
+      // Return at most 5 results from the runbooks
+      { knowledgeBase: runbooks, description: "Engineering runbooks", maxNumberOfResults: 5 },
     ],
     maxAgentIteration: 3,
   },

@@ -289,6 +289,13 @@ export interface KnowledgeBaseRetriever {
   readonly description?: string;
 
   /**
+   * The maximum number of results to return from this knowledge base. Must be an integer of at least 1.
+   *
+   * @default - the service default
+   */
+  readonly maxNumberOfResults?: number;
+
+  /**
    * The customer managed KMS key that encrypts the knowledge base.
    *
    * The gateway role is granted permission to decrypt with this key through Amazon Bedrock, which
@@ -306,8 +313,9 @@ export interface KnowledgeBaseRetriever {
  * knowledge bases, and returns the supporting results with a synthesized, citation-backed answer.
  *
  * It runs with the service-managed foundation model, and the reranking model follows the service
- * default for each knowledge base. To attach a guardrail or use your own foundation or reranking
- * model, add the fields with a property override on the target's `CfnGatewayTarget`. The target
+ * default for each knowledge base. To attach a guardrail, filter the results of a retriever by
+ * metadata, or use your own foundation or reranking model, add the fields with a property override
+ * on the target's `CfnGatewayTarget`. The target
  * keeps the permissions this configuration grants, and you grant what the added fields need.
  */
 export interface KnowledgeBaseAgenticRetrieveOptions {
@@ -570,9 +578,13 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
         if (retriever.description !== undefined) {
           rendered.description = retriever.description;
         }
-        rendered.configuration = {
-          knowledgeBase: { knowledgeBaseId: retriever.knowledgeBase.knowledgeBaseRef.knowledgeBaseId },
+        const knowledgeBase: { [key: string]: any } = {
+          knowledgeBaseId: retriever.knowledgeBase.knowledgeBaseRef.knowledgeBaseId,
         };
+        if (retriever.maxNumberOfResults !== undefined) {
+          knowledgeBase.retrievalOverrides = { maxNumberOfResults: retriever.maxNumberOfResults };
+        }
+        rendered.configuration = { knowledgeBase };
         return rendered;
       }),
       agenticRetrieveConfiguration,
@@ -629,6 +641,17 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
         'agenticRetrieve.retrievers must contain at least one knowledge base',
       );
     }
+
+    this.agenticRetrieve?.retrievers.forEach((retriever, index) => {
+      const maxNumberOfResults = retriever.maxNumberOfResults;
+      if (maxNumberOfResults !== undefined && !Token.isUnresolved(maxNumberOfResults)
+        && (!Number.isInteger(maxNumberOfResults) || maxNumberOfResults < 1)) {
+        throw new UnscopedValidationError(
+          lit`KnowledgeBasesMaxNumberOfResultsInvalid`,
+          `agenticRetrieve.retrievers[${index}].maxNumberOfResults must be an integer of at least 1, got ${JSON.stringify(maxNumberOfResults)}`,
+        );
+      }
+    });
 
     const maxAgentIteration = this.agenticRetrieve?.maxAgentIteration;
     if (maxAgentIteration !== undefined && !Token.isUnresolved(maxAgentIteration)

@@ -374,6 +374,36 @@ describe('Connector gateway targets', () => {
       });
     });
 
+    test('renders the result limit of a retriever as retrievalOverrides', () => {
+      gateway.addKnowledgeBasesTarget('Target', {
+        agenticRetrieve: {
+          retrievers: [
+            { knowledgeBase: kb1, maxNumberOfResults: 8 },
+            { knowledgeBase: kb2 },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        TargetConfiguration: {
+          Mcp: {
+            Connector: {
+              Configurations: [{
+                Name: 'AgenticRetrieveStream',
+                ParameterValues: Match.objectEquals({
+                  retrievers: [
+                    { configuration: { knowledgeBase: { knowledgeBaseId: 'KB11111111', retrievalOverrides: { maxNumberOfResults: 8 } } } },
+                    { configuration: { knowledgeBase: { knowledgeBaseId: 'KB22222222' } } },
+                  ],
+                  agenticRetrieveConfiguration: { foundationModelType: 'MANAGED' },
+                }),
+              }],
+            },
+          },
+        },
+      });
+    });
+
     test('renders generateResponse as false when maxAgentIteration is 0 and generateResponse is not given', () => {
       gateway.addKnowledgeBasesTarget('Target', {
         agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration: 0 },
@@ -746,6 +776,44 @@ describe('Connector gateway targets', () => {
                 Configurations: [{
                   ParameterValues: {
                     agenticRetrieveConfiguration: { foundationModelType: 'MANAGED', maxAgentIteration: { Ref: 'Iterations' } },
+                  },
+                }],
+              },
+            },
+          },
+        });
+      });
+
+      test.each([0, 1.5, -1])('fails for maxNumberOfResults %d on a retriever', (maxNumberOfResults) => {
+        expect(() => gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }, { knowledgeBase: kb2, maxNumberOfResults }] },
+        })).toThrow(`agenticRetrieve.retrievers[1].maxNumberOfResults must be an integer of at least 1, got ${maxNumberOfResults}`);
+      });
+
+      test.each([1, 1000])('accepts maxNumberOfResults %d on a retriever', (maxNumberOfResults) => {
+        expect(() => gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1, maxNumberOfResults }] },
+        })).not.toThrow();
+      });
+
+      test('accepts an unresolved maxNumberOfResults on a retriever', () => {
+        const param = new cdk.CfnParameter(stack, 'MaxResults', { type: 'Number' });
+
+        gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1, maxNumberOfResults: param.valueAsNumber }] },
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+          TargetConfiguration: {
+            Mcp: {
+              Connector: {
+                Configurations: [{
+                  ParameterValues: {
+                    retrievers: [{
+                      configuration: {
+                        knowledgeBase: { knowledgeBaseId: 'KB11111111', retrievalOverrides: { maxNumberOfResults: { Ref: 'MaxResults' } } },
+                      },
+                    }],
                   },
                 }],
               },

@@ -64,7 +64,7 @@ const gateway = new agentcore.Gateway(stack, 'Gateway', {
 const target = gateway.addKnowledgeBasesTarget('KnowledgeBases', {
   gatewayTargetName: 'managed-kb',
   agenticRetrieve: {
-    retrievers: [{ knowledgeBase, description: 'Integration test documents' }],
+    retrievers: [{ knowledgeBase, description: 'Integration test documents', maxNumberOfResults: 8 }],
     maxAgentIteration: 3,
     generateResponse: false,
     description: 'Answer questions from the integration test documents.',
