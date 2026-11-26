@@ -42,8 +42,8 @@ function, method, or constructor in a stable module: existing positional calls s
 argument to the wrong parameter.
 
 **[REG-JSII-STRUCT-LAST] (BLOCKING)** — A positional parameter placed after a struct argument (a data
-interface: no `I` prefix, `readonly`-only props). jsii explodes it into keyword/named arguments in Python,
-Java, C#, and Go, so any parameter after a struct breaks the generated bindings — even an optional one
+interface: no `I` prefix, `readonly`-only props). jsii explodes the struct into keyword/named arguments in
+Python, Java, C#, and Go, so any parameter after a struct breaks the generated bindings — even an optional one
 TypeScript accepts. Fix: move the new field into the struct as an optional `readonly` property.
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
 

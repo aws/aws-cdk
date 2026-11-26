@@ -46,8 +46,8 @@ plain string, so a plaintext secret can pass through the API. See
 a resource interface name not derived from it (`IFoo`). See
 [`AGENTS_CONSTRUCT_DESIGN.md § Property Naming`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-naming).
 
-**[CD-ATTRIBUTES] (BLOCKING)** — A CloudFormation attribute missing from the L2, or exposed without the
-type-name prefix (`arn` where `bucketArn` fits) or as other than an opaque token. See
+**[CD-ATTRIBUTES] (BLOCKING)** — A CloudFormation attribute missing from the L2, exposed without the
+type-name prefix (`arn` where `bucketArn` fits), or parsed where it is passed on as an opaque token. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Resource Attributes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#resource-attributes).
 
 **[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — An L2 that extends a class other than
@@ -93,8 +93,8 @@ build-time enforcement and
 for the `exclude` mechanism.
 - **Tier:** BLOCKING when the suppressed rule backs a MUST-level guideline.
 
-**[CD-ENUMS] (RECOMMENDED)** — A closed known set that is not an `enum`, or an open set that is not an
-enum-like class. See
+**[CD-ENUMS] (RECOMMENDED)** — An `enum` for an open set, or an enum-like class for a closed known set.
+See
 [`AGENTS_CONSTRUCT_DESIGN.md § Enums & Enum-Like Classes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#enums--enum-like-classes).
 
 **[CD-STATIC-TYPE-CHECK] (RECOMMENDED)** — An `instanceof` check where a static `isFoo` fits. See
