@@ -1,6 +1,6 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default`/`@param` JSDoc tags, migration notes, README usage examples, and rosetta `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be true and complete against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect."
+description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default` JSDoc tags, migration notes, README usage examples, `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be true and complete against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect."
 ---
 
 # AWS CDK Documentation Review
@@ -30,8 +30,7 @@ concern; on each, own the documentation question:
 Work the changed docs in this order. Adapt to what the diff touches.
 
 1. **Inventory the doc surfaces, and load your rules.** From the diff, enumerate every doc surface the
-   PR touches: every exported public class / method / prop it adds or renames (a brand-new exported L2 is
-   highest-value — it triggers the README-example and JSDoc-tag checks at once); every
+   PR touches: every exported public class / method / prop it adds or renames; every
    `@default` it adds or changes; every `@deprecated` tag and breaking API change; and every fenced
    ` ```ts ` block and `*.ts-fixture` it adds or edits. Then read
    [`documentation-rules.md`](references/documentation-rules.md) — its rows are your checklist. Before
@@ -43,10 +42,9 @@ Work the changed docs in this order. Adapt to what the diff touches.
 2. **Check the inventory against the rules.** Walk the changed docs family by family — **README
    examples**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For each
    rule check both directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
-   inventory, check each doc a surface of that kind owes and flag the absent. One method the rows lack: for
-   a `@default`, **read the constructor / `?? ` handling in the same
-   diff and compare** what the code applies when the prop is omitted against the tag — a contradiction is
-   this dimension's highest-value defect.
+   inventory, check each doc a surface of that kind owes and flag the absent. For a `@default`, read the
+   constructor / `??` handling in the same diff and compare what the code applies when the prop is
+   omitted against the tag.
 
 3. **Rate by harm and stop.** Rate every finding by the harm the defect does — misled consumer, a feature
    shipped without the usage docs a guide requires — per `cdk-review-principles` (its
@@ -58,16 +56,10 @@ Work the changed docs in this order. Adapt to what the diff touches.
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
-no-nit-quota), this dimension stays silent on the following — not even as OPTIONAL — because each
-belongs to a different dimension or is not a documentation defect at all. When a defect belongs to
-another dimension, leave it — it's outside your scope.
-
 - **Prose wording is not a `@default` defect** — a misspelled word, an awkward sentence, a comment that
   "reads a little off", capitalization, Oxford-comma preferences break no build and misstate no behavior.
-  **This is the single most important exclusion for this dimension:** a misspelled word in a JSDoc comment
-  breaks nothing; a `@default false` that is actually `true` misleads every consumer — only the second is
-  a finding.
+  A misspelled word in a JSDoc comment breaks nothing; a `@default false` that is actually `true` misleads
+  every consumer — only the second is a finding.
 - **Comment-density or style opinions** — whether a block "needs more comments", inline-comment placement,
   docstring formatting idioms.
 - **Code correctness** — whether the code the docs describe is itself buggy is a code-correctness question,
@@ -78,9 +70,9 @@ another dimension, leave it — it's outside your scope.
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, concrete fix, guideline cited inline by
-file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
-Public-API doc completeness, Migration notes. The `suggestedFix` (folded into `message`) shows the doc or
+`message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
+cited inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
+Public-API doc completeness, Migration notes. A `suggestedFix` (folded into `message`) shows the doc or
 snippet as written and its corrected form.
 
 ## Apply cdk-review-principles
