@@ -90,10 +90,9 @@ See
 and prefer extending an existing method over adding a new one. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Factory Methods for Secondary Resources`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#factory-methods-for-secondary-resources).
 
-**[CD-STANDARD-AFFORDANCE] (RECOMMENDED)** — Add the standard `metric*`/`onXxx`/`connections`/`role`
-affordance where the service supports it. See
-[`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
-and the sections following it for the signatures.
+**[CD-STANDARD-EXTENSIONS] (RECOMMENDED)** — Add the standard interface extensions the service supports:
+`metric*`, `onXxx`, `connections`, `role`. See
+[`AGENTS_CONSTRUCT_DESIGN.md § Standard Interface Extensions`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#standard-interface-extensions).
 
 **[CD-POLYMORPHISM-OVER-BOOLEAN] (RECOMMENDED)** — Model behavioral variation through polymorphism, not a
 boolean flag. See

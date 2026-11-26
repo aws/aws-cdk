@@ -18,9 +18,9 @@ to extension later without breaking its users? Apply
 
 2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
    check both directions: what is present and violating, and what the kind requires but the diff omits.
-   Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
-   docs, and confirm the CDK framework doesn't already auto-wire it. A missing affordance takes its rule's
-   tier, like a declared defect.
+   Before flagging something as missing, confirm in the AWS documentation that the service supports it,
+   and that the CDK framework does not already provide it. A missing extension takes its rule's tier,
+   like a declared defect.
 
 3. **When to stop.** When several defects share one code cause, give one finding with the `ruleId`,
    `category` and `severity` of its most severe defect, since each field takes one value. Stop once you
