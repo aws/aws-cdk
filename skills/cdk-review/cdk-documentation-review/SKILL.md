@@ -46,8 +46,8 @@ mixin with no `## Mixins` README entry. See
 [`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes) and, for the
 `## Mixins` section,
 [`AGENTS_CONSTRUCT_DESIGN.md § Documentation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#documentation).
-- **Tier:** RECOMMENDED for a new prop on an existing construct with no README mention, and for a new use
-  case the README does not show.
+- **Tier:** RECOMMENDED for a new prop or a new use case of an existing construct that the README does not
+  mention or show.
 
 **[DOC-MIXIN-MERGE-UNDOCUMENTED] (RECOMMENDED)** — A mixin the PR adds, or an existing mixin whose way of
 writing L1 properties the PR changes, with no JSDoc saying how it merges with L1 properties already set. See
