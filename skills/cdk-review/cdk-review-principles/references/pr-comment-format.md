@@ -26,7 +26,7 @@ Related findings on one cause are one finding.
 
 - **Observation** — what is wrong, specific, referencing the code (one or two sentences).
 - **Impact** — what goes wrong for a user or a maintainer if it ships.
-- **Guide** — the guide cited inline where one backs the finding; a finding that rests on a guide line
-  quotes that line.
+- **Guide** — a link to the guide that backs the finding; a finding that rests on a guide line adds the
+  words of that line that state the requirement.
 
 The change to make goes in `suggestedFix` only.
