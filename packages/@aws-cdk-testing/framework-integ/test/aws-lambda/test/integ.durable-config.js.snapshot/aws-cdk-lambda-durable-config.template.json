@@ -272,7 +272,7 @@
      "ZipFile": "const { withDurableExecution } = require('@aws/durable-execution-sdk-js');\nexports.handler = withDurableExecution(async (event, context) => {\n  const result = await context.step('checkpoint', async () => 'checkpointed');\n  await context.wait({ seconds: 2 });\n  return { result };\n});"
     },
     "DurableConfig": {
-     "ExecutionTimeout": 3600,
+     "ExecutionTimeout": 900,
      "KMSKeyArn": {
       "Fn::GetAtt": [
        "DurableKeyAD70383F",
@@ -314,7 +314,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226a": {
+  "DurableFunctionWithCmkCurrentVersion9D43471B4462c344d2e228ebfdbef9be3a4a4941": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -518,7 +518,7 @@
      "ZipFile": "const { withDurableExecution } = require('@aws/durable-execution-sdk-js');\nexports.handler = withDurableExecution(async (event, context) => {\n  const result = await context.step('checkpoint', async () => 'checkpointed');\n  await context.wait({ seconds: 2 });\n  return { result };\n});"
     },
     "DurableConfig": {
-     "ExecutionTimeout": 3600,
+     "ExecutionTimeout": 900,
      "KMSKeyArn": {
       "Fn::GetAtt": [
        "ScopedKeyB82353F2",
@@ -561,7 +561,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982": {
+  "DurableFunctionWithCmkAndNameCurrentVersionF292EABA54a839d959d24cfe21eaba4b19906b59": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -670,7 +670,7 @@
      "ZipFile": "const { withDurableExecution } = require('@aws/durable-execution-sdk-js');\nexports.handler = withDurableExecution(async (event, context) => {\n  const result = await context.step('checkpoint', async () => 'checkpointed');\n  await context.wait({ seconds: 2 });\n  return { result };\n});"
     },
     "DurableConfig": {
-     "ExecutionTimeout": 3600,
+     "ExecutionTimeout": 900,
      "KMSKeyArn": {
       "Fn::ImportValue": "aws-cdk-lambda-durable-config-key:ExportsOutputFnGetAttCrossStackKey8B7D4CF8Arn5F1D25C1"
      },
@@ -710,7 +710,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a76": {
+  "DurableFunctionWithCrossStackCmkCurrentVersion0EFBCB3517334bd2691c2b25a57ac20abc32a5f2": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -742,28 +742,28 @@
     "Name": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmk4AAC4848129EDE55"
    }
   },
-  "ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226aC017A495": {
+  "ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471B4462c344d2e228ebfdbef9be3a4a494151597B78": {
    "Value": {
-    "Ref": "DurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226a"
+    "Ref": "DurableFunctionWithCmkCurrentVersion9D43471B4462c344d2e228ebfdbef9be3a4a4941"
    },
    "Export": {
-    "Name": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226aC017A495"
+    "Name": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471B4462c344d2e228ebfdbef9be3a4a494151597B78"
    }
   },
-  "ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7": {
+  "ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA54a839d959d24cfe21eaba4b19906b59CA54D63F": {
    "Value": {
-    "Ref": "DurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982"
+    "Ref": "DurableFunctionWithCmkAndNameCurrentVersionF292EABA54a839d959d24cfe21eaba4b19906b59"
    },
    "Export": {
-    "Name": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+    "Name": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA54a839d959d24cfe21eaba4b19906b59CA54D63F"
    }
   },
-  "ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a7642B24277": {
+  "ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB3517334bd2691c2b25a57ac20abc32a5f219BE6C78": {
    "Value": {
-    "Ref": "DurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a76"
+    "Ref": "DurableFunctionWithCrossStackCmkCurrentVersion0EFBCB3517334bd2691c2b25a57ac20abc32a5f2"
    },
    "Export": {
-    "Name": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a7642B24277"
+    "Name": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB3517334bd2691c2b25a57ac20abc32a5f219BE6C78"
    }
   },
   "ExportsOutputFnGetAttScopedKeyB82353F2Arn362FD109": {

@@ -38,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795712533573"
+    "salt": "1795716182221"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -111,7 +111,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226aC017A495"
+              "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471B4462c344d2e228ebfdbef9be3a4a494151597B78"
              }
             ]
            ]
@@ -160,7 +160,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+              "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA54a839d959d24cfe21eaba4b19906b59CA54D63F"
              }
             ]
            ]
@@ -209,7 +209,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a7642B24277"
+              "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB3517334bd2691c2b25a57ac20abc32a5f219BE6C78"
              }
             ]
            ]
@@ -246,7 +246,7 @@
     }
    }
   },
-  "LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6": {
+  "LambdaInvokecea21f25f8f45baaff3be7c47f0dc998": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -265,7 +265,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226aC017A495"
+         "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471B4462c344d2e228ebfdbef9be3a4a494151597B78"
         },
         "\""
        ]
@@ -274,17 +274,17 @@
      "Payload": "\"{}\""
     },
     "flattenResponse": "false",
-    "salt": "1795712533577"
+    "salt": "1795716182225"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6Invoke39F38524": {
+  "LambdaInvokecea21f25f8f45baaff3be7c47f0dc998Invoke8DFE4C87": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226aC017A495"
+     "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471B4462c344d2e228ebfdbef9be3a4a494151597B78"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -332,12 +332,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795712533578"
+    "salt": "1795716182226"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke196a686eba30e2212e0fd4c079be8c8d": {
+  "LambdaInvoke2879a53d8d6b781d55dd7b02955fee6d": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -356,7 +356,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+         "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA54a839d959d24cfe21eaba4b19906b59CA54D63F"
         },
         "\""
        ]
@@ -365,17 +365,17 @@
      "Payload": "\"{}\""
     },
     "flattenResponse": "false",
-    "salt": "1795712533578"
+    "salt": "1795716182227"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke196a686eba30e2212e0fd4c079be8c8dInvokeA4AD8649": {
+  "LambdaInvoke2879a53d8d6b781d55dd7b02955fee6dInvokeE1EA9F75": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+     "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA54a839d959d24cfe21eaba4b19906b59CA54D63F"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -423,12 +423,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795712533579"
+    "salt": "1795716182227"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke93b1daa4500ac0d15956e1e3dececb10": {
+  "LambdaInvoke8fa93495b3a1596e12e5062bcd633a0e": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -447,7 +447,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a7642B24277"
+         "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB3517334bd2691c2b25a57ac20abc32a5f219BE6C78"
         },
         "\""
        ]
@@ -456,17 +456,17 @@
      "Payload": "\"{}\""
     },
     "flattenResponse": "false",
-    "salt": "1795712533579"
+    "salt": "1795716182228"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke93b1daa4500ac0d15956e1e3dececb10InvokeD12CA57C": {
+  "LambdaInvoke8fa93495b3a1596e12e5062bcd633a0eInvokeF0C2939F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a7642B24277"
+     "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB3517334bd2691c2b25a57ac20abc32a5f219BE6C78"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -486,10 +486,10 @@
     ]
    }
   },
-  "AssertionResultsLambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6": {
+  "AssertionResultsLambdaInvokecea21f25f8f45baaff3be7c47f0dc998": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6",
+     "LambdaInvokecea21f25f8f45baaff3be7c47f0dc998",
      "assertion"
     ]
    }
@@ -502,10 +502,10 @@
     ]
    }
   },
-  "AssertionResultsLambdaInvoke196a686eba30e2212e0fd4c079be8c8d": {
+  "AssertionResultsLambdaInvoke2879a53d8d6b781d55dd7b02955fee6d": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke196a686eba30e2212e0fd4c079be8c8d",
+     "LambdaInvoke2879a53d8d6b781d55dd7b02955fee6d",
      "assertion"
     ]
    }
@@ -518,10 +518,10 @@
     ]
    }
   },
-  "AssertionResultsLambdaInvoke93b1daa4500ac0d15956e1e3dececb10": {
+  "AssertionResultsLambdaInvoke8fa93495b3a1596e12e5062bcd633a0e": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke93b1daa4500ac0d15956e1e3dececb10",
+     "LambdaInvoke8fa93495b3a1596e12e5062bcd633a0e",
      "assertion"
     ]
    }
