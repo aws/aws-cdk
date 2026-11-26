@@ -18,10 +18,8 @@ missing a test the change needs, and demanding one it does not. Weigh each again
    happy path, or test one of two flag states. The rules in
    [`testing-rules.md`](references/testing-rules.md) name and tier the cases they describe.
 
-2. **Integration tests.** Where the change's behavior only shows once deployed (`TEST-INTEG-WEAK-ASSERTION`
-   names the cases), ask whether the integ test asserts it on the deployed resources, not only that the
-   stack deploys. Then judge the integ tests and snapshots it adds or changes, and any it needs but lacks,
-   by the integration rules.
+2. **Integration tests.** Judge the integ tests and snapshots the PR adds or changes, and any it needs but
+   lacks, by the integration rules.
 
 3. **Write the finding.** Name the gap and its rule or guide line. When several gaps stem from one test,
    classify under the best-fitting rule and describe them together. When the tests would catch a break, or
