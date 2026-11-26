@@ -42,7 +42,7 @@ export abstract class StackSetTemplate {
   /**
    * Uses a template that is already stored in Amazon S3
    *
-   * @param url the S3 URL of the template
+   * @param url the HTTPS URL of the template in Amazon S3, for example `https://s3.amazonaws.com/my-bucket/template.json`
    * @returns StackSetTemplate
    */
   public static fromUrl(url: string): StackSetTemplate {
@@ -50,7 +50,7 @@ export abstract class StackSetTemplate {
   }
 
   /**
-   * Uses a local template file, uploaded as an asset of the StackSet's stack
+   * Uses a local template file, uploaded as an asset of the stack that contains the StackSet
    *
    * @param path the path to the template file
    * @param options options for the asset
@@ -206,7 +206,7 @@ export interface StackSetTargetOptions {
 export interface OrganizationsTargetOptions extends StackSetTargetOptions {
   /**
    * The IDs of the organizational units (`ou-...`) or of the organization root (`r-...`) to
-   * deploy to. The StackSet will deploy the provided Stack template to all accounts in the OU.
+   * deploy to. The StackSet deploys the template to all accounts in the OU.
    * This can be further filtered by specifying `accountFilter`.
    *
    * If the service managed `deploymentType` has `autoDeployment` enabled (the default),
@@ -255,12 +255,11 @@ interface StackSetTargetConfig {
 interface TargetBindOptions {}
 
 /**
- * Which organizational units or accounts the stack set
- * should be deployed to.
+ * Which organizational units or accounts the StackSet should be deployed to.
  *
- * `fromAccounts` deploys the stack set to specific AWS accounts. Use it with a self managed StackSet.
+ * `fromAccounts` deploys the StackSet to specific AWS accounts. Use it with a self managed StackSet.
  *
- * `fromOrganizationalUnits` deploys the stack set to specific organizational units. With an
+ * `fromOrganizationalUnits` deploys the StackSet to specific organizational units. With an
  * `accountFilter` it can also filter the accounts in the
  * specified OUs. Use it with a service managed StackSet.
  */
@@ -470,10 +469,10 @@ export interface ServiceManagedOptions {
  */
 export interface SelfManagedOptions {
   /**
-   * The name of the stackset execution role that already exists in each target AWS account.
+   * The name of the StackSet execution role that already exists in each target AWS account.
    * This role must be configured with a trust policy that allows `sts:AssumeRole` from the `adminRole`.
    *
-   * In addition this role must have the necessary permissions to manage the resources created by the stackset.
+   * In addition this role must have the necessary permissions to manage the resources created by the StackSet.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html#stacksets-prereqs-accountsetup
    *
@@ -482,7 +481,7 @@ export interface SelfManagedOptions {
   readonly executionRoleName?: string;
 
   /**
-   * The admin role that CloudFormation will use to perform stackset operations.
+   * The admin role that CloudFormation will use to perform StackSet operations.
    * This role should only have permissions to be assumed by the CloudFormation service
    * and to assume the execution role in each individual account.
    *
@@ -523,12 +522,12 @@ interface DeploymentTypeOptions {}
 export abstract class DeploymentType {
   /**
    * StackSets deployed using service managed permissions allow you to deploy
-   * StackSet instances to accounts within an AWS Organization. Using this module
-   * AWS Organizations will handle creating the necessary IAM roles and setting up the
-   * required permissions.
+   * StackSet instances to accounts within an AWS Organization. AWS Organizations
+   * creates the necessary IAM roles and sets up the required permissions.
    *
-   * This model also allows you to enable automated deployments which allows the StackSet
-   * to be automatically deployed to new accounts that are added to your organization in the future.
+   * Automatic deployment is enabled by default: the StackSet deploys the stack to accounts
+   * that are added to a target organizational unit. Turn it off with
+   * `autoDeployment: StackSetAutoDeployment.disabled()`.
    *
    * This model requires you to be operating in either the AWS Organizations management account
    * or the delegated administrator account
@@ -632,7 +631,7 @@ export interface StackSetProps {
    *
    * Use `stackSet.grants.readAssets()` to allow the target accounts to read the assets.
    *
-   * @default - no asset buckets. File assets will not be supported.
+   * @default - no asset buckets, and using a file asset in the StackSet fails synthesis
    */
   readonly assetBuckets?: StackSetAssetBuckets;
 
@@ -642,7 +641,7 @@ export interface StackSetProps {
    * the StackSet is deployed from.
    *
    * In order to use DeploymentType.serviceManaged() the account needs to either be the
-   * organizations's management account or a delegated administrator account.
+   * organization's management account or a delegated administrator account.
    *
    * @default DeploymentType.selfManaged()
    */
@@ -688,6 +687,7 @@ export interface StackSetProps {
    * not specified, the deployment will fail with a `InsufficientCapabilities` error.
    *
    * `CfnCapabilities.NONE` is not accepted; omit `capabilities` to specify no capabilities.
+   * `CfnCapabilities.AUTO_EXPAND` is not supported with `DeploymentType.serviceManaged()`.
    *
    * @default - no specific capabilities
    */
@@ -717,9 +717,8 @@ export interface OperationPreferences {
    * The maximum concurrent count is at most one more than the failure tolerance count if you're
    * using `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE`.
    *
-   * Note that this setting lets you specify the maximum for operations. For large deployments,
-   * under certain circumstances the actual number of accounts acted upon concurrently may be
-   * lower due to service throttling.
+   * For large deployments, service throttling can lower the actual concurrency below this
+   * maximum.
    *
    * @default - the CloudFormation default concurrency
    */
@@ -928,12 +927,12 @@ const STACK_SET_SYMBOL = Symbol.for('aws-cdk-lib.aws-cloudformation.StackSet');
  *
  * A StackSet is a stack: the resources defined in it make up the template that is
  * deployed to the target accounts and regions. It is defined
- * within another stack (the host stack), which deploys the `AWS::CloudFormation::StackSet`
+ * within another stack (the stack that contains the StackSet), which deploys the `AWS::CloudFormation::StackSet`
  * resource, its administration role, the template, and the file assets of the template.
  *
  * The template is always environment agnostic. `account` and `region` refer to the
  * accounts and regions the template is deployed to, while `env` and `stack` refer to the
- * StackSet resource in the host stack.
+ * StackSet resource in the stack that contains it.
  *
  * Values from other stacks that the template references are passed to the template as
  * StackSet parameters. Other stacks can't reference the resources of the template.
