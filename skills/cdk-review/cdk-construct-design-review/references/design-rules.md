@@ -9,8 +9,9 @@ requires on the interface; features belong on Facades. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo)
 and [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#configuration-mutation).
 
-**[CD-LAYER-MODEL] (BLOCKING)** — An L2 that exposes CloudFormation in its surface (`Cfn*`/`Token`), lacks
-an escape hatch to the L1, or hard-codes a choice the service exposes. See
+**[CD-LAYER-MODEL] (BLOCKING)** — An L2 hides CloudFormation (no `Cfn*`/`Token` in its surface),
+provides an escape hatch to the L1, and exposes the full service surface (no hard-coded choice the service
+exposes). See
 [`AGENTS.md § Architecture — The Layer Model`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#architecture--the-layer-model).
 
 **[CD-FEATURE-PLACEMENT] (RECOMMENDED)** — Implement a new feature as a building block (Mixin /
@@ -26,9 +27,8 @@ example is a design miss. See
 
 ## Design Guidelines conformance
 
-**[CD-PROPS-SHAPE] (BLOCKING)** — A prop that is weakly typed or loosely shaped: an ARN string where a
-construct interface fits, a raw number where `Duration`/`Size` fits, a `Cfn*` or `Token` type, a nested
-object where flat props fit. See
+**[CD-PROPS-SHAPE] (BLOCKING)** — Props are flat, concise and strongly typed (construct interfaces not ARN
+strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 - **Tier:** RECOMMENDED for props valid only together that are left as separate props (one nested object),
   and for props that exclude each other (factory methods or an enum-like class). See
@@ -38,8 +38,8 @@ object where flat props fit. See
 behavioral surprise. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
 
-**[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token or secret, typed as a
-plain string, so a plaintext secret can pass through the API. See
+**[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token or secret, is typed
+`SecretValue`, so a plaintext secret can't pass through the API. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
 **[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
