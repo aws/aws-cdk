@@ -12,7 +12,7 @@ to extension later without breaking its users? Apply
 
 ## The review process
 
-1. **Orient and load your rules.** List the public API the diff adds or changes, and name its kind —
+1. **Read the change and your rules.** List the public API the diff adds or changes, and name its kind —
    grantable, stateful, connectable, attribute-bearing — because the kind sets both what the surface needs
    and what to scan (step 2). Then read [`design-rules.md`](references/design-rules.md).
 

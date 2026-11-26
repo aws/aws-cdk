@@ -7,7 +7,7 @@ outcome that matters — or a test named for a behavior it never exercises. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the `Match`
 rules.
 - **Tier:** RECOMMENDED when the core outcome is asserted elsewhere
-  and only a facet is loose.
+  and only a detail is unasserted.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
 optional prop that changes a default with no backward-compat test locking the old default in. Both
@@ -25,17 +25,17 @@ that would fail if it broke. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for how to assert
 the outcome.
 - **Tier:** BLOCKING when the untested behavior is a security- or
-  correctness-critical guardrail the change adds. Such a guardrail is a check the change adds whose silent
-  failure would let a security exposure or a wrong deployment through, for example a validation that
-  rejects a configuration which would otherwise deploy and be exposed or wrong. A check whose silent
-  failure would only surface as a synthesis or deployment error, such as a bound on a value the service
-  itself rejects, is not a guardrail: losing it delays an error the user gets anyway. Neither is any other
+  correctness-critical check the change adds: one whose silent failure would let a security exposure or a
+  wrong deployment through, for example a validation that rejects a configuration which would otherwise
+  deploy and be exposed or wrong. A check whose silent failure would only surface as a synthesis or
+  deployment error, such as a bound on a value the service itself rejects, is not critical: losing it
+  delays an error the user gets anyway. Neither is any other
   behavior, however important; its missing test stays RECOMMENDED.
 
 **[TEST-UNIT-EDGE-NEGATIVE] (RECOMMENDED)** — The happy path is tested but the boundary value, invalid
 input, failure/error path, or token input the code handles is not. A branch that
-emits a diagnostic (`addWarningV2` / `addError` / `addInfo`) instead of throwing is also a reject arm: it
-needs a `hasWarning`/`hasError` assertion, because a "does not throw" test passes while the warning silently
+emits a diagnostic (`addWarningV2` / `addError` / `addInfo`) instead of throwing needs a
+`hasWarning`/`hasError` assertion too, because a "does not throw" test passes while the warning silently
 regresses. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the
 `test.each` / `"fails"`-prefix / specific-message convention,
@@ -43,8 +43,8 @@ regresses. See
 for the `hasWarning`/`hasNoWarning`/`hasError` API, and
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Mixin Testing`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#mixin-testing)
 for a mixin's required tests.
-- **Tier:** BLOCKING when the diagnostic / reject arm is a security- or
-  correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
+- **Tier:** BLOCKING when the branch that rejects or warns is a security- or
+  correctness-critical check the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
 
 ## Integration tests
 
@@ -57,7 +57,7 @@ for the required-scenario list,
 [`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
 for the feat/fix default, and the `pr-linter/exempt-integ-test` label in
 [`prlint/constants.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/constants.ts) for
-the exempt terminal.
+the exemption.
 - **Tier:** RECOMMENDED when a unit test already asserts the change's
   synthesized-template effect and only the required integ test is absent; ask for the integ test or the exempt
   label.
@@ -72,15 +72,15 @@ for the breaking-change rule.
 - **Also dangerous:** a widened IAM `Action`/`Resource`, a new `Allow` or a widened trust principal, and a
   `DeletionPolicy` / `UpdateReplacePolicy` moved off `Retain` or dropped on a stateful resource.
 - **Snapshot reading:** skip `manifest.json`, `tree.json` and asset files; read the template diff.
-- **Mechanical churn:** a diff in which no resource's type, logical ID or real property value changed is
-  not this finding.
+- **Unchanged resources:** a diff in which no resource's type, logical ID or real property value changed
+  is not this finding.
 
 **[TEST-INTEG-STALE-SNAPSHOT] (BLOCKING)** — The diff shows a changed `integ.*.ts` and its companion
 `*.snapshot/`, but the snapshot does not reflect the test change (or a brand-new `integ.*.ts` arrives with
 no `*.snapshot/` at all). A test change that alters synthesis changes the snapshot too; when it does not,
 the committed snapshot no longer proves the test deploys.
 A `.ts` edit that cannot alter synthesis (a comment, rename, reorder, import or formatting change)
-correctly leaves the snapshot byte-identical and is not this finding. See
+correctly leaves the snapshot unchanged and is not this finding. See
 [`INTEGRATION_TESTS.md § What are CDK Integration Tests`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#what-are-cdk-integration-tests)
 for the snapshot-as-template fact and
 [`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
@@ -97,8 +97,8 @@ for the no-`--dry-run` hard rule, and the
 [`IntegTest` construct](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts).
 
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
-code-bundling, or complex-IAM/networking change needs a deploy-time assertion. Independently, a verification
-scaffold that never verifies — a `CfnOutput` declared or an `awsApiCall` set up with no `ExpectedResult`
+code-bundling, or complex-IAM/networking change needs a deploy-time assertion. Independently, a check that
+is set up but never asserted — a `CfnOutput` declared or an `awsApiCall` set up with no `ExpectedResult`
 asserting on it — is also this rule's case. Flag it whether or not the change's category needed an
 assertion. See
 [`INTEGRATION_TESTS.md § Assertions`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#assertions)

@@ -17,7 +17,7 @@ exposes). See
 **[CD-FEATURE-PLACEMENT] (RECOMMENDED)** — Implement a new feature as a building block (Mixin /
 CfnPropsMixin / Facade / Trait) first, and only as an L2 method if none fits. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Feature Placement Decision`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision)
-for the first-match-wins table and
+for the decision table and
 [`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
 for each block.
 
@@ -71,8 +71,7 @@ for the stateful classification.
 
 **[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — Flag every `awslint.exclude` entry the diff adds or broadens,
 and ask for a stated justification in the PR description or an adjacent comment. A suppression turns off an
-awslint rule that enforces a design guideline at build time, so an unjustified one silently drops that
-guardrail. See
+awslint rule that enforces a design guideline at build time, so an unjustified one drops that check. See
 [`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint) for the
 build-time enforcement and
 [`awslint README § Saving State`](https://github.com/aws/aws-cdk/blob/main/packages/awslint/README.md#saving-state)
@@ -122,5 +121,5 @@ public surface. See
 - **Tier:** RECOMMENDED in an experimental (`-alpha`) module.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
-capability lands additively. See
+capability can be added without changing what exists. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Factory Methods for Secondary Resources`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#factory-methods-for-secondary-resources).

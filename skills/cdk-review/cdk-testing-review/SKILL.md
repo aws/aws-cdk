@@ -33,6 +33,6 @@ missing a test the change needs, and demanding one it does not. Weigh each again
   a refactor with no behavior change, needs no test.
 - **Production-code correctness** — whether the implementation is buggy is production-code
   correctness — outside your scope. Judge whether the tests would catch a bug, not whether the code has one.
-- **Mechanical / tooling-driven snapshot churn** — asset hashes, CDK-version strings, bootstrap /
+- **Tooling-driven snapshot changes** — asset hashes, CDK-version strings, bootstrap /
   metadata-only diffs with no semantic change to a resource's type, logical ID, or a real property. Read
   the diff; flag it only if a real property changed.

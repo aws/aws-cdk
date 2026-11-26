@@ -11,7 +11,7 @@ fix, added validation or an optimization can break that code too. Apply `cdk-rev
 
 ## The review process
 
-1. **Orient and load your rules.** Name the public surface the PR changes. Establish first whether its
+1. **Read the change and your rules.** Name the public surface the PR changes. Establish first whether its
    module is stable or experimental, since it decides which rules on breaking existing code apply. Read
    [`regression-rules.md`](references/regression-rules.md).
 

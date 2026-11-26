@@ -49,8 +49,8 @@ control. See
 
 **[SEC-IAM-PERMBOUNDARY] (RECOMMENDED)** — Missing `permissionsBoundary` on an IAM-*provisioning* role.
 A role whose `inlinePolicies`/`managedPolicies` grant IAM-mutating actions (`iam:CreateRole`,
-`iam:PutRolePolicy`, `iam:AttachRolePolicy`, or `iam:PassRole` on `Resource: '*'`) can mint or
-re-permission other roles; a `permissionsBoundary` caps what those minted roles may do
+`iam:PutRolePolicy`, `iam:AttachRolePolicy`, or `iam:PassRole` on `Resource: '*'`) can create other
+roles or change their permissions; a `permissionsBoundary` caps what those roles may do
 (privilege-escalation containment). See
 [`AGENTS_CONSTRUCT_DESIGN.md § IAM Role Integration`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#iam-role-integration).
 
@@ -72,7 +72,7 @@ resource policy's principal/action set beyond what the feature requires) where t
 private. See
 [`AGENTS_CONSTRUCT_DESIGN.md § IAM Resource Policy Integration`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#iam-resource-policy-integration).
 
-**[SEC-NET-PUBLIC-NO-WARNING] (RECOMMENDED)** — Public access introduced without the mandated
+**[SEC-NET-PUBLIC-NO-WARNING] (RECOMMENDED)** — Public access introduced without the required
 synthesis-time `Annotations.of(construct).addWarningV2()` warning. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 - **Tier:** BLOCKING when it ships public access.
@@ -80,7 +80,7 @@ synthesis-time `Annotations.of(construct).addWarningV2()` warning. See
 ## Secrets & credentials
 
 **[SEC-SECRET-LITERAL] (BLOCKING)** — A literal credential or sensitive value (access key, password, API
-key, private key, bearer token) in the diff — in code or in a value that lands in the synthesized
+key, private key, bearer token) in the diff — in code or in a value that ends up in the synthesized
 template. `SecretValue` defers resolution and keeps plaintext out of source and templates; a
 `Token`-typed prop bypasses that. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
@@ -91,7 +91,7 @@ template. `SecretValue` defers resolution and keeps plaintext out of source and 
 
 **[SEC-SECRET-IN-MAP] (BLOCKING)** — A value that is itself a credential, judged by the value and not the
 key name, nested in a `Record<string, string>` map (a Lambda/ECS `environment`, CFN Include parameters, or a
-similar map prop). The value still lands in the template, recoverable via `cloudformation:GetTemplate` /
+similar map prop). The value still ends up in the template, recoverable via `cloudformation:GetTemplate` /
 `lambda:GetFunctionConfiguration`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 

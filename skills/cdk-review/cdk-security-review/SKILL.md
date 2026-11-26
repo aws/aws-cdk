@@ -12,7 +12,7 @@ and secure-by-default. Judge what this change widens, weakens, or leaks for user
 
 ## The review process
 
-1. **Orient and load your rules.** Name the security-sensitive surface the diff adds or changes — an
+1. **Read the change and your rules.** Name the security-sensitive surface the diff adds or changes — an
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
    prop named like a secret — and its kind. The kind tells you which controls it needs and what to scan.
    Then read [`security-rules.md`](references/security-rules.md).
@@ -24,8 +24,8 @@ and secure-by-default. Judge what this change widens, weakens, or leaks for user
    (step 1), check each control the change needs. Confirm the service supports the control before flagging
    its absence.
 
-3. **Write the finding.** Name the specific exposure, one realistic reach path, and its rule or guide
-   line.
+3. **Write the finding.** Name the specific exposure, one realistic way to reach it, and its rule or
+   guide line.
 
 ## What not to flag
 

@@ -42,7 +42,7 @@ function, method, or constructor in a stable module: existing positional calls s
 argument to the wrong parameter.
 
 **[REG-JSII-STRUCT-LAST] (BLOCKING)** — A positional parameter placed after a struct argument (a data
-interface: no `I` prefix, `readonly`-only props). jsii explodes the struct into keyword/named arguments in
+interface: no `I` prefix, `readonly`-only props). jsii turns the struct into keyword/named arguments in
 Python, Java, C#, and Go, so any parameter after a struct breaks the generated bindings — even an optional one
 TypeScript accepts. Fix: move the new field into the struct as an optional `readonly` property.
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
@@ -80,7 +80,7 @@ props-based shape, or for a written justification. See
 
 **[REG-UNDEFINED-BEHAVIOR] (RECOMMENDED)** — Any other runtime-behavior risk that fits no other family: a
 logic refactor that changes what the code does on an edge case, or a shared base-class/helper side effect
-(a spurious `CfnCondition`, a token-keyed cache) that flows into every consumer of that method. A change
+(an extra `CfnCondition`, a token-keyed cache) that flows into every consumer of that method. A change
 that only stops an input or configuration that never deployed or never worked is not this finding; one
 that also changes what working code does is.
 - **Tier:** BLOCKING when it reaches every consumer or fails an existing stack's update.
@@ -102,7 +102,7 @@ compile: renaming or removing a public class/method/property, adding a required 
 optional→required / nullable→non-nullable on an input), or removing a return property (or changing
 non-nullable→nullable on a return), or removing an enum member. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation)
-for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
+for the no-break requirement; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change in a stable module that alters CloudFormation synthesis
@@ -111,7 +111,7 @@ data loss (replacement of a stateful resource), or a change to the **logical ID 
 resource**. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the construct-ID/logical-ID→data-loss rule; [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
-for the definitional test of which template changes are breaking.
+for which template changes are breaking.
 
 **[REG-BEHAVIOR-CHANGE-NO-FLAG] (RECOMMENDED)** — A change to the observable behavior of an existing API in a
 stable module, such as a changed default, with no feature flag. See
