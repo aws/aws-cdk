@@ -27,8 +27,7 @@ example is a design miss. See
 
 ## Design Guidelines conformance
 
-**[CD-PROPS-SHAPE] (BLOCKING)** — Props are flat by default, concise and strongly typed (construct
-interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
+**[CD-PROPS-SHAPE] (BLOCKING)** — Props are flat by default, concise and strongly typed. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 - **Tier:** RECOMMENDED for props valid only together that are left as separate props (one nested object),
   and for props that exclude each other (factory methods or an enum-like class). See
