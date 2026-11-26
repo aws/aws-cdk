@@ -15,7 +15,7 @@ Give each finding these fields:
 - `suggestedFix` — the change to make (a code example or a question framing a specific
   alternative), once you have checked it (`SKILL.md` "Suggested fix"); or null.
 - `reference` — the source for the fact the finding turns on (`SKILL.md` "Verification"), and for a
-  finding that rests on a guide line, that line quoted: file + section, or a URL; or null.
+  finding that rests on a guide line, that line's file + section, or a URL; or null.
 - `evidence` — the supporting detail behind the finding.
 
 Related findings on one cause are one finding.
@@ -26,6 +26,7 @@ Related findings on one cause are one finding.
 
 - **Observation** — what is wrong, specific, referencing the code (one or two sentences).
 - **Impact** — what goes wrong for a user or a maintainer if it ships.
-- **Guide** — the guide cited inline where one backs the finding.
+- **Guide** — the guide cited inline where one backs the finding; a finding that rests on a guide line
+  quotes that line.
 
 The change to make goes in `suggestedFix` only.
