@@ -95,9 +95,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -125,9 +123,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -136,7 +132,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/integ-bucket-deployment-cross-stack-ssm/S3Stack/integbucketdeploymentcrossstackssmS3StackReproBucket6C842AADRef": [
@@ -195,21 +191,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -331,12 +319,6 @@
       "data": "ReproBucketAutoDeleteObjectsCustomResource3655A94E"
     }
   ],
-  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithSsmParameterAwsCliLayer695E077A"
-    }
-  ],
   "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -403,12 +385,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
-    }
-  ],
-  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
