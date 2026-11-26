@@ -99,7 +99,8 @@ for the no-`--dry-run` hard rule, and the
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
 code-bundling, or complex-IAM/networking change needs a deploy-time assertion. Independently, a verification
 scaffold that never verifies — a `CfnOutput` declared or an `awsApiCall` set up with no `ExpectedResult`
-asserting on it. Flag it whether or not the change's category needed an assertion. See
+asserting on it — is also this rule's case. Flag it whether or not the change's category needed an
+assertion. See
 [`INTEGRATION_TESTS.md § Assertions`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#assertions)
 for the cases that need an assertion and the `awsApiCall` → `ExpectedResult` API. Also assert the
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
