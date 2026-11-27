@@ -2238,6 +2238,196 @@ The `includeQueryParameters` option specifies whether to include query parameter
 When enabled, query parameters from HTTP requests are included in the logs. Consider security and privacy implications, as query parameters may contain sensitive information such as request IDs and tokens.
 By default, this parameter is `false`.
 
+## Amazon ECS Gateway
+
+An Amazon ECS gateway is an Application Load Balancer that Amazon ECS manages for you and shares
+between the services of the clusters the gateway is associated with. Services opt in with a
+gateway connector that names the port mapping the gateway sends traffic to.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+
+const gateway = new ecs.Gateway(this, 'Gateway', {
+  vpc,
+  scheme: ecs.GatewayScheme.INTERNET_FACING,
+});
+cluster.associateGateway(gateway);
+
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+  portMappings: [{ containerPort: 80, name: 'web' }],
+});
+
+new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  gatewayConnector: {
+    portName: 'web',
+    accessTypes: [ecs.GatewayAccessType.PUBLIC],
+    healthCheck: { path: '/' },
+  },
+});
+```
+
+A gateway is internal by default and is placed in the VPC's default subnet selection (its private
+subnets with egress, or its isolated subnets if it has none); an internet-facing gateway is placed
+in the public subnets. Use `vpcSubnets` to choose other subnets, in at least two Availability Zones, and `ipAddressType` to change the load balancer's IP address type (dual-stack by default).
+
+The gateway listens for HTTPS on port 443, with a certificate that Amazon ECS requests and
+manages; Amazon ECS doesn't support other listener ports or protocols. Amazon ECS creates a security group for each
+connected service that lets the gateway reach its tasks, so you don't add rules for that traffic.
+By default, Amazon ECS also creates the gateway's own security group, which allows inbound HTTPS on
+port 443 from all IP addresses, even for an internal gateway. Use `securityGroup` to control who can
+reach the gateway: Amazon ECS then removes the inbound rules it managed and stops managing them, so
+your security group must allow HTTPS on port 443 from the clients of the connected services, or
+those services become unreachable.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+declare const logBucket: s3.Bucket;
+
+new ecs.Gateway(this, 'Gateway', {
+  vpc,
+  securityGroup,
+  httpDesync: elbv2.DesyncMitigationMode.STRICTEST,
+  maxAlbCount: 2,
+  accessLogs: { bucket: logBucket, prefix: 'gateway' },
+  tags: { team: 'web' },
+});
+```
+
+The gateway adds a statement to the access log bucket's policy that lets the Elastic Load
+Balancing log delivery service (`logdelivery.elasticloadbalancing.amazonaws.com`) write under
+`<prefix>/AWSLogs/<account>/`, limited to load balancers in the stack's account and Region. For a
+bucket whose policy the app can't change, such as an imported bucket, the gateway warns and you add
+that statement yourself. The bucket must be in the gateway's Region and use Amazon S3-managed keys
+(SSE-S3); the gateway rejects a bucket that uses AWS KMS, including the AWS managed key. Test traffic
+rules for blue/green deployments aren't modeled yet; set them on the `CfnGateway` with an escape
+hatch.
+
+The gateway doesn't copy its tags to the resources Amazon ECS creates for it (`propagateTags`
+defaults to `GatewayPropagateTags.NONE`, unlike CloudFormation's `GATEWAY`). A gateway created by
+CloudFormation carries `aws:cloudformation:*` tags, and copying them makes the certificate request
+for the gateway fail, so the gateway never connects services.
+
+By default, the gateway gets a new IAM role that Amazon ECS assumes to manage the load balancer,
+with the `AmazonECSInfrastructureRoleForGatewayHostSharedALB` managed policy. Pass
+`infrastructureRole` to use your own role.
+
+Requirements and limits:
+
+- The task definition must use the `awsvpc` network mode and have a named container port mapping,
+  and a service can have one gateway connector.
+- The gateway must be in the same VPC as the services, and its subnets must cover every
+  Availability Zone the services run in.
+- A cluster can be associated with up to 5 gateways, and a gateway and its clusters must be in
+  the same account and Region.
+- The gateway's name, scheme, subnets, IP address type can't be changed:
+  changing them replaces the gateway.
+- A gateway always has a name (one is generated from the construct path if you don't set
+  `gatewayName`), and CloudFormation can't replace a resource with a custom name. A change that
+  replaces the gateway, including a change to the VPC that changes the default subnets, therefore
+  also needs a new `gatewayName` or construct ID.
+- Gateways have deletion protection on by default, so deleting the stack, or replacing the
+  gateway, fails while the gateway exists. Set `deletionProtection: false` for gateways that you
+  want to delete with the stack, or replace with a new name.
+
+Without `accessTypes`, a service is eligible for both internal and internet-facing gateways
+associated with its cluster, as in CloudFormation. That includes gateways imported or associated
+outside the app, so a service whose connector leaves out `accessTypes` or includes `PUBLIC` gets
+the synthesis warning `@aws-cdk/aws-ecs:gatewayConnectorPublicAccess`. For a service that must not
+be reachable from the internet, set `accessTypes: [ecs.GatewayAccessType.PRIVATE]`.
+
+The health check defaults to HTTP on path `/` of the named port, every 30 seconds with a 5 second
+timeout, healthy on HTTP code 200. `deregistrationDelay` sets how long the gateway lets requests in
+progress finish before it removes a task (300 seconds by default, between 0 and 3600 seconds).
+Changing the health check or the deregistration delay of a connected service replaces its target
+group, which fails for services with the `ROLLING` deployment strategy: set them when you first
+connect the service, or use the `BLUE_GREEN` or `CANARY` deployment strategy.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.FargateTaskDefinition;
+
+new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  gatewayConnector: {
+    portName: 'web',
+    healthCheck: { path: '/health', interval: Duration.seconds(15) },
+    deregistrationDelay: Duration.seconds(30),
+  },
+});
+```
+
+The CloudFormation schema bundled with the CDK's template validation doesn't include
+`DeregistrationDelay` yet. Until it does, an app with the `@aws-cdk/core:validateAgainstDefaultRules`
+feature flag enabled fails synthesis when a service sets `deregistrationDelay`, and other apps get a
+warning. Acknowledge the finding on the service:
+
+```ts
+declare const service: ecs.FargateService;
+
+Validations.of(service).acknowledge({
+  id: 'CloudFormation-Validate::F3002',
+  reason: 'DeregistrationDelay is a valid property that the bundled schema does not include yet',
+});
+```
+
+Removing `gatewayConnector` from a connected service doesn't disconnect it. The CDK then leaves
+`GatewayConnectors` out of the template, and Amazon ECS keeps the service's current connector.
+To disconnect the service, set `GatewayConnectors` to an empty list with an escape hatch and
+deploy. Once that deployment finishes you can remove the override, and the service stays
+disconnected:
+
+```ts
+declare const service: ecs.FargateService;
+
+const cfnService = service.node.defaultChild as ecs.CfnService;
+cfnService.addPropertyOverride('GatewayConnectors', []);
+```
+
+The service keeps serving traffic through its gateways until the deployment that disconnects it
+finishes. After that, its gateway hostnames stop working.
+
+The gateway's access type, status, creation and update times and current number of load
+balancers are available as `gatewayAccessType`, `gatewayStatus`, `gatewayCreatedAt`,
+`gatewayUpdatedAt` and `gatewayCurrentAlbCount`.
+
+A gateway connector can only be added to a service once the cluster's gateway association is
+active. Services in a cluster created in the same app depend on the cluster's gateway
+associations automatically. `cluster.associateGateway()` returns the association, and names it
+after the gateway's construct path; to choose its construct ID, or to associate a gateway with an
+imported cluster, create a `GatewayClusterAssociation`. For an imported cluster, add the
+dependency yourself:
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const gateway: ecs.Gateway;
+declare const taskDefinition: ecs.FargateTaskDefinition;
+
+const cluster = ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
+  clusterName: 'my-cluster',
+  vpc,
+});
+const association = new ecs.GatewayClusterAssociation(this, 'Association', {
+  cluster,
+  gateway,
+});
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  gatewayConnector: { portName: 'web' },
+});
+service.node.addDependency(association);
+```
+
+To use a gateway that already exists, import it with `ecs.Gateway.fromGatewayArn()`.
+
 ## ServiceManagedVolume
 
 Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
@@ -2605,4 +2795,31 @@ Applies one or more cluster settings to an ECS cluster. If a setting with the sa
 ```ts
 new ecs.CfnCluster(this, 'Cluster')
   .with(new ecs.mixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]));
+```
+
+### ServiceGatewayConnector
+
+Connects a service to the Amazon ECS gateways associated with its cluster by setting its gateway
+connector, replacing any existing one. The connector options are validated when the mixin is created,
+and a warning is added when the service accepts traffic from internet-facing gateways:
+
+```ts
+new ecs.CfnService(this, 'Service')
+  .with(new ecs.mixins.ServiceGatewayConnector({
+    portName: 'web',
+    accessTypes: [ecs.GatewayAccessType.PRIVATE],
+  }));
+```
+
+Applied to a bare `CfnService`, the mixin can't check the task definition or the cluster. Applied to
+a `FargateService` or `Ec2Service`, it also checks that the task definition uses the `awsvpc` network
+mode and has a port mapping named `portName`. For a cluster created in this app, it also makes the
+service depend on the cluster's gateway associations; for an imported cluster, add that dependency
+yourself. The `gatewayConnector` property of these services applies the same
+mixin, so both ways run the same checks. `ExternalService` doesn't support gateway connectors.
+
+```ts
+declare const service: ecs.FargateService;
+
+service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' }));
 ```

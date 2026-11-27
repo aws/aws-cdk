@@ -15,6 +15,7 @@ import type { LoadBalancerTargetOptions, TaskDefinition } from '../base/task-def
 import { Compatibility } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { ServiceReference } from '../ecs.generated';
+import type { GatewayConnectorOptions } from '../gateway';
 
 /**
  * The properties for defining a service using the External launch type.
@@ -149,6 +150,10 @@ export class ExternalService extends BaseService implements IExternalService {
       throw new ValidationError(lit`CapacityProvidersSupportedExternal`, 'Capacity Providers are not supported for External service', scope);
     }
 
+    if (props.gatewayConnector !== undefined) {
+      throw new ValidationError(lit`GatewayConnectorSupportedExternal`, 'Gateway connectors are not supported for External service', scope);
+    }
+
     const propagateTagsFromSource = props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
@@ -179,6 +184,16 @@ export class ExternalService extends BaseService implements IExternalService {
     if (props.minHealthyPercent === undefined) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentExternal', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705');
     }
+  }
+
+  /**
+   * Gateway connectors are not supported for External service, so applying the
+   * `ServiceGatewayConnector` mixin to this service throws.
+   *
+   * @internal
+   */
+  public _checkGatewayConnector(_connector: GatewayConnectorOptions): void {
+    throw new ValidationError(lit`GatewayConnectorSupportedExternal`, 'Gateway connectors are not supported for External service', this);
   }
 
   /**

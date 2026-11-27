@@ -47,7 +47,9 @@ import { Cluster, ExecuteCommandLogging } from '../cluster';
 import type { ContainerDefinition, Protocol } from '../container-definition';
 import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
+import type { GatewayConnectorOptions } from '../gateway';
 import type { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
+import { ServiceGatewayConnector } from '../mixins/service';
 
 /**
  * The interface for a service.
@@ -551,6 +553,23 @@ export interface BaseServiceOptions {
   readonly serviceConnectConfiguration?: ServiceConnectProps;
 
   /**
+   * Receive traffic through the Amazon ECS gateways associated with the cluster.
+   *
+   * Associate a gateway with the cluster with `cluster.associateGateway()`. For a cluster created in
+   * this app, the service depends on the cluster's gateway associations, because a gateway
+   * connector can only be added once an association is active.
+   *
+   * Removing this property from a connected service doesn't disconnect it: `GatewayConnectors` is
+   * left out of the template, and Amazon ECS keeps the current connector. To disconnect the service,
+   * set `GatewayConnectors` to an empty list on the `CfnService` with
+   * `addPropertyOverride('GatewayConnectors', [])` and deploy. The override can be removed after that
+   * deployment.
+   *
+   * @default - the service does not receive traffic through a gateway
+   */
+  readonly gatewayConnector?: GatewayConnectorOptions;
+
+  /**
    * Revision number for the task definition or `latest` to use the latest active task revision.
    *
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
@@ -861,6 +880,11 @@ export abstract class BaseService extends Resource
   private readonly isEcsDeploymentController: boolean;
 
   private readonly resource: CfnService;
+
+  /**
+   * The gateway connector last applied to this service, if any.
+   */
+  private _gatewayConnector?: GatewayConnectorOptions;
   private scalableTaskCount?: ScalableTaskCount;
 
   /**
@@ -963,6 +987,8 @@ export abstract class BaseService extends Resource
     if (props.canaryConfiguration) {
       this.validateCanaryConfiguration(props.canaryConfiguration);
     }
+    // the connector options are validated here; the checks on this service run when the mixin is applied
+    const gatewayConnectorMixin = props.gatewayConnector ? new ServiceGatewayConnector(props.gatewayConnector) : undefined;
 
     // An empty array tells CloudFormation to remove the existing load balancer registrations, while an
     // absent property leaves the live service alone, so removing the last target group from a service
@@ -1128,6 +1154,12 @@ export abstract class BaseService extends Resource
     }
 
     this.node.defaultChild = this.resource;
+
+    // applied after defaultChild is set, so the mixin runs _checkGatewayConnector on this service and
+    // its warning goes on this construct, the same as when the mixin is applied to the service later
+    if (gatewayConnectorMixin) {
+      this.with(gatewayConnectorMixin);
+    }
   }
 
   /**
@@ -1495,6 +1527,45 @@ export abstract class BaseService extends Resource
    */
   private isValidPort(port?: number): boolean {
     return !!(port && Number.isInteger(port) && port >= BaseService.MIN_PORT && port <= BaseService.MAX_PORT);
+  }
+
+  /**
+   * Check what a gateway connector needs from this service and its task definition, and make the
+   * service depend on the gateway associations of its cluster.
+   *
+   * Called by the `ServiceGatewayConnector` mixin when it is applied to the `CfnService` of this
+   * service, either through the `gatewayConnector` property or with `service.with(...)`.
+   *
+   * @internal
+   */
+  public _checkGatewayConnector(connector: GatewayConnectorOptions): void {
+    if (this.taskDefinition.networkMode !== NetworkMode.AWS_VPC) {
+      throw new ValidationError(lit`GatewayConnectorRequiresAwsVpc`, `gatewayConnector requires a task definition with the awsvpc network mode, got ${JSON.stringify(this.taskDefinition.networkMode)}`, this);
+    }
+
+    // the mixin replaces the connector, so only the last one applied is validated
+    const firstConnector = this._gatewayConnector === undefined;
+    this._gatewayConnector = connector;
+    if (!firstConnector) {
+      return;
+    }
+
+    if (Cluster.isCluster(this.cluster)) {
+      this.node.addDependency(this.cluster._gatewayAssociationsDependable);
+    }
+
+    // containers can be added to the task definition after the service is created
+    this.node.addValidation({
+      validate: () => {
+        const portName = this._gatewayConnector!.portName;
+        // a token can't be compared, so only report a mismatch when every name is known
+        if (Token.isUnresolved(portName) || this.taskDefinition._hasUnresolvedPortMappingName()
+          || this.taskDefinition.findPortMappingByName(portName)) {
+          return [];
+        }
+        return [`gatewayConnector portName ${JSON.stringify(portName)} does not match the name of a port mapping in the task definition`];
+      },
+    });
   }
 
   /**

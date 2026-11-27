@@ -1,0 +1,1100 @@
+import { Construct } from 'constructs';
+import { Annotations, Match, Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import * as iam from '../../aws-iam';
+import * as s3 from '../../aws-s3';
+import * as wafv2 from '../../aws-wafv2';
+import * as cdk from '../../core';
+import * as ecs from '../lib';
+import { acknowledgeTestValidationRules } from './util';
+
+const GATEWAY_ARN = 'arn:aws:ecs:us-west-2:123456789012:gateway/imported/0123456789abcdef';
+
+describe('gateway', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    vpc = new ec2.Vpc(stack, 'Vpc');
+  });
+
+  test('defaults to an internal gateway in the private subnets with a new infrastructure role', () => {
+    const gateway = new ecs.Gateway(stack, 'Gateway', { vpc });
+
+    expect(gateway.scheme).toEqual(ecs.GatewayScheme.INTERNAL);
+    expect(gateway.gatewayName).toEqual('Gateway');
+    expect(stack.resolve(gateway.gatewayArn)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'Arn'] });
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Gateway', {
+      GatewayName: 'Gateway',
+      InfrastructureRoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('^GatewayInfrastructureRole'), 'Arn'] },
+      DeletionProtection: Match.absent(),
+      PropagateTags: 'NONE',
+      Tags: Match.absent(),
+      Configuration: {
+        HostSharedAlb: {
+          Scheme: 'internal',
+          Port: Match.absent(),
+          Protocol: Match.absent(),
+          MaxAlbCount: Match.absent(),
+          HttpDesync: Match.absent(),
+          WebACLArn: Match.absent(),
+          AccessLogs: Match.absent(),
+          NetworkConfiguration: {
+            Subnets: [
+              { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+              { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+            ],
+            IpAddressType: Match.absent(),
+            InboundSecurityGroup: Match.absent(),
+          },
+        },
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'ecs.amazonaws.com' },
+          Condition: { StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } } },
+        }],
+      },
+      ManagedPolicyArns: [{
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/AmazonECSInfrastructureRoleForGatewayHostSharedALB',
+        ]],
+      }],
+    });
+    Annotations.fromStack(stack).hasNoWarning('/Default/Gateway', Match.anyValue());
+  });
+
+  test('internet-facing gateway uses the public subnets and warns', () => {
+    new ecs.Gateway(stack, 'Gateway', {
+      vpc,
+      scheme: ecs.GatewayScheme.INTERNET_FACING,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      Configuration: {
+        HostSharedAlb: {
+          Scheme: 'internet-facing',
+          NetworkConfiguration: {
+            Subnets: [
+              { Ref: 'VpcPublicSubnet1Subnet5C2D37C4' },
+              { Ref: 'VpcPublicSubnet2Subnet691E08A3' },
+            ],
+          },
+        },
+      },
+    });
+    Annotations.fromStack(stack).hasWarning('/Default/Gateway', Match.stringLikeRegexp('internet-facing.*PRIVATE'));
+  });
+
+  test('uses the given name, role, subnets, IP address type and deletion protection', () => {
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/gateway');
+
+    const gateway = new ecs.Gateway(stack, 'Gateway', {
+      vpc,
+      gatewayName: 'my-gateway',
+      infrastructureRole: role,
+      deletionProtection: false,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+
+    expect(gateway.gatewayName).toEqual('my-gateway');
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Gateway', {
+      GatewayName: 'my-gateway',
+      InfrastructureRoleArn: 'arn:aws:iam::123456789012:role/gateway',
+      DeletionProtection: false,
+      Configuration: {
+        HostSharedAlb: {
+          Scheme: 'internal',
+          NetworkConfiguration: {
+            Subnets: [
+              { Ref: 'VpcPublicSubnet1Subnet5C2D37C4' },
+              { Ref: 'VpcPublicSubnet2Subnet691E08A3' },
+            ],
+            IpAddressType: 'dualstack',
+          },
+        },
+      },
+    });
+    template.resourceCountIs('AWS::IAM::Role', 0);
+  });
+
+  test('accepts a dual-stack IP address type without public IPv4', () => {
+    new ecs.Gateway(stack, 'Gateway', {
+      vpc,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      Configuration: { HostSharedAlb: { NetworkConfiguration: { IpAddressType: 'dualstack-without-public-ipv4' } } },
+    });
+  });
+
+  test('propagates the gateway tags when asked to', () => {
+    new ecs.Gateway(stack, 'Gateway', { vpc, propagateTags: ecs.GatewayPropagateTags.GATEWAY });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      PropagateTags: 'GATEWAY',
+    });
+  });
+
+  test('renders the security group, load balancer and logging settings', () => {
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+    const bucket = new s3.Bucket(stack, 'Logs');
+    const webAcl = new wafv2.CfnWebACL(stack, 'WebAcl', {
+      defaultAction: { allow: {} },
+      scope: 'REGIONAL',
+      visibilityConfig: { cloudWatchMetricsEnabled: false, metricName: 'acl', sampledRequestsEnabled: false },
+    });
+
+    new ecs.Gateway(stack, 'Gateway', {
+      vpc,
+      securityGroup,
+      maxAlbCount: 2,
+      httpDesync: elbv2.DesyncMitigationMode.STRICTEST,
+      webAcl,
+      accessLogs: { bucket, prefix: 'gateway' },
+      tags: { team: 'web' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      Tags: [{ Key: 'team', Value: 'web' }],
+      Configuration: {
+        HostSharedAlb: {
+          MaxAlbCount: 2,
+          HttpDesync: 'strictest',
+          WebACLArn: { 'Fn::GetAtt': ['WebAcl', 'Arn'] },
+          AccessLogs: { Destination: { S3: { Bucket: { Ref: 'Logs6819BB44' }, Prefix: 'gateway' } } },
+          NetworkConfiguration: {
+            InboundSecurityGroup: { 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] },
+          },
+        },
+      },
+    });
+  });
+
+  test('lets Elastic Load Balancing write the access logs and creates the bucket policy first', () => {
+    const bucket = new s3.Bucket(stack, 'Logs');
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket, prefix: 'gateway' } });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'Logs6819BB44' },
+      PolicyDocument: {
+        Statement: Match.arrayWith([{
+          Action: 's3:PutObject',
+          Effect: 'Allow',
+          Principal: { Service: 'logdelivery.elasticloadbalancing.amazonaws.com' },
+          Resource: {
+            'Fn::Join': ['', [
+              { 'Fn::GetAtt': ['Logs6819BB44', 'Arn'] },
+              '/gateway/AWSLogs/',
+              { Ref: 'AWS::AccountId' },
+              '/*',
+            ]],
+          },
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':elasticloadbalancing:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':loadbalancer/*',
+                ]],
+              },
+            },
+          },
+        }]),
+      },
+    });
+    template.hasResource('AWS::ECS::Gateway', { DependsOn: Match.arrayWith(['LogsPolicy90DB40C9']) });
+  });
+
+  test('grants access log delivery without a prefix', () => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const bucket = new s3.Bucket(envStack, 'Logs');
+
+    new ecs.Gateway(envStack, 'Gateway', { vpc: new ec2.Vpc(envStack, 'Vpc'), accessLogs: { bucket } });
+
+    Template.fromStack(envStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Principal: { Service: 'logdelivery.elasticloadbalancing.amazonaws.com' },
+          Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Logs6819BB44', 'Arn'] }, '/AWSLogs/123456789012/*']] },
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':elasticloadbalancing:us-west-2:123456789012:loadbalancer/*']] },
+            },
+          },
+        })]),
+      },
+    });
+  });
+
+  test('warns when the access log bucket policy cannot be changed', () => {
+    const bucket = s3.Bucket.fromBucketName(stack, 'Logs', 'my-logs');
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Gateway', Match.stringLikeRegexp(
+      '^The policy of the access log bucket can\'t be changed by this app; allow logdelivery\\.elasticloadbalancing\\.amazonaws\\.com'));
+    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
+  });
+
+  test.each([
+    s3.BucketEncryption.KMS,
+    s3.BucketEncryption.KMS_MANAGED,
+    s3.BucketEncryption.DSSE,
+    s3.BucketEncryption.DSSE_MANAGED,
+  ])('fails for an access log bucket with %s encryption', (encryption) => {
+    const bucket = new s3.Bucket(stack, 'Logs', { encryption });
+
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } })).toThrow(
+      `the access log bucket of a gateway must use Amazon S3-managed keys (SSE-S3); a bucket encrypted with AWS KMS is not supported, got ${encryption}`);
+  });
+
+  test('fails for an imported access log bucket that declares KMS_MANAGED encryption', () => {
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Logs', {
+      bucketName: 'logs',
+      encryption: s3.BucketEncryption.KMS_MANAGED,
+    });
+
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } })).toThrow(
+      /must use Amazon S3-managed keys \(SSE-S3\)/);
+  });
+
+  test.each([
+    s3.BucketEncryption.S3_MANAGED,
+    s3.BucketEncryption.UNENCRYPTED,
+  ])('accepts an access log bucket with %s encryption', (encryption) => {
+    const bucket = new s3.Bucket(stack, 'Logs', { encryption });
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } });
+
+    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
+  });
+
+  test('fails for an access log prefix containing AWSLogs', () => {
+    const bucket = new s3.Bucket(stack, 'Logs');
+
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket, prefix: 'x/AWSLogs' } })).toThrow(
+      'the access log prefix of a gateway must not contain "AWSLogs", got "x/AWSLogs"');
+  });
+
+  test('Tags.of() tags the gateway', () => {
+    const gateway = new ecs.Gateway(stack, 'Gateway', { vpc });
+
+    cdk.Tags.of(gateway).add('team', 'web');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      Tags: [{ Key: 'team', Value: 'web' }],
+    });
+  });
+
+  test.each([0, 1.5])('fails for maxAlbCount %d', (maxAlbCount) => {
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, maxAlbCount }))
+      .toThrow(/maxAlbCount must be a whole number of at least 1/);
+  });
+
+  test('skips maxAlbCount validation for tokens', () => {
+    const maxAlbCount = new cdk.CfnParameter(stack, 'MaxAlbCount', { type: 'Number' }).valueAsNumber;
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, maxAlbCount });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      Configuration: { HostSharedAlb: { MaxAlbCount: { Ref: 'MaxAlbCount' } } },
+    });
+  });
+
+  test('generates a concrete name for PhysicalName.GENERATE_IF_NEEDED', () => {
+    const gateway = new ecs.Gateway(stack, 'Gateway', { vpc, gatewayName: cdk.PhysicalName.GENERATE_IF_NEEDED });
+
+    expect(gateway.gatewayName).toEqual('Gateway');
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      GatewayName: 'Gateway',
+    });
+  });
+
+  test('the generated name can be used in another environment', () => {
+    const app = new cdk.App();
+    const gatewayStack = new cdk.Stack(app, 'GatewayStack', { env: { account: '111111111111', region: 'us-east-1' } });
+    const otherStack = new cdk.Stack(app, 'OtherStack', { env: { account: '222222222222', region: 'us-west-2' } });
+    const gateway = new ecs.Gateway(gatewayStack, 'Gateway', {
+      vpc: new ec2.Vpc(gatewayStack, 'Vpc'),
+      gatewayName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+    });
+
+    new cdk.CfnOutput(otherStack, 'GatewayName', { value: gateway.gatewayName });
+
+    Template.fromStack(otherStack).hasOutput('GatewayName', { Value: gateway.gatewayName });
+    Template.fromStack(gatewayStack).hasResourceProperties('AWS::ECS::Gateway', {
+      GatewayName: gateway.gatewayName,
+    });
+  });
+
+  test('a custom infrastructure role and its policy are created before the gateway', () => {
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com') });
+    role.addToPolicy(new iam.PolicyStatement({ actions: ['ec2:DescribeVpcs'], resources: ['*'] }));
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, infrastructureRole: role });
+
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::ECS::Gateway', {
+      DependsOn: Match.arrayWith(['RoleDefaultPolicy5FFB7DAB', 'Role1ABCC5F0']),
+    });
+    // the given role is used as is: no second role, and its trust policy is not changed
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'ecs.amazonaws.com' },
+          Condition: Match.absent(),
+        }],
+      },
+    });
+  });
+
+  test('the created infrastructure role trusts ECS only from the stack account', () => {
+    const app = new cdk.App();
+    const envStack = new cdk.Stack(app, 'EnvStack', { env: { account: '111122223333', region: 'us-east-1' } });
+    acknowledgeTestValidationRules(envStack);
+    new ecs.Gateway(envStack, 'Gateway', { vpc: new ec2.Vpc(envStack, 'Vpc') });
+
+    Template.fromStack(envStack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'ecs.amazonaws.com' },
+          Condition: { StringEquals: { 'aws:SourceAccount': '111122223333' } },
+        }],
+      },
+    });
+  });
+
+  test('generated name of a deeply nested gateway is at most 255 characters', () => {
+    let scope: Construct = stack;
+    for (let i = 0; i < 20; i++) {
+      scope = new Construct(scope, `AVeryLongConstructIdForTestingNameGeneration${i}`);
+    }
+
+    const gateway = new ecs.Gateway(scope, 'Gateway', { vpc });
+
+    expect(gateway.gatewayName.length).toBeLessThanOrEqual(255);
+    expect(gateway.gatewayName).toMatch(/^[a-zA-Z0-9-]+$/);
+  });
+
+  test.each(['', 'has_underscore', 'a'.repeat(256)])('fails for gateway name %j', (gatewayName) => {
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, gatewayName }))
+      .toThrow(/gatewayName must be 1 to 255 letters, numbers and hyphens/);
+  });
+
+  test('skips name validation for a token', () => {
+    const gatewayName = new cdk.CfnParameter(stack, 'Name').valueAsString;
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, gatewayName });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      GatewayName: { Ref: 'Name' },
+    });
+  });
+
+  test('fails with fewer than 2 subnets', () => {
+    expect(() => new ecs.Gateway(stack, 'Gateway', {
+      vpc,
+      vpcSubnets: { subnets: [vpc.privateSubnets[0]] },
+    })).toThrow(/a gateway needs at least 2 subnets in different Availability Zones, got 1 subnet\(s\)/);
+  });
+
+  test('fails with subnets in a single Availability Zone', () => {
+    const subnets = ['subnet-1', 'subnet-2'].map((subnetId) =>
+      ec2.Subnet.fromSubnetAttributes(stack, subnetId, { subnetId, availabilityZone: 'us-east-1a' }));
+
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, vpcSubnets: { subnets } }))
+      .toThrow(/a gateway needs subnets in at least 2 different Availability Zones, got \["us-east-1a"\]/);
+  });
+
+  test('places an internal gateway in the isolated subnets of a VPC without egress subnets', () => {
+    const isolatedVpc = new ec2.Vpc(stack, 'IsolatedVpc', {
+      natGateways: 0,
+      subnetConfiguration: [{ name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+    });
+
+    new ecs.Gateway(stack, 'Gateway', { vpc: isolatedVpc });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      Configuration: {
+        HostSharedAlb: {
+          Scheme: 'internal',
+          NetworkConfiguration: {
+            Subnets: [
+              { Ref: 'IsolatedVpcIsolatedSubnet1SubnetB37DD975' },
+              { Ref: 'IsolatedVpcIsolatedSubnet2Subnet774D9F55' },
+            ],
+          },
+        },
+      },
+    });
+  });
+
+  test('exposes the gateway attributes', () => {
+    const gateway = new ecs.Gateway(stack, 'Gateway', { vpc });
+
+    expect(stack.resolve(gateway.gatewayAccessType)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'AccessType'] });
+    expect(stack.resolve(gateway.gatewayStatus)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'Status'] });
+    expect(stack.resolve(gateway.gatewayCreatedAt)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'CreatedAt'] });
+    expect(stack.resolve(gateway.gatewayUpdatedAt)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'UpdatedAt'] });
+    expect(stack.resolve(gateway.gatewayCurrentAlbCount))
+      .toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'Configuration.HostSharedAlb.CurrentAlbCount'] });
+  });
+
+  test('imports a gateway from its ARN', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Imported', GATEWAY_ARN);
+
+    expect(gateway.gatewayArn).toEqual(GATEWAY_ARN);
+    expect(gateway.gatewayName).toEqual('imported');
+    expect(gateway.gatewayRef.gatewayArn).toEqual(GATEWAY_ARN);
+    expect(gateway.env.region).toEqual('us-west-2');
+    expect(gateway.env.account).toEqual('123456789012');
+  });
+
+  test('imports a gateway from a token ARN', () => {
+    const arn = new cdk.CfnParameter(stack, 'Arn').valueAsString;
+
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Imported', arn);
+
+    expect(stack.resolve(gateway.gatewayName)).toEqual({
+      'Fn::Select': [0, {
+        'Fn::Split': ['/', {
+          'Fn::Select': [1, {
+            'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'Arn' }] }] }],
+          }],
+        }],
+      }],
+    });
+  });
+
+  test.each([
+    ['arn:aws:ecs:us-west-2:123456789012:cluster/my-cluster', 'my-cluster'],
+    ['arn:aws:sqs:us-west-2:123456789012:gateway/name/id', 'name'],
+    ['arn:aws:ecs:us-west-2:123456789012:gateway', ''],
+  ])('imports %s without validating it', (arn, name) => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Imported', arn);
+
+    expect(gateway.gatewayArn).toEqual(arn);
+    expect(gateway.gatewayName).toEqual(name);
+  });
+});
+
+describe('gateway connector', () => {
+  let stack: cdk.Stack;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+      portMappings: [{ containerPort: 80, name: 'web' }],
+    });
+  });
+
+  test('cluster associates a gateway', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+
+    cluster.associateGateway(gateway);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::GatewayClusterAssociations', {
+      Cluster: { Ref: 'ClusterEB0386A7' },
+      Gateway: GATEWAY_ARN,
+    });
+  });
+
+  test('fails to associate the same gateway twice', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+    cluster.associateGateway(gateway);
+
+    expect(() => cluster.associateGateway(gateway)).toThrow(/gateway Default\/Gateway is already associated with this cluster/);
+  });
+
+  test('fails to associate a 6th gateway', () => {
+    for (let i = 0; i < 5; i++) {
+      cluster.associateGateway(ecs.Gateway.fromGatewayArn(stack, `Gateway${i}`, `arn:aws:ecs:us-east-1:123456789012:gateway/gw${i}/id`));
+    }
+    const sixth = ecs.Gateway.fromGatewayArn(stack, 'Gateway5', 'arn:aws:ecs:us-east-1:123456789012:gateway/gw5/id');
+
+    expect(() => cluster.associateGateway(sixth))
+      .toThrow('a cluster can be associated with up to 5 gateways, cannot associate gateway Default/Gateway5');
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::GatewayClusterAssociations', 5);
+  });
+
+  test('associateGateway returns the association', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+
+    const association = cluster.associateGateway(gateway);
+
+    expect(association).toBeInstanceOf(ecs.GatewayClusterAssociation);
+    expect(association.node.scope).toBe(cluster);
+    const cfn = association.node.defaultChild as ecs.CfnGatewayClusterAssociations;
+    expect(stack.resolve(cfn.cluster)).toEqual({ Ref: 'ClusterEB0386A7' });
+    expect(cfn.gateway).toEqual(GATEWAY_ARN);
+  });
+
+  test('exposes the association attributes', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+
+    const association = cluster.associateGateway(gateway);
+
+    const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+    expect(stack.resolve(association.gatewayClusterAssociationStatus)).toEqual({ 'Fn::GetAtt': [logicalId, 'Status'] });
+    expect(stack.resolve(association.gatewayClusterAssociationClusterArn)).toEqual({ 'Fn::GetAtt': [logicalId, 'ClusterArn'] });
+    expect(stack.resolve(association.gatewayClusterAssociationGatewayArn)).toEqual({ 'Fn::GetAtt': [logicalId, 'GatewayArn'] });
+  });
+
+  test('associates a gateway with an imported cluster under a chosen construct ID', () => {
+    const imported = ecs.Cluster.fromClusterAttributes(stack, 'Imported', { clusterName: 'imported', vpc: cluster.vpc });
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+
+    const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster: imported, gateway });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::GatewayClusterAssociations', {
+      Cluster: 'imported',
+      Gateway: GATEWAY_ARN,
+    });
+    expect(Object.keys(template.findResources('AWS::ECS::GatewayClusterAssociations')))
+      .toEqual([stack.getLogicalId(association.node.defaultChild as cdk.CfnElement)]);
+  });
+
+  test('a GatewayClusterAssociation on a cluster from this app counts toward the cluster and its services depend on it', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+    const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster, gateway });
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web' } });
+
+    expect(() => cluster.associateGateway(gateway)).toThrow('gateway Default/Gateway is already associated with this cluster');
+    const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+    Template.fromStack(stack).hasResource('AWS::ECS::Service', { DependsOn: Match.arrayWith([logicalId]) });
+  });
+
+  test.each([
+    ['Region', 'arn:aws:ecs:eu-west-1:123456789012:gateway/gw/id', 'gateway Region eu-west-1 and cluster Region us-west-2'],
+    ['account', 'arn:aws:ecs:us-west-2:210987654321:gateway/gw/id', 'gateway account 210987654321 and cluster account 123456789012'],
+  ])('fails to associate a gateway in another %s', (_name, arn, detail) => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const envCluster = new ecs.Cluster(envStack, 'Cluster', { vpc: new ec2.Vpc(envStack, 'Vpc') });
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', arn);
+
+    expect(() => envCluster.associateGateway(gateway)).toThrow(
+      `a gateway, the cluster it is associated with and the stack of the association must be in the same account and Region, got ${detail}`);
+  });
+
+  test.each([
+    ['Region', 'arn:aws:ecs:us-east-1:123456789012', 'cluster Region us-east-1 and stack Region us-west-2'],
+    ['account', 'arn:aws:ecs:us-west-2:210987654321', 'cluster account 210987654321 and stack account 123456789012'],
+  ])('fails to associate a gateway and a cluster that match each other but not the stack %s', (_name, prefix, detail) => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const imported = ecs.Cluster.fromClusterArn(envStack, 'Cluster', `${prefix}:cluster/my-cluster`);
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', `${prefix}:gateway/gw/id`);
+
+    expect(() => new ecs.GatewayClusterAssociation(envStack, 'Association', { cluster: imported, gateway })).toThrow(
+      `a gateway, the cluster it is associated with and the stack of the association must be in the same account and Region, got ${detail}`);
+  });
+
+  test('accepts an imported gateway and cluster in the stack account and Region', () => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const imported = ecs.Cluster.fromClusterArn(envStack, 'Cluster', 'arn:aws:ecs:us-west-2:123456789012:cluster/my-cluster');
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', GATEWAY_ARN);
+
+    new ecs.GatewayClusterAssociation(envStack, 'Association', { cluster: imported, gateway });
+
+    Template.fromStack(envStack).hasResourceProperties('AWS::ECS::GatewayClusterAssociations', {
+      Cluster: 'my-cluster',
+      Gateway: GATEWAY_ARN,
+    });
+  });
+
+  test('skips the environment check when the cluster environment is a token', () => {
+    // the stack is environment-agnostic, so its account and Region are tokens
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', 'arn:aws:ecs:eu-west-1:210987654321:gateway/gw/id');
+
+    expect(() => cluster.associateGateway(gateway)).not.toThrow();
+  });
+
+  test('skips the environment check when the gateway ARN is a token', () => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const envCluster = new ecs.Cluster(envStack, 'Cluster', { vpc: new ec2.Vpc(envStack, 'Vpc') });
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', new cdk.CfnParameter(envStack, 'Arn').valueAsString);
+
+    expect(() => envCluster.associateGateway(gateway)).not.toThrow();
+  });
+
+  test('renders the gateway connector and depends on the cluster gateway associations', () => {
+    const gateway = new ecs.Gateway(stack, 'Gateway', { vpc: cluster.vpc });
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: {
+        portName: 'web',
+        accessTypes: [ecs.GatewayAccessType.PRIVATE],
+        healthCheck: {
+          path: '/health',
+          port: 8080,
+          protocol: ecs.GatewayHealthCheckProtocol.HTTP,
+          interval: cdk.Duration.seconds(15),
+          timeout: cdk.Duration.seconds(5),
+          healthyThresholdCount: 2,
+          unhealthyThresholdCount: 3,
+          healthyHttpCodes: '200-299',
+        },
+      },
+    });
+    // associated after the service is created: the dependency is still added
+    cluster.associateGateway(gateway);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{
+        PortName: 'web',
+        Filters: { AccessTypes: ['PRIVATE'] },
+        HealthCheck: {
+          HealthCheckPath: '/health',
+          HealthCheckPort: 8080,
+          HealthCheckProtocol: 'HTTP',
+          HealthCheckIntervalSeconds: 15,
+          HealthCheckTimeoutSeconds: 5,
+          HealthyThresholdCount: 2,
+          UnhealthyThresholdCount: 3,
+          Matcher: { HttpCode: '200-299' },
+        },
+      }],
+    });
+    const associations = template.findResources('AWS::ECS::GatewayClusterAssociations');
+    expect(Object.keys(associations)).toHaveLength(1);
+    template.hasResource('AWS::ECS::Service', {
+      DependsOn: Match.arrayWith([Object.keys(associations)[0]]),
+    });
+  });
+
+  test('renders gRPC health check codes', () => {
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', healthCheck: { healthyGrpcCodes: '0-99' } },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: 'web', HealthCheck: { Matcher: { GrpcCode: '0-99', HttpCode: Match.absent() } } }],
+    });
+  });
+
+  test('renders only the port name by default', () => {
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{
+        PortName: 'web',
+        Filters: Match.absent(),
+        HealthCheck: Match.absent(),
+        DeregistrationDelay: Match.absent(),
+      }],
+    });
+  });
+
+  test('leaves GatewayConnectors out without a connector, and the documented override disconnects', () => {
+    const noConnector = new ecs.FargateService(stack, 'NoConnector', { cluster, taskDefinition });
+    const disconnected = new ecs.FargateService(stack, 'Disconnected', { cluster, taskDefinition });
+    (disconnected.node.defaultChild as ecs.CfnService).addPropertyOverride('GatewayConnectors', []);
+
+    const template = Template.fromStack(stack);
+    const services = template.findResources('AWS::ECS::Service');
+    const id = (service: ecs.FargateService) => stack.getLogicalId(service.node.defaultChild as ecs.CfnService);
+    expect(services[id(noConnector)].Properties).not.toHaveProperty('GatewayConnectors');
+    expect(services[id(disconnected)].Properties.GatewayConnectors).toEqual([]);
+  });
+
+  test('two services can share one gateway', () => {
+    const gateway = new ecs.Gateway(stack, 'Gateway', { vpc: cluster.vpc });
+    cluster.associateGateway(gateway);
+
+    for (const id of ['ServiceA', 'ServiceB']) {
+      new ecs.FargateService(stack, id, { cluster, taskDefinition, gatewayConnector: { portName: 'web' } });
+    }
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::ECS::Gateway', 1);
+    template.resourceCountIs('AWS::ECS::GatewayClusterAssociations', 1);
+    const association = Object.keys(template.findResources('AWS::ECS::GatewayClusterAssociations'))[0];
+    const services = template.findResources('AWS::ECS::Service', { DependsOn: Match.arrayWith([association]) });
+    expect(Object.keys(services)).toHaveLength(2);
+  });
+
+  test('a service in an imported cluster has no dependency on an association', () => {
+    const imported = ecs.Cluster.fromClusterAttributes(stack, 'Imported', { clusterName: 'imported', vpc: cluster.vpc });
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+    const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster: imported, gateway });
+
+    new ecs.FargateService(stack, 'Service', { cluster: imported, taskDefinition, gatewayConnector: { portName: 'web' } });
+
+    const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+    const service = Object.values(Template.fromStack(stack).findResources('AWS::ECS::Service'))[0] as { DependsOn?: string[] };
+    expect(service.DependsOn ?? []).not.toContain(logicalId);
+  });
+
+  const PUBLIC_ACCESS_WARNING = 'This service can receive traffic from internet-facing gateways associated with its cluster; '
+    + 'set gatewayConnector accessTypes to [GatewayAccessType.PRIVATE] if it must not be reachable from the internet. '
+    + '[ack: @aws-cdk/aws-ecs:gatewayConnectorPublicAccess]';
+
+  test.each<[string, ecs.GatewayAccessType[] | undefined]>([
+    ['omitted', undefined],
+    ['[PUBLIC]', [ecs.GatewayAccessType.PUBLIC]],
+    ['[PRIVATE, PUBLIC]', [ecs.GatewayAccessType.PRIVATE, ecs.GatewayAccessType.PUBLIC]],
+  ])('warns about public access when accessTypes is %s', (_name, accessTypes) => {
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web', accessTypes } });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Service', PUBLIC_ACCESS_WARNING);
+  });
+
+  test('does not warn about public access when accessTypes is [PRIVATE]', () => {
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', accessTypes: [ecs.GatewayAccessType.PRIVATE] },
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Service', Match.stringLikeRegexp('gatewayConnectorPublicAccess'));
+  });
+
+  test('does not warn about public access when accessTypes is a token', () => {
+    const accessTypes = new cdk.CfnParameter(stack, 'AccessTypes', { type: 'CommaDelimitedList' }).valueAsList as ecs.GatewayAccessType[];
+
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web', accessTypes } });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Service', Match.stringLikeRegexp('gatewayConnectorPublicAccess'));
+  });
+
+  test('does not warn about public access without a gateway connector', () => {
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Service', Match.stringLikeRegexp('gatewayConnectorPublicAccess'));
+  });
+
+  test('without a gateway connector the service has no GatewayConnectors', () => {
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: Match.absent(),
+    });
+  });
+
+  test('fails when the port name does not match a port mapping', () => {
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'api' },
+    });
+
+    expect(() => Template.fromStack(stack))
+      .toThrow(/gatewayConnector portName "api" does not match the name of a port mapping in the task definition/);
+  });
+
+  test('accepts a port mapping added after the service', () => {
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'api' },
+    });
+    taskDefinition.addContainer('api', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+      portMappings: [{ containerPort: 8080, name: 'api' }],
+    });
+
+    expect(() => Template.fromStack(stack)).not.toThrow();
+  });
+
+  test('skips validation of token port name and health check port', () => {
+    const portName = new cdk.CfnParameter(stack, 'PortName').valueAsString;
+    const port = new cdk.CfnParameter(stack, 'Port', { type: 'Number' }).valueAsNumber;
+
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName, healthCheck: { port } },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: { Ref: 'PortName' }, HealthCheck: { HealthCheckPort: { Ref: 'Port' } } }],
+    });
+  });
+
+  test('renders the deregistration delay', () => {
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'DeregistrationDelay is a newly launched property not yet in the bundled schema' });
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', deregistrationDelay: cdk.Duration.minutes(1) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: 'web', DeregistrationDelay: { TimeoutSeconds: 60 } }],
+    });
+  });
+
+  test.each([0, 3600])('accepts a deregistration delay of %d seconds', (seconds) => {
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'DeregistrationDelay is a newly launched property not yet in the bundled schema' });
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', deregistrationDelay: cdk.Duration.seconds(seconds) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: 'web', DeregistrationDelay: { TimeoutSeconds: seconds } }],
+    });
+  });
+
+  test.each([
+    ['too long', cdk.Duration.seconds(3601), 'got 3601 seconds'],
+    ['fractional', cdk.Duration.millis(1500), 'got 1.5 seconds'],
+  ])('fails for a %s deregistration delay', (_name, deregistrationDelay, got) => {
+    expect(() => new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', deregistrationDelay },
+    })).toThrow(`gatewayConnector deregistrationDelay must be a whole number of seconds between 0 and 3600, ${got}`);
+  });
+
+  test('skips validation of token health check interval, timeout and deregistration delay', () => {
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'DeregistrationDelay is a newly launched property not yet in the bundled schema' });
+    const interval = new cdk.CfnParameter(stack, 'Interval', { type: 'Number' }).valueAsNumber;
+    const timeout = new cdk.CfnParameter(stack, 'Timeout', { type: 'Number' }).valueAsNumber;
+    const delay = new cdk.CfnParameter(stack, 'Delay', { type: 'Number' }).valueAsNumber;
+
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: {
+        portName: 'web',
+        healthCheck: { interval: cdk.Duration.seconds(interval), timeout: cdk.Duration.seconds(timeout) },
+        deregistrationDelay: cdk.Duration.seconds(delay),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{
+        PortName: 'web',
+        HealthCheck: {
+          HealthCheckIntervalSeconds: { Ref: 'Interval' },
+          HealthCheckTimeoutSeconds: { Ref: 'Timeout' },
+        },
+        DeregistrationDelay: { TimeoutSeconds: { Ref: 'Delay' } },
+      }],
+    });
+  });
+
+  test('skips the port name check when a port mapping name is a token', () => {
+    const otherTaskDefinition = new ecs.FargateTaskDefinition(stack, 'OtherTaskDef');
+    otherTaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+      portMappings: [{ containerPort: 80, name: new cdk.CfnParameter(stack, 'MappingName').valueAsString }],
+    });
+
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition: otherTaskDefinition,
+      gatewayConnector: { portName: 'web' },
+    });
+
+    expect(() => Template.fromStack(stack)).not.toThrow();
+  });
+
+  test('fails for a task definition without the awsvpc network mode', () => {
+    const ec2Cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc: cluster.vpc });
+    ec2Cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t3.micro') });
+    const bridgeTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'BridgeTaskDef', { networkMode: ecs.NetworkMode.BRIDGE });
+    bridgeTaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+      memoryLimitMiB: 256,
+      portMappings: [{ containerPort: 80, name: 'web' }],
+    });
+
+    expect(() => new ecs.Ec2Service(stack, 'Service', {
+      cluster: ec2Cluster,
+      taskDefinition: bridgeTaskDefinition,
+      gatewayConnector: { portName: 'web' },
+    })).toThrow(/gatewayConnector requires a task definition with the awsvpc network mode, got "bridge"/);
+  });
+
+  test('fails for an external service', () => {
+    const externalTaskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+    externalTaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+      memoryLimitMiB: 256,
+      portMappings: [{ containerPort: 80, name: 'web' }],
+    });
+
+    expect(() => new ecs.ExternalService(stack, 'Service', {
+      cluster,
+      taskDefinition: externalTaskDefinition,
+      gatewayConnector: { portName: 'web' },
+    })).toThrow(/Gateway connectors are not supported for External service/);
+  });
+
+  describe('applying the ServiceGatewayConnector mixin to an L2 service', () => {
+    test('makes the service depend on the gateway associations of its cluster, the same as the property', () => {
+      const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+      const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster, gateway });
+      const viaProp = new ecs.FargateService(stack, 'ViaProp', { cluster, taskDefinition, gatewayConnector: { portName: 'web' } });
+      const viaMixin = new ecs.FargateService(stack, 'ViaMixin', { cluster, taskDefinition });
+
+      viaMixin.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' }));
+
+      const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+      const services = Template.fromStack(stack).findResources('AWS::ECS::Service');
+      const id = (service: ecs.FargateService) => stack.getLogicalId(service.node.defaultChild as ecs.CfnService);
+      expect(services[id(viaMixin)].DependsOn).toContain(logicalId);
+      expect(services[id(viaMixin)].DependsOn).toEqual(services[id(viaProp)].DependsOn);
+      expect(services[id(viaMixin)].Properties.GatewayConnectors).toEqual([{ PortName: 'web' }]);
+    });
+
+    test('fails when the port name does not match a port mapping', () => {
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+      service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'api' }));
+
+      expect(() => Template.fromStack(stack))
+        .toThrow(/gatewayConnector portName "api" does not match the name of a port mapping in the task definition/);
+    });
+
+    test('validates only the last connector when applied twice', () => {
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+      service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'api' }));
+      service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', { GatewayConnectors: [{ PortName: 'web' }] });
+    });
+
+    test('fails for a task definition without the awsvpc network mode', () => {
+      const ec2Cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc: cluster.vpc });
+      ec2Cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t3.micro') });
+      const bridgeTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'BridgeTaskDef', { networkMode: ecs.NetworkMode.BRIDGE });
+      bridgeTaskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+        memoryLimitMiB: 256,
+        portMappings: [{ containerPort: 80, name: 'web' }],
+      });
+      const service = new ecs.Ec2Service(stack, 'Service', { cluster: ec2Cluster, taskDefinition: bridgeTaskDefinition });
+
+      expect(() => service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' })))
+        .toThrow(/gatewayConnector requires a task definition with the awsvpc network mode, got "bridge"/);
+    });
+
+    test('fails for an external service', () => {
+      const externalTaskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+      externalTaskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+        memoryLimitMiB: 256,
+        portMappings: [{ containerPort: 80, name: 'web' }],
+      });
+      const service = new ecs.ExternalService(stack, 'Service', { cluster, taskDefinition: externalTaskDefinition });
+
+      expect(() => service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' })))
+        .toThrow(/Gateway connectors are not supported for External service/);
+    });
+
+    test('does not check a CfnService that is not the default child of the L2', () => {
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+      const extra = new ecs.CfnService(service, 'Extra');
+
+      extra.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'api' }));
+
+      expect(() => Template.fromStack(stack)).not.toThrow();
+    });
+  });
+
+  test.each([0, 65536])('fails for health check port %d', (port) => {
+    expect(() => new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', healthCheck: { port } },
+    })).toThrow(/gatewayConnector health check port must be between 1 and 65535/);
+  });
+
+  test.each([
+    [[]],
+    [[ecs.GatewayAccessType.PUBLIC, ecs.GatewayAccessType.PUBLIC]],
+  ])('fails for access types %j', (accessTypes) => {
+    expect(() => new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', accessTypes },
+    })).toThrow(/gatewayConnector accessTypes must be a non-empty list without duplicates/);
+  });
+
+  test.each<[string, ecs.GatewayConnectorHealthCheck, Record<string, number>]>([
+    ['minimum interval and timeout', { interval: cdk.Duration.seconds(5), timeout: cdk.Duration.seconds(2) },
+      { HealthCheckIntervalSeconds: 5, HealthCheckTimeoutSeconds: 2 }],
+    ['maximum interval and timeout', { interval: cdk.Duration.seconds(300), timeout: cdk.Duration.seconds(120) },
+      { HealthCheckIntervalSeconds: 300, HealthCheckTimeoutSeconds: 120 }],
+    ['minimum thresholds', { healthyThresholdCount: 2, unhealthyThresholdCount: 2 },
+      { HealthyThresholdCount: 2, UnhealthyThresholdCount: 2 }],
+    ['maximum thresholds', { healthyThresholdCount: 10, unhealthyThresholdCount: 10 },
+      { HealthyThresholdCount: 10, UnhealthyThresholdCount: 10 }],
+  ])('accepts %s', (_name, healthCheck, expected) => {
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web', healthCheck } });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: 'web', HealthCheck: Match.objectLike(expected) }],
+    });
+  });
+
+  test.each<[string, ecs.GatewayConnectorHealthCheck, RegExp]>([
+    ['path without a leading slash', { path: 'health' }, /health check path must start with '\/'/],
+    ['interval too short', { interval: cdk.Duration.seconds(4) }, /interval must be a whole number of seconds between 5 and 300/],
+    ['interval too long', { interval: cdk.Duration.seconds(301) }, /interval must be a whole number of seconds between 5 and 300/],
+    ['fractional interval', { interval: cdk.Duration.millis(10500) }, /interval must be a whole number of seconds between 5 and 300/],
+    ['timeout too short', { timeout: cdk.Duration.seconds(1) }, /timeout must be a whole number of seconds between 2 and 120/],
+    ['timeout too long', { timeout: cdk.Duration.seconds(121) }, /timeout must be a whole number of seconds between 2 and 120/],
+    ['timeout not less than interval', { interval: cdk.Duration.seconds(10), timeout: cdk.Duration.seconds(10) }, /timeout must be less than the interval/],
+    ['healthy threshold too low', { healthyThresholdCount: 1 }, /healthyThresholdCount must be a whole number between 2 and 10/],
+    ['unhealthy threshold too high', { unhealthyThresholdCount: 11 }, /unhealthyThresholdCount must be a whole number between 2 and 10/],
+    ['both matcher codes', { healthyHttpCodes: '200', healthyGrpcCodes: '0' }, /healthyHttpCodes or healthyGrpcCodes, not both/],
+  ])('fails for %s', (_name, healthCheck, error) => {
+    expect(() => new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', healthCheck },
+    })).toThrow(error);
+  });
+});

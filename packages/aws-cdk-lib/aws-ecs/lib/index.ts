@@ -9,6 +9,8 @@ export * from './container-image';
 export * from './amis';
 export * from './cluster';
 export * from './cluster-grants';
+export * from './gateway';
+export * from './gateway-cluster-association';
 export * from './environment-file';
 export * from './credential-spec';
 export * from './firelens-log-router';

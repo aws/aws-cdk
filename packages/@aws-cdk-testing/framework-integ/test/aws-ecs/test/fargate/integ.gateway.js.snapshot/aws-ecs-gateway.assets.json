@@ -1,0 +1,34 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4": {
+      "displayName": "aws-ecs-gateway/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9a78531b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "4f45ecd91517c1daa8b76e839d5c5f2a23d76cc49da4e1fb4af80b935bd666a7": {
+      "displayName": "aws-ecs-gateway Template",
+      "source": {
+        "path": "aws-ecs-gateway.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3fd7059e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4f45ecd91517c1daa8b76e839d5c5f2a23d76cc49da4e1fb4af80b935bd666a7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
