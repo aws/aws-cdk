@@ -94,6 +94,10 @@ new codepipeline.Pipeline(stack, 'Pipeline2', {
           outputs: [new codepipeline.Artifact()],
           environmentVariables: {
             CommitId: { value: sourceAction2.variables.commitId },
+            SourceBranchName: { value: sourceAction2.variables.sourceBranchName },
+            DestinationBranchName: { value: sourceAction2.variables.destinationBranchName },
+            PullRequestId: { value: sourceAction2.variables.pullRequestId },
+            PullRequestTitle: { value: sourceAction2.variables.pullRequestTitle },
           },
         }),
       ],
