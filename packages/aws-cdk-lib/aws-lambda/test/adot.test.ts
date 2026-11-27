@@ -118,4 +118,58 @@ describe('ADOT Lambda Layer', () => {
       });
     });
   });
+
+  describe('AWS Lambda Layer for OpenTelemetry (Distro)', () => {
+    test('resolves JavaScript distro layer ARN per region and wires Function with INSTRUMENT_HANDLER', () => {
+      const app = new cdk.App();
+      const usStack = new cdk.Stack(app, 'us-stack', { env: { region: 'us-east-1' } });
+      new lambda.Function(usStack, 'AgentFn', {
+        code: new lambda.InlineCode('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_22_X,
+        adotInstrumentation: {
+          layerVersion: lambda.AdotLayerVersion.fromJavaScriptDistroLayerVersion(
+            lambda.AdotLambdaLayerJavaScriptDistroVersion.LATEST,
+          ),
+          execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
+        },
+      });
+
+      Template.fromStack(usStack).hasResourceProperties('AWS::Lambda::Function', {
+        Layers: ['arn:aws:lambda:us-east-1:615299751070:layer:AWSOpenTelemetryDistroJs:18'],
+        Environment: {
+          Variables: {
+            AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
+          },
+        },
+      });
+
+      const optInStack = new cdk.Stack(app, 'optin-stack', { env: { region: 'ap-east-2' } });
+      const optInFn = new lambda.Function(optInStack, 'OptInFn', {
+        code: new lambda.InlineCode('exports.handler = async () => {};'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_22_X,
+      });
+      expect(
+        lambda.AdotLambdaLayerJavaScriptDistroVersion.V0_15_0.layerArn(optInFn.stack, optInFn.architecture),
+      ).toEqual('arn:aws:lambda:ap-east-2:412664885777:layer:AWSOpenTelemetryDistroJs:7');
+    });
+
+    test('resolves Python, Java, and .NET distro layer ARNs', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-west-2' } });
+
+      expect(
+        lambda.AdotLambdaLayerPythonDistroVersion.LATEST.layerArn(stack, lambda.Architecture.ARM_64),
+      ).toEqual('arn:aws:lambda:us-west-2:615299751070:layer:AWSOpenTelemetryDistroPython:39');
+
+      expect(
+        lambda.AdotLambdaLayerJavaDistroVersion.LATEST.layerArn(stack, lambda.Architecture.X86_64),
+      ).toEqual('arn:aws:lambda:us-west-2:615299751070:layer:AWSOpenTelemetryDistroJava:20');
+
+      expect(
+        lambda.AdotLambdaLayerDotNetDistroVersion.LATEST.layerArn(stack, lambda.Architecture.X86_64),
+      ).toEqual('arn:aws:lambda:us-west-2:615299751070:layer:AWSOpenTelemetryDistroDotNet:15');
+    });
+  });
 });
