@@ -1,16 +1,16 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "688cb77e4de018e0c62d640095c4e8a1f3cea0a8a355f6d047f99dc9ce796073": {
+    "e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4": {
       "displayName": "cross-region-consumer/Custom::CrossRegionExportReaderCustomResourceProvider Code",
       "source": {
-        "path": "asset.688cb77e4de018e0c62d640095c4e8a1f3cea0a8a355f6d047f99dc9ce796073",
+        "path": "asset.e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-east-2-3b2a6c32": {
+        "current_account-us-east-2-0c0e07e2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "688cb77e4de018e0c62d640095c4e8a1f3cea0a8a355f6d047f99dc9ce796073.zip",
+          "objectKey": "e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4.zip",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }
@@ -31,16 +31,16 @@
         }
       }
     },
-    "f12776871f97d0b4f2403c9d83fdb312a6700a13e95049d958e387a05db16f0f": {
+    "4e783f5cd9df410d9503b787598da26b4a3cf5130a5990da13b31570a141c238": {
       "displayName": "cross-region-consumer Template",
       "source": {
         "path": "cross-region-consumer.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-2-804e922d": {
+        "current_account-us-east-2-699e417b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "f12776871f97d0b4f2403c9d83fdb312a6700a13e95049d958e387a05db16f0f.json",
+          "objectKey": "4e783f5cd9df410d9503b787598da26b4a3cf5130a5990da13b31570a141c238.json",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }

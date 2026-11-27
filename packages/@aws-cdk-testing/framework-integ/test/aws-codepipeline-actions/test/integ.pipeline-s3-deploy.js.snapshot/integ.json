@@ -10,5 +10,6 @@
       "assertionStackName": "s3deploytestDefaultTestDeployAssert6BC61647"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

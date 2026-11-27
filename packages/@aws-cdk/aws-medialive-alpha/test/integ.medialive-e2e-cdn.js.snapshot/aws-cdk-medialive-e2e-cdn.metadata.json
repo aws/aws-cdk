@@ -1,4 +1,23 @@
 {
+  "/aws-cdk-medialive-e2e-cdn": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk/aws-medialive-alpha/test/integ.medialive-e2e-cdn.js:47:32)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-medialive-e2e-cdn.template.json"
+    }
+  ],
   "/aws-cdk-medialive-e2e-cdn/HlsBucket": [
     {
       "type": "aws:cdk:analytics:construct",

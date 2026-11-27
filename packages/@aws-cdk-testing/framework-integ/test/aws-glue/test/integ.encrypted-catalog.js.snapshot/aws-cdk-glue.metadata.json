@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-glue": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-glue.template.json"
+    }
+  ],
   "/aws-cdk-glue/CatalogKey": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -17,13 +23,38 @@
   "/aws-cdk-glue/Database": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "databaseName": "*"
+      }
     }
   ],
   "/aws-cdk-glue/MyTable": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "database": "*",
+        "tableName": "*",
+        "columns": [
+          {
+            "name": "*",
+            "type": "*"
+          }
+        ],
+        "partitionKeys": [
+          {
+            "name": "*",
+            "type": "*"
+          }
+        ],
+        "dataFormat": "*",
+        "enablePartitionFiltering": true,
+        "partitionIndexes": [
+          {
+            "indexName": "*",
+            "keyNames": "*"
+          }
+        ]
+      }
     }
   ],
   "/aws-cdk-glue/BootstrapVersion": [

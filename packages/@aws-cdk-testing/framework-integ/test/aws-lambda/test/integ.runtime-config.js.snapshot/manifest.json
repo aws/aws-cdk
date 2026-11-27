@@ -14,7 +14,7 @@
         "templateFile": "aws-cdk-lambda-runtime-config.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d71f2bcfbc6df505acebaf0b77e9e4c28236553223a246ff06dfeb20bc967ad4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/41c1af7107e4fa1d4d391b9370df36e285af13d49ae3d71998ec64f3f39da1e4.json",
         "additionalDependencies": [
           "aws-cdk-lambda-runtime-config.assets"
         ]
@@ -42,7 +42,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a97b5d2357ae7654570c0ae72f6aaad1e34d541226c0db44751d7821ceef6723.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc11cd55584a587bbd0094134ba27d8fd12b8c146a846dd62e5546ff79d0d80e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -614,6 +614,11 @@
             "recommendedValue": true,
             "explanation": "Render the API Gateway access log destination ARN without the trailing `:*`"
           },
+          "@aws-cdk/aws-s3-deployment:modernResource": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the new BucketDeployment resource"
+          },
           "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction": {
             "recommendedValue": true,
             "explanation": "When enabled, each EvaluateExpression task gets its own Lambda function",
@@ -629,5 +634,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1148.1"
+  "minimumCliVersion": "2.1149.0"
 }

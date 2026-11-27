@@ -11,5 +11,6 @@
       "assertionStackName": "Route53RenameCrossAccountIntegDefaultTestDeployAssert2D0BD417"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

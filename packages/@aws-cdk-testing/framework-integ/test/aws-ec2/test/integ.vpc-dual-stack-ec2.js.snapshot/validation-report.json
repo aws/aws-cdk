@@ -1,0 +1,36 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W2508",
+          "description": "SecurityGroupIngress: Security group allows 0.0.0.0/0 access to sensitive port 22 (range 22-22)",
+          "suggestedFix": "Restrict the CIDR range to specific IP addresses",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup/Resource",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "vpc-dual-stack-ec2.template.json",
+                "logicalId": "MyInstanceInstanceSecurityGroup3E7A7DD1",
+                "propertyPaths": [
+                  "Properties.SecurityGroupIngress"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

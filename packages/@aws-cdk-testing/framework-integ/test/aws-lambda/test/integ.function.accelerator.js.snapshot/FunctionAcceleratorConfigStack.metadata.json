@@ -6,11 +6,11 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
-        "    at Stack._silenceLiteralAzWarning (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
-        "    at get availabilityZones (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
-        "    at new Vpc (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:47:13)",
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:47:13)",
         "    ...node internals..."
       ]
     },
@@ -77,39 +77,39 @@
     },
     {
       "type": "aws:cdk:info",
-      "data": "Modifying acceleratorConfig on an existing function will trigger a resource replacement [ack: aws-lambda:Function.AcceleratorConfig]",
+      "data": "Modifying acceleratorConfig on an existing function causes some interruption during the update [ack: aws-lambda:Function.AcceleratorConfig]",
       "trace": [
-        "Annotations.addMessage (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
-        "Annotations.addInfoV2 (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
-        "PropertyInjectable.validateAndRenderAcceleratorConfig (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1322:43)",
-        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:736:24)",
-        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:57:12)",
-        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
-        "Object..js (node:internal/modules/cjs/loader:1913:10)",
-        "Module.load (node:internal/modules/cjs/loader:1505:32)",
-        "Function._load (node:internal/modules/cjs/loader:1309:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
+        "Annotations.addMessage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addInfoV2 (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
+        "PropertyInjectable.validateAndRenderAcceleratorConfig (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1327:43)",
+        "new Function (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:736:24)",
+        "new Function (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:57:12)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     },
     {
       "type": "aws:cdk:info",
       "data": "Capacity provider configuration cannot be removed from a function once added, only modified. [ack: aws-lambda:Function.CapacityProviderConfiguration]",
       "trace": [
-        "Annotations.addMessage (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
-        "Annotations.addInfoV2 (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
-        "PropertyInjectable.addFunction (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:527:43)",
-        "PropertyInjectable.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Object.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:66:18)",
-        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
-        "Object..js (node:internal/modules/cjs/loader:1913:10)",
-        "Module.load (node:internal/modules/cjs/loader:1505:32)",
-        "Function._load (node:internal/modules/cjs/loader:1309:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
+        "Annotations.addMessage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addInfoV2 (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
+        "PropertyInjectable.addFunction (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:527:43)",
+        "PropertyInjectable.<anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Object.<anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:66:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     }
   ],

@@ -10,5 +10,6 @@
       "assertionStackName": "integtestcustomresourceconfiglambdapythonruntimeDefaultTestDeployAssert91E3D6DA"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

@@ -1,4 +1,10 @@
 {
+  "/CapacityProviderAllFieldsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CapacityProviderAllFieldsTestDefaultTestDeployAssert66FA2D60.template.json"
+    }
+  ],
   "/CapacityProviderAllFieldsTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

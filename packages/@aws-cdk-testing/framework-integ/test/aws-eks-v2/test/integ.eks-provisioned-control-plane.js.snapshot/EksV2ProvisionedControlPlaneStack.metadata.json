@@ -1,10 +1,33 @@
 {
+  "/EksV2ProvisionedControlPlaneStack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at EksV2ProvisionedControlPlaneStack._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new Cluster (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:738:37)",
+        "    at new EksV2ProvisionedControlPlaneStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-provisioned-control-plane.js:48:9)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-provisioned-control-plane.js:56:15)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EksV2ProvisionedControlPlaneStack.template.json"
+    }
+  ],
   "/EksV2ProvisionedControlPlaneStack/Cluster": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "version": "*",
-        "clusterName": "*"
+        "clusterName": "*",
+        "controlPlaneScalingTier": "*"
       }
     }
   ],
@@ -177,7 +200,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -213,7 +239,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

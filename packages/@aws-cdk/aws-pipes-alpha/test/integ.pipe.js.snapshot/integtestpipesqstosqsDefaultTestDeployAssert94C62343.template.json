@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSQSsendMessage51022d738af37e16c47a122a1437a2d0": {
+  "AwsApiCallSQSsendMessage7126fb3c217282a7663d0713b181abaa": {
    "Type": "Custom::DeployAssert@SdkCallSQSsendMessage",
    "Properties": {
     "ServiceToken": {
@@ -24,10 +24,10 @@
        ]
       ]
      },
-     "MessageBody": "\"d4523281-167c-4275-ade0-be2a729b3364\""
+     "MessageBody": "\"87c6b7b5-3f97-4af7-9579-86b2ea4748ec\""
     },
     "flattenResponse": "false",
-    "salt": "1779368590027"
+    "salt": "1795720123929"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -94,12 +94,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "28bce12e0353ebd46e8e9c0f43ad6c7b04c80fd2a41d9f733c5b3e46ccc7742d.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -108,6 +108,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -126,7 +130,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"d4523281-167c-4275-ade0-be2a729b3364-",
+       "{\"$ObjectLike\":{\"Messages\":[{\"Body\":\"87c6b7b5-3f97-4af7-9579-86b2ea4748ec-",
        {
         "Fn::ImportValue": "aws-cdk-pipes:ExportsOutputRefPipe7793F8A1A40D990A"
        },
@@ -152,10 +156,10 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1779368590028"
+    "salt": "1795720123930"
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage51022d738af37e16c47a122a1437a2d0"
+    "AwsApiCallSQSsendMessage7126fb3c217282a7663d0713b181abaa"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -178,7 +182,7 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage51022d738af37e16c47a122a1437a2d0"
+    "AwsApiCallSQSsendMessage7126fb3c217282a7663d0713b181abaa"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForTimeoutProviderInvokeD92624FF": {
@@ -199,7 +203,7 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage51022d738af37e16c47a122a1437a2d0"
+    "AwsApiCallSQSsendMessage7126fb3c217282a7663d0713b181abaa"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForRoleF8FA8111": {
@@ -247,7 +251,7 @@
     ]
    },
    "DependsOn": [
-    "AwsApiCallSQSsendMessage51022d738af37e16c47a122a1437a2d0"
+    "AwsApiCallSQSsendMessage7126fb3c217282a7663d0713b181abaa"
    ]
   },
   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE": {
@@ -284,7 +288,7 @@
    },
    "DependsOn": [
     "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForRoleF8FA8111",
-    "AwsApiCallSQSsendMessage51022d738af37e16c47a122a1437a2d0"
+    "AwsApiCallSQSsendMessage7126fb3c217282a7663d0713b181abaa"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -331,12 +335,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "28bce12e0353ebd46e8e9c0f43ad6c7b04c80fd2a41d9f733c5b3e46ccc7742d.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -345,6 +349,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -373,12 +381,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "28bce12e0353ebd46e8e9c0f43ad6c7b04c80fd2a41d9f733c5b3e46ccc7742d.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -387,6 +395,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   }

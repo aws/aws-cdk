@@ -9,5 +9,6 @@
       "assertionStackName": "LambdaS3ObjectStorageModeDefaultTestDeployAssert1436D810"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

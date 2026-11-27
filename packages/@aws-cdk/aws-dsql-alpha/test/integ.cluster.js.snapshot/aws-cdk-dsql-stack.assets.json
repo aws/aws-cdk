@@ -1,16 +1,16 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "41a4a70285f934e4432c846353e467b3984ec5a12651012e2cf71612a8fcf409": {
+    "46ca79867b9fd0a8118635d1e8ad9427476dfb1bb432eaeff922ffbc70c08e26": {
       "displayName": "aws-cdk-dsql-stack Template",
       "source": {
         "path": "aws-cdk-dsql-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-93f2c459": {
+        "current_account-current_region-c047d6fd": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "41a4a70285f934e4432c846353e467b3984ec5a12651012e2cf71612a8fcf409.json",
+          "objectKey": "46ca79867b9fd0a8118635d1e8ad9427476dfb1bb432eaeff922ffbc70c08e26.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

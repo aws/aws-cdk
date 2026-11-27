@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-emx-flow-zixi-push/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegemxflowzixipushDefaultTestDeployAssert8794164D.template.json"
+    }
+  ],
   "/cdk-integ-emx-flow-zixi-push/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

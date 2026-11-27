@@ -16,7 +16,7 @@
      "FunctionName": "\"integ-test-gateway-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1779368679445"
+    "salt": "1795720274775"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -83,12 +83,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "28bce12e0353ebd46e8e9c0f43ad6c7b04c80fd2a41d9f733c5b3e46ccc7742d.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -97,6 +97,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -116,7 +120,7 @@
      "FunctionName": "\"integ-test-gateway-request-interceptor\""
     },
     "flattenResponse": "false",
-    "salt": "1779368679447"
+    "salt": "1795720274777"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +141,7 @@
      "FunctionName": "\"integ-test-gateway-response-interceptor\""
     },
     "flattenResponse": "false",
-    "salt": "1779368679447"
+    "salt": "1795720274777"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

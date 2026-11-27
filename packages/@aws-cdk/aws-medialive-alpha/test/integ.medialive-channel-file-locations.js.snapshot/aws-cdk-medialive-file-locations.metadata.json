@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-medialive-file-locations": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-medialive-file-locations.template.json"
+    }
+  ],
   "/aws-cdk-medialive-file-locations/Input": [
     {
       "type": "aws:cdk:analytics:construct",

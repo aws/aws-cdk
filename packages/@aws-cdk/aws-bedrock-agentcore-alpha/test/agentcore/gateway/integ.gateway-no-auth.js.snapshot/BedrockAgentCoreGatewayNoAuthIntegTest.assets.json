@@ -1,16 +1,16 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "e6fb94d7f408a2082bc948a1c1308f916c2dc474f246f5723c471b6f5ed94892": {
+    "858e6cac75a82025ac4225e1d4939f1c04e8fdef08143894ba1fccb03b79da2c": {
       "displayName": "BedrockAgentCoreGatewayNoAuthIntegTest Template",
       "source": {
         "path": "BedrockAgentCoreGatewayNoAuthIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8a72f2fc": {
+        "current_account-current_region-e0e2f777": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e6fb94d7f408a2082bc948a1c1308f916c2dc474f246f5723c471b6f5ed94892.json",
+          "objectKey": "858e6cac75a82025ac4225e1d4939f1c04e8fdef08143894ba1fccb03b79da2c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

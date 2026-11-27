@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-file-locations/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivefilelocationsDefaultTestDeployAssert8AAC2239.template.json"
+    }
+  ],
   "/cdk-integ-medialive-file-locations/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

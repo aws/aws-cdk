@@ -182,7 +182,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -394,7 +394,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Timeout": 900
    },
    "DependsOn": [

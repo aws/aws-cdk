@@ -1,4 +1,26 @@
 {
+  "/EksProvisionedControlPlaneStack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at EksProvisionedControlPlaneStack._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new Cluster (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:935:37)",
+        "    at new EksProvisionedControlPlaneStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-provisioned-control-plane.js:49:9)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-provisioned-control-plane.js:57:15)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EksProvisionedControlPlaneStack.template.json"
+    }
+  ],
   "/EksProvisionedControlPlaneStack/KubectlLayer": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -11,7 +33,8 @@
       "data": {
         "version": "*",
         "kubectlLayer": "*",
-        "clusterName": "*"
+        "clusterName": "*",
+        "controlPlaneScalingTier": "tier-xl"
       }
     },
     {
@@ -30,6 +53,18 @@
     {
       "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
       "data": true
+    }
+  ],
+  "/EksProvisionedControlPlaneStack/@aws-cdk--aws-eks.ClusterResourceProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EksProvisionedControlPlaneStackawscdkawseksClusterResourceProvider22D13A5E.nested.template.json"
+    }
+  ],
+  "/EksProvisionedControlPlaneStack/@aws-cdk--aws-eks.KubectlProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EksProvisionedControlPlaneStackawscdkawseksKubectlProvider5EFF9DF4.nested.template.json"
     }
   ],
   "/EksProvisionedControlPlaneStack/BootstrapVersion": [
@@ -446,7 +481,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -482,7 +520,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

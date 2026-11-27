@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-channel-vpc-outputs/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivechannelvpcoutputsDefaultTestDeployAssert280F37DA.template.json"
+    }
+  ],
   "/cdk-integ-medialive-channel-vpc-outputs/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

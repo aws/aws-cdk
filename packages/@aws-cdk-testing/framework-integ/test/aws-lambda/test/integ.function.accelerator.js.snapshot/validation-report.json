@@ -4,34 +4,12 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
-          "ruleName": "F3002",
-          "description": "AcceleratorConfig: Additional properties are not allowed ('AcceleratorConfig' was unexpected)",
-          "severity": "warning",
-          "ruleMetadata": {
-            "category": "Schema"
-          },
-          "violatingConstructs": [
-            {
-              "constructPath": "FunctionAcceleratorConfigStack/Function/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "FunctionAcceleratorConfigStack.template.json",
-                "logicalId": "Function76856677",
-                "propertyPaths": [
-                  "Properties.AcceleratorConfig"
-                ]
-              }
-            }
-          ]
-        },
-        {
           "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
+          "description": "Resources: Resources section must exist and be non-empty",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Structure"

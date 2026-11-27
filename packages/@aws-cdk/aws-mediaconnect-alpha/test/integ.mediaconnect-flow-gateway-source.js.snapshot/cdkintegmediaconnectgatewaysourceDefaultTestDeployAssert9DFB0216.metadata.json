@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-mediaconnect-gateway-source/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmediaconnectgatewaysourceDefaultTestDeployAssert9DFB0216.template.json"
+    }
+  ],
   "/cdk-integ-mediaconnect-gateway-source/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

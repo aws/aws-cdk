@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-medialive-audio-codecs": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-medialive-audio-codecs.template.json"
+    }
+  ],
   "/aws-cdk-medialive-audio-codecs/ArchiveBucket": [
     {
       "type": "aws:cdk:analytics:construct",

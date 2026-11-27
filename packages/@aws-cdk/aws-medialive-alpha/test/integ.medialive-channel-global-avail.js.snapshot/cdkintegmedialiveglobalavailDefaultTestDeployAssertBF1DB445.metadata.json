@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-global-avail/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialiveglobalavailDefaultTestDeployAssertBF1DB445.template.json"
+    }
+  ],
   "/cdk-integ-medialive-global-avail/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

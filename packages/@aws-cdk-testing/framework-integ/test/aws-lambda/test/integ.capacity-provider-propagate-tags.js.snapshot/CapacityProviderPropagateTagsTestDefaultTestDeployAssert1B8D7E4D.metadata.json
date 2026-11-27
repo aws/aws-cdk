@@ -1,4 +1,10 @@
 {
+  "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CapacityProviderPropagateTagsTestDefaultTestDeployAssert1B8D7E4D.template.json"
+    }
+  ],
   "/CapacityProviderPropagateTagsTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

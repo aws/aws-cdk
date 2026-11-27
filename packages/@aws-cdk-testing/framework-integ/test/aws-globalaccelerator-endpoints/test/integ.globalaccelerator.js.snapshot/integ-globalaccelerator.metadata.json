@@ -6,12 +6,12 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
-        "    at GaStack._silenceLiteralAzWarning (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
-        "    at get availabilityZones (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
-        "    at new Vpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new GaStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-globalaccelerator-endpoints/test/integ.globalaccelerator.js:45:21)",
-        "    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-globalaccelerator-endpoints/test/integ.globalaccelerator.js:90:15)",
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at GaStack._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new GaStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-globalaccelerator-endpoints/test/integ.globalaccelerator.js:45:21)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-globalaccelerator-endpoints/test/integ.globalaccelerator.js:90:15)",
         "    ...node internals..."
       ]
     },

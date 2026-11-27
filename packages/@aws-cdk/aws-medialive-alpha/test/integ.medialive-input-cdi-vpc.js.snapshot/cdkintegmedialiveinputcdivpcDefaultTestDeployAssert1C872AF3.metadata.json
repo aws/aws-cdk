@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-input-cdi-vpc/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialiveinputcdivpcDefaultTestDeployAssert1C872AF3.template.json"
+    }
+  ],
   "/cdk-integ-medialive-input-cdi-vpc/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

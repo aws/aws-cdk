@@ -53,7 +53,7 @@
     "funcnodejs20xServiceRoleD34C713B"
    ]
   },
-  "funcnodejs24xServiceRoleA3378EBF": {
+  "funcnodejs26xServiceRole5E6698F3": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -84,7 +84,7 @@
     ]
    }
   },
-  "funcnodejs24x281DC0AE": {
+  "funcnodejs26x15F7754B": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -96,14 +96,14 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "funcnodejs24xServiceRoleA3378EBF",
+      "funcnodejs26xServiceRole5E6698F3",
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x"
+    "Runtime": "nodejs26.x"
    },
    "DependsOn": [
-    "funcnodejs24xServiceRoleA3378EBF"
+    "funcnodejs26xServiceRole5E6698F3"
    ]
   },
   "funcnodejs22xServiceRole4249784B": {
@@ -158,6 +158,59 @@
    "DependsOn": [
     "funcnodejs22xServiceRole4249784B"
    ]
+  },
+  "funcnodejs24xServiceRoleA3378EBF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "funcnodejs24x281DC0AE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e8960aa6af35278f443e1ec124004691bddeea5dce3b83e2c00b020b65fe5dea.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "funcnodejs24xServiceRoleA3378EBF",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "funcnodejs24xServiceRoleA3378EBF"
+   ]
   }
  },
  "Outputs": {
@@ -169,12 +222,12 @@
     "Name": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs20x20EDE4EE45E884C9"
    }
   },
-  "ExportsOutputReffuncnodejs24x281DC0AE436CAE1D": {
+  "ExportsOutputReffuncnodejs26x15F7754B35A15331": {
    "Value": {
-    "Ref": "funcnodejs24x281DC0AE"
+    "Ref": "funcnodejs26x15F7754B"
    },
    "Export": {
-    "Name": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs24x281DC0AE436CAE1D"
+    "Name": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs26x15F7754B35A15331"
    }
   },
   "ExportsOutputReffuncnodejs22xAA4F54D576AB7928": {
@@ -183,6 +236,14 @@
    },
    "Export": {
     "Name": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs22xAA4F54D576AB7928"
+   }
+  },
+  "ExportsOutputReffuncnodejs24x281DC0AE436CAE1D": {
+   "Value": {
+    "Ref": "funcnodejs24x281DC0AE"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-nodejs-latest:ExportsOutputReffuncnodejs24x281DC0AE436CAE1D"
    }
   }
  },

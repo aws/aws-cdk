@@ -1,4 +1,10 @@
 {
+  "/PipelineStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PipelineStack.template.json"
+    }
+  ],
   "/PipelineStack/SourceBucket": [
     {
       "type": "aws:cdk:analytics:construct",

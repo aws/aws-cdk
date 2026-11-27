@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-channel-archive/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivechannelarchiveDefaultTestDeployAssert2929D256.template.json"
+    }
+  ],
   "/cdk-integ-medialive-channel-archive/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-audio-codecs/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialiveaudiocodecsDefaultTestDeployAssertCFC0FCAC.template.json"
+    }
+  ],
   "/cdk-integ-medialive-audio-codecs/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

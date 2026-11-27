@@ -1,4 +1,10 @@
 {
+  "/launchtemplate-volume-initialization-rate-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "launchtemplatevolumeinitializationrateintegDefaultTestDeployAssertEAC51340.template.json"
+    }
+  ],
   "/launchtemplate-volume-initialization-rate-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

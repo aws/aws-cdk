@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-mediaconnect-kitchen-sink/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmediaconnectkitchensinkDefaultTestDeployAssertE9C83F7D.template.json"
+    }
+  ],
   "/cdk-integ-mediaconnect-kitchen-sink/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

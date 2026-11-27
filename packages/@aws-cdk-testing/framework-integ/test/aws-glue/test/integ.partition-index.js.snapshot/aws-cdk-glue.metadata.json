@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-glue": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-glue.template.json"
+    }
+  ],
   "/aws-cdk-glue/DataBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -8,13 +14,54 @@
   "/aws-cdk-glue/MyDatabase": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "databaseName": "*"
+      }
     }
   ],
   "/aws-cdk-glue/CSVTable": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "database": "*",
+        "storage": "*",
+        "tableName": "*",
+        "columns": [
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          }
+        ],
+        "partitionKeys": [
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          }
+        ],
+        "partitionIndexes": [
+          {
+            "indexName": "*",
+            "keyNames": "*"
+          }
+        ],
+        "dataFormat": "*"
+      }
     }
   ],
   "/aws-cdk-glue/@aws-cdk.aws-glue-alpha.AccountCatalog": [
@@ -26,7 +73,40 @@
   "/aws-cdk-glue/JSONTable": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "database": "*",
+        "storage": "*",
+        "tableName": "*",
+        "columns": [
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          }
+        ],
+        "partitionKeys": [
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          },
+          {
+            "name": "*",
+            "type": "*"
+          }
+        ],
+        "dataFormat": "*"
+      }
     }
   ],
   "/aws-cdk-glue/BootstrapVersion": [

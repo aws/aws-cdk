@@ -28,7 +28,7 @@
      "Body": "\"reached-through-the-vpc\""
     },
     "flattenResponse": "false",
-    "salt": "1793597041108"
+    "salt": "1795720911237"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -77,12 +77,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "51b944905f939c72f2e3f1b195abdd28b736d035fbd71eed92fb900f3cb95f57.zip"
+     "S3Key": "28bce12e0353ebd46e8e9c0f43ad6c7b04c80fd2a41d9f733c5b3e46ccc7742d.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -123,7 +123,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":{\"object\":\"reached-through-the-vpc\"}}}",
     "flattenResponse": "false",
-    "salt": "1793597041109"
+    "salt": "1795720911238"
    },
    "DependsOn": [
     "AwsApiCallS3putObject5d965a19a7cf9826f911494ff03b6a97"

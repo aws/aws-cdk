@@ -6,19 +6,32 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/validation/validations.js:104:18)",
-        "    at Stack._silenceLiteralAzWarning (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack.js:1348:47)",
-        "    at get availabilityZones (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack.js:756:18)",
-        "    at new Vpc (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
-        "    at <anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector.js:44:13)",
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector.js:44:13)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "NetworkConnectorStack.template.json"
     }
   ],
   "/NetworkConnectorStack/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Isolated"
+          }
+        ]
+      }
     }
   ],
   "/NetworkConnectorStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -30,7 +43,10 @@
   "/NetworkConnectorStack/ConnectorSecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "vpc": "*",
+        "allowAllOutbound": true
+      }
     }
   ],
   "/NetworkConnectorStack/Connector": [
@@ -66,21 +82,49 @@
   "/NetworkConnectorStack/Vpc/isolatedSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     }
   ],
   "/NetworkConnectorStack/Vpc/isolatedSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     }
   ],
   "/NetworkConnectorStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
@@ -110,7 +154,17 @@
   "/NetworkConnectorStack/Connector/OperatorRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     }
   ],
   "/NetworkConnectorStack/Connector/Resource": [

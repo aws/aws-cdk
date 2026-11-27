@@ -15,16 +15,16 @@
         }
       }
     },
-    "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f": {
+    "5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8ddc0c0caafac39aa01171290176e33e251915a88/Code",
       "source": {
-        "path": "asset.7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f",
+        "path": "asset.5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-39a56ff1": {
+        "current_account-current_region-f5d75415": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip",
+          "objectKey": "5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -43,16 +43,16 @@
         }
       }
     },
-    "83b984dd28c4ffd679fd46398106c01baeab041735c8bc9de95f1563c217a5ec": {
+    "ae290c09df3b1d40da26747ca710b26c185a4a88117cec0967002df80c3f3cea": {
       "displayName": "test-bucket-deployment-vpc-basic Template",
       "source": {
         "path": "test-bucket-deployment-vpc-basic.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-622fc4b1": {
+        "current_account-current_region-c8b9adf8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "83b984dd28c4ffd679fd46398106c01baeab041735c8bc9de95f1563c217a5ec.json",
+          "objectKey": "ae290c09df3b1d40da26747ca710b26c185a4a88117cec0967002df80c3f3cea.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

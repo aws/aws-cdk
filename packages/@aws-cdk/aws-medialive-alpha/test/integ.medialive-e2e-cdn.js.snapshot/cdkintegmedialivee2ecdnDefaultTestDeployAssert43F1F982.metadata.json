@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-e2e-cdn/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivee2ecdnDefaultTestDeployAssert43F1F982.template.json"
+    }
+  ],
   "/cdk-integ-medialive-e2e-cdn/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

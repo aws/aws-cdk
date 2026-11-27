@@ -10,5 +10,6 @@
       "assertionStackName": "integtestbucketdeploymentvpcefsDefaultTestDeployAssert40A85EB7"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

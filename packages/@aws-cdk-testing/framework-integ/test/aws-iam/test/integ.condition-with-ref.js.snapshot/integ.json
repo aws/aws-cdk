@@ -10,5 +10,6 @@
       "assertionStackName": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

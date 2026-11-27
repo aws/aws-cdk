@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-pipeline-locking/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivepipelinelockingDefaultTestDeployAssert2FACAE6C.template.json"
+    }
+  ],
   "/cdk-integ-medialive-pipeline-locking/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

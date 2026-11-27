@@ -6,14 +6,18 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at TestStack._silenceLiteralAzWarning (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new TestStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/aws-cdk-pr-review-6c2980/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-logging.js:44:21)",
-        "    at <anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/aws-cdk-pr-review-6c2980/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-logging.js:74:15)",
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at TestStack._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new TestStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-logging.js:44:21)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-logging.js:74:15)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "redshift-cloudwatch-logging-integ.template.json"
     }
   ],
   "/redshift-cloudwatch-logging-integ/Vpc": [
@@ -62,19 +66,19 @@
       "type": "aws:cdk:warning",
       "data": "To capture user activity logs, the \"enable_user_activity_logging\" database parameter must be \"true\". For a parameter group created by CDK, use cluster.addToParameterGroup('enable_user_activity_logging', 'true'); for an imported parameter group, set the parameter on the group itself. [ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]",
       "trace": [
-        "Annotations.addMessage (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "Object.visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/aws-cdk-pr-review-6c2980/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:486:57)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:196:38)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
-        "recurse (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
-        "invokeAspectsV2 (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:168:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:9)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:216:27)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:163:51)",
-        "Object.onceWrapper (node:events:639:26)",
-        "process.emit (node:events:524:28)"
+        "Annotations.addMessage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "Object.visit (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:502:57)",
+        "recurse (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:196:38)",
+        "recurse (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
+        "recurse (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
+        "invokeAspectsV2 (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:168:5)",
+        "synthesize (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:9)",
+        "App.synth (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "process.<anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:181:51)",
+        "Object.onceWrapper (node:events:631:26)",
+        "process.emit (node:events:509:28)"
       ]
     }
   ],
@@ -128,7 +132,9 @@
       "data": {
         "addNatGateway": [
           "*",
-          "*"
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -165,7 +171,9 @@
       "data": {
         "addNatGateway": [
           "*",
-          "*"
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

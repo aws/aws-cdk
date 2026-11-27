@@ -10,5 +10,6 @@
       "assertionStackName": "integtestbucketdeploymentvpccustomsubnetsDefaultTestDeployAssert5DB57A11"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

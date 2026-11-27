@@ -11,5 +11,6 @@
       "assertionStackName": "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }
