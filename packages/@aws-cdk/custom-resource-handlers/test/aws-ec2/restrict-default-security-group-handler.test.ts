@@ -247,6 +247,41 @@ test('other errors in RevokeSecurityGroupIngressCommand should be thrown', async
   await expect(invokeHandler(event)).rejects.toThrow();
 });
 
+test('authorizing rules that already exist on delete event should not throw error', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    RequestType: 'Delete',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      DefaultSecurityGroupId: 'sg-abc123',
+      Account: '12345678912',
+    },
+  };
+  mockEc2Client.on(AuthorizeSecurityGroupEgressCommand).rejects({ name: 'InvalidPermission.Duplicate' });
+  mockEc2Client.on(AuthorizeSecurityGroupIngressCommand).rejects({ name: 'InvalidPermission.Duplicate' });
+
+  // THEN
+  await expect(invokeHandler(event)).resolves.not.toThrow();
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupEgressCommand, 1);
+  expect(mockEc2Client).toHaveReceivedCommandTimes(AuthorizeSecurityGroupIngressCommand, 1);
+});
+
+test('other errors in AuthorizeSecurityGroupIngressCommand should be thrown', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    RequestType: 'Delete',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      DefaultSecurityGroupId: 'sg-abc123',
+      Account: '12345678912',
+    },
+  };
+  mockEc2Client.on(AuthorizeSecurityGroupIngressCommand).rejects({ name: 'Some.Other.Errors' });
+
+  // THEN
+  await expect(invokeHandler(event)).rejects.toThrow();
+});
+
 // helper function to get around TypeScript expecting a complete event object,
 // even though our tests only need some of the fields
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
