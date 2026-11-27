@@ -139,6 +139,8 @@ interface PolicyShape {
   readonly resource?: PolicyResource;
   /** The resource's Metadata, such as Metadata.guard.SuppressedRules */
   readonly metadata?: Record<string, unknown>;
+  /** Statements placed before `statement` in the same policy */
+  readonly otherStatements?: Array<Record<string, unknown>>;
 }
 
 const fires = { static: 'fail', resolved: 'fail' };
@@ -150,6 +152,8 @@ const roleArn = 'arn:aws:iam::123456789012:role/Example';
 const rootArn = 'arn:aws:iam::123456789012:root';
 // CDK writes ARNs as intrinsic functions, which only the resolved scan turns into strings
 const roleArnJoin = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/Example']] };
+// CDK's enforceSSL option adds a Deny of { AWS: "*" } with this Condition beside a policy's other statements
+const secureTransportFalse = { Bool: { 'aws:SecureTransport': 'false' } };
 
 // A rule skips a resource whose Metadata.guard.SuppressedRules lists the rule's name, and still checks
 // a resource that suppresses only other rules
@@ -172,6 +176,7 @@ function principalShapes(rule: WorldAccessRule, action: unknown): PolicyShape[] 
   const withNotPrincipal = (Effect: string, NotPrincipal: unknown, Condition?: unknown) =>
     ({ Effect, NotPrincipal, Action: action, Resource: rule.resource, Condition });
   const worldGrant: PolicyShape = { title: 'Principal "*"', statement: grant('Allow', '*'), status: fires };
+  const tlsDeny = grant('Deny', { AWS: '*' }, secureTransportFalse);
   const shapes: PolicyShape[] = [
     worldGrant,
     ...suppressionShapes(rule.ruleName, worldGrant),
@@ -193,6 +198,18 @@ function principalShapes(rule: WorldAccessRule, action: unknown): PolicyShape[] 
     },
     { title: 'Principal { Service }', statement: grant('Allow', { Service: 'sns.amazonaws.com' }), status: skips },
     { title: 'a Deny of Principal { AWS: "*" }', statement: grant('Deny', { AWS: '*' }), status: skips },
+    {
+      title: 'an Allow of Principal { AWS: "*" } after a Deny of Principal { AWS: "*" }',
+      otherStatements: [tlsDeny],
+      statement: grant('Allow', { AWS: '*' }),
+      status: fires,
+    },
+    {
+      title: 'an Allow of Principal { AWS: role ARN } after a Deny of Principal { AWS: "*" }',
+      otherStatements: [tlsDeny],
+      statement: grant('Allow', { AWS: roleArn }),
+      status: passes,
+    },
     { title: 'NotPrincipal "*"', statement: withNotPrincipal('Allow', '*'), status: fires },
     { title: 'NotPrincipal { AWS: role ARN }', statement: withNotPrincipal('Allow', { AWS: roleArn }), status: fires },
     { title: 'NotPrincipal { AWS: [role ARN, account ID] }', statement: withNotPrincipal('Allow', { AWS: [roleArn, '123456789012'] }), status: fires },
@@ -264,7 +281,8 @@ const notPrincipalValues: Array<[string, unknown]> = [
 /**
  * Shapes for a rule that checks a Principal and its Condition: `principal` with each of `conditions`
  * passes, an Allow with the `ignored` Principal skips, and an Allow with NotPrincipal fires with or
- * without those conditions
+ * without those conditions. Each keeps its status after a Deny of { AWS: "*" } in the same policy, and
+ * a Deny with NotPrincipal before a passing Allow leaves it passing.
  */
 function notPrincipalShapes(
   ruleName: string,
@@ -277,8 +295,37 @@ function notPrincipalShapes(
     ({ Effect, ...element, Action: target.action, Resource: target.arn, Condition });
   const [principalTitle, principalValue] = principal;
   const [ignoredTitle, ignoredValue] = ignored;
+  const [conditionTitle, condition] = conditions[0];
+  const tlsDeny = statement('Deny', { Principal: { AWS: '*' } }, secureTransportFalse);
+  const afterDeny = 'after a Deny of Principal { AWS: "*" }';
   const valueShapes = notPrincipalValues.map(([title, value]): PolicyShape =>
     ({ title: `NotPrincipal ${title}`, statement: statement('Allow', { NotPrincipal: value }), status: fires }));
+  const multiStatementShapes: PolicyShape[] = [
+    {
+      title: `an Allow of NotPrincipal ${principalTitle} ${afterDeny}`,
+      otherStatements: [tlsDeny],
+      statement: statement('Allow', { NotPrincipal: principalValue }),
+      status: fires,
+    },
+    {
+      title: `an Allow of Principal ${principalTitle} with ${conditionTitle} ${afterDeny}`,
+      otherStatements: [tlsDeny],
+      statement: statement('Allow', { Principal: principalValue }, condition),
+      status: passes,
+    },
+    {
+      title: `an Allow of Principal ${ignoredTitle} ${afterDeny}`,
+      otherStatements: [tlsDeny],
+      statement: statement('Allow', { Principal: ignoredValue }),
+      status: skips,
+    },
+    {
+      title: `an Allow of Principal ${principalTitle} with ${conditionTitle} after a Deny of NotPrincipal ${principalTitle}`,
+      otherStatements: [statement('Deny', { NotPrincipal: principalValue }, secureTransportFalse)],
+      statement: statement('Allow', { Principal: principalValue }, condition),
+      status: passes,
+    },
+  ];
   const shapes: PolicyShape[] = [
     ...conditions.map(([title, condition]): PolicyShape =>
       ({ title: `Principal ${principalTitle} with ${title}`, statement: statement('Allow', { Principal: principalValue }, condition), status: passes })),
@@ -288,6 +335,7 @@ function notPrincipalShapes(
       ({ title: `NotPrincipal ${principalTitle} with ${title}`, statement: statement('Allow', { NotPrincipal: principalValue }, condition), status: fires })),
     { title: `a Deny of NotPrincipal ${principalTitle}`, statement: statement('Deny', { NotPrincipal: principalValue }), status: skips },
     ...suppressionShapes(ruleName, valueShapes[0]),
+    ...multiStatementShapes,
   ];
   return shapes.map(shape => ({ ...shape, resource: target.resource }));
 }
@@ -461,7 +509,7 @@ describe('Guard Rule Fixtures', () => {
             Policy: {
               Type: resource.type,
               ...(shape.metadata ? { Metadata: shape.metadata } : {}),
-              Properties: { ...resource.properties, [resource.policyProperty]: { Version: '2012-10-17', Statement: [shape.statement] } },
+              Properties: { ...resource.properties, [resource.policyProperty]: { Version: '2012-10-17', Statement: [...(shape.otherStatements ?? []), shape.statement] } },
             },
           },
         };
