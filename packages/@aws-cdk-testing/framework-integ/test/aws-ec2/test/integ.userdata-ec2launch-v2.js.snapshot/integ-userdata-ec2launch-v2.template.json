@@ -1,0 +1,281 @@
+{
+ "Resources": {
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-ec2launch-v2/Vpc"
+     }
+    ]
+   }
+  },
+  "VpcPublicSubnet1Subnet5C2D37C4": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/16",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-ec2launch-v2/Vpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPublicSubnet1RouteTable6C95E38E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-ec2launch-v2/Vpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcPublicSubnet1RouteTableAssociation97140677": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+   }
+  },
+  "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+   },
+   "DependsOn": [
+    "VpcVPCGWBF912B6E"
+   ]
+  },
+  "VpcIGWD7BA715C": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-ec2launch-v2/Vpc"
+     }
+    ]
+   }
+  },
+  "VpcVPCGWBF912B6E": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "InstanceInstanceSecurityGroupF0E2D5BE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-userdata-ec2launch-v2/Instance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-ec2launch-v2/Instance"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "InstanceInstanceRoleE9785DE5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-ec2launch-v2/Instance"
+     }
+    ]
+   }
+  },
+  "InstanceInstanceProfileAB5AEF02": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "InstanceInstanceRoleE9785DE5"
+     }
+    ]
+   }
+  },
+  "InstanceC1063A87": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "xvdf",
+      "Ebs": {
+       "VolumeSize": 1
+      }
+     }
+    ],
+    "IamInstanceProfile": {
+     "Ref": "InstanceInstanceProfileAB5AEF02"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.medium",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "InstanceInstanceSecurityGroupF0E2D5BE",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-ec2launch-v2/Instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "version: 1.1\ntasks:\n  - task: initializeVolume\n    inputs:\n      initialize: devices\n      devices:\n        - device: xvdf\n          name: Data\n          letter: D\n  - task: setHostName\n    inputs:\n      hostName: cdk-integ\n      reboot: true\n  - task: setWallpaper\n    inputs:\n      path: C:\\ProgramData\\Amazon\\EC2Launch\\wallpaper\\Ec2Wallpaper.jpg\n      attributes:\n        - instanceId\n      instanceTags: AllTags\n  - task: startSsm\n  - task: writeFile\n    inputs:\n      - frequency: once\n        destination: C:\\cdk-integ-write-file.txt\n        content: written by writeFile\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: C:\\Windows\\System32\\cmd.exe\n        arguments:\n          - /c\n          - mkdir\n          - |2-\n            C:\\cdk-integ-",
+        {
+         "Ref": "AWS::StackName"
+        },
+        "\n        runAs: localSystem\n  - task: executeScript\n    inputs:\n      - frequency: once\n        type: batch\n        runAs: localSystem\n        content: echo batch> C:\\cdk-integ-batch.txt\n      - frequency: once\n        type: powershell\n        runAs: admin\n        arguments:\n          - -NoProfile\n          - -ExecutionPolicy\n          - Unrestricted\n        content: |-\n          if (-not (Test-Path -Path 'C:\\cdk-integ-batch.txt')) { throw 'batch script did not run first' }\n          Set-Content -Path 'C:\\cdk-integ-powershell.txt' -Value powershell\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        detach: true\n        content: Write-Output detached\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        content: |2-\n          $success = $true\n          $finished = $false\n          try {\n          if ($env:COMPUTERNAME -ne 'cdk-integ') { throw 'setHostName task did not run' }\n          if (-not (Test-Path -Path 'D:\\')) { throw 'initializeVolume task did not run' }\n          if (-not (Test-Path -Path 'C:\\cdk-integ-powershell.txt')) { throw 'PowerShell script did not run before the commands' }\n          if (-not (Test-Path -Path 'C:\\cdk-integ-",
+        {
+         "Ref": "AWS::StackName"
+        },
+        "' -PathType Container)) { throw 'executeProgram task did not run' }\n          if ((Get-Content -Path 'C:\\cdk-integ-write-file.txt' -ErrorAction SilentlyContinue) -ne 'written by writeFile') { throw 'writeFile task did not run' }\n          $finished = $true\n          } catch {\n          $success = $false\n          $finished = $true\n          throw\n          } finally {\n          if ($finished) {\n          cfn-signal --stack integ-userdata-ec2launch-v2 --resource InstanceC1063A87 --region ",
+        {
+         "Ref": "AWS::Region"
+        },
+        " --success ($success.ToString().ToLower())\n          }\n          }\n"
+       ]
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "InstanceInstanceRoleE9785DE5"
+   ],
+   "CreationPolicy": {
+    "ResourceSignal": {
+     "Timeout": "PT30M"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

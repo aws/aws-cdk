@@ -2676,6 +2676,109 @@ commandsUserData.addCommands('touch /root/userdata.txt');
 
 When used on an EC2 instance, the above `multipartUserData` will create both `multi.txt` and `userdata.txt` in `/root`.
 
+### Windows user data for EC2Launch v2
+
+`UserData.forWindows()` produces the XML (`<powershell>`) format that every Windows launch agent understands.
+Instances running the [EC2Launch v2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2.html) agent
+also accept a YAML document listing [tasks](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html)
+to run, which gives more control: for example, initializing volumes, writing files, setting the host name, running
+programs, or running scripts as a specific account. Use `UserData.forWindowsEc2LaunchV2()` to produce this format.
+
+Commands added with `addCommands()` and the other `add*Command()` methods are run as a single PowerShell script, and
+other tasks can be added with `addTask()`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const userData = ec2.UserData.forWindowsEc2LaunchV2();
+userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({
+  devices: [{ device: 'xvdf', letter: 'D', name: 'Data' }],
+}));
+userData.addTask(ec2.Ec2LaunchV2Task.hostName({ hostName: 'web-01', reboot: true }));
+userData.addCommands('Install-WindowsFeature -Name Web-Server');
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  machineImage: ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE),
+  blockDevices: [{ deviceName: 'xvdf', volume: ec2.BlockDeviceVolume.ebs(10) }],
+  userData,
+});
+```
+
+EC2Launch v2 [allows each task only once](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data)
+in user data. Tasks run in the order they were first added, with two exceptions:
+
+* The `executeScript` task, which runs all scripts, runs after all other tasks. Scripts added with
+  `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()` run in the order they were added, followed
+  by the commands added with `addCommands()` and the other `add*Command()` methods, which form a single PowerShell
+  script. So a CloudFormation signal added with `addSignalOnExitCommand()` is sent after all other tasks have run, as
+  with `UserData.forWindows()`, also for tasks added after passing `init` to an `Instance`. Scripts added with
+  `detach: true` are the exception: they run concurrently, so the signal does not wait for them to finish.
+  As all scripts run after the other tasks, a file downloaded with `addS3DownloadCommand()` does not exist yet when
+  those tasks run. Run it with `addExecuteFileCommand()`, not with an `Ec2LaunchV2Task.executeProgram()` task.
+* EC2Launch v2 always runs `sysprep` last.
+
+The factory methods of `Ec2LaunchV2Task` are named after the tasks they produce, except `executePowerShell()` and
+`executeBatch()`, which both produce the `executeScript` task, `hostName()` for the `setHostName` task, and
+`wallpaper()` for the `setWallpaper` task. Tasks without a factory method can be added with
+`Ec2LaunchV2Task.custom()`.
+
+Adding `executeScript` (with `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()`), `executeProgram`,
+`writeFile`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again appends to the inputs of the
+existing task. Adding `initializeVolume` again with other devices adds them to the task, and adding it again for all
+volumes has no effect; adding the same device twice, or both all volumes and specific devices, is an error. Adding any
+other task with inputs twice is an error.
+
+EC2Launch v2 (tested with version 2.5.2) does not load user data with a `writeFile` task whose destination is under
+`C:\Windows`, so `Ec2LaunchV2Task.writeFile()` rejects such destinations. Write those files with a command instead.
+
+Values that CloudFormation substitutes into the document at deploy time, such as parameters or resource attributes,
+are inserted as they are. Strings that contain them are written as YAML literal blocks, so the values need no escaping,
+but every line of a literal block must be indented, and only the first line of a multi-line value would be. So these
+values must be single line, and a string that contains one must not contain carriage returns or other control
+characters, or end with a line that contains only whitespace. Use LF line endings in scripts that contain such values. To pass a multi-line value to a script, encode it
+with `Fn.base64()` and decode it in the script:
+
+```ts
+declare const userData: ec2.Ec2LaunchV2UserData;
+declare const value: string; // for example a parameter or resource attribute
+
+userData.addCommands(
+  `$value = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${Fn.base64(value)}'))`,
+);
+```
+
+AWS Windows Server 2022 and later AMIs run EC2Launch v2 by default. For Windows Server 2016 and 2019, use the AMIs
+published by Amazon whose names start with `EC2LaunchV2-Windows_Server-`. Limit the lookup to Amazon as owner, as any
+account can publish an AMI with a matching name:
+
+```ts
+const machineImage = ec2.MachineImage.lookup({
+  name: 'EC2LaunchV2-Windows_Server-2019-English-Full-Base-*',
+  owners: ['amazon'],
+  windows: true,
+});
+```
+
+Earlier launch agents (EC2Launch v1 and EC2Config) do not understand this format.
+
+#### Moving from `UserData.forWindows()`
+
+* Commands, `addS3DownloadCommand()`, `addExecuteFileCommand()` and `addSignalOnExitCommand()` produce the same
+  PowerShell commands as with `UserData.forWindows()`.
+* Instead of `persist: true`, use `frequency: ec2.Ec2LaunchV2Frequency.ALWAYS`.
+* The script runs as the local system account by default. Use `runAs: ec2.Ec2LaunchV2RunAs.ADMIN` to run it as the
+  local administrator instead.
+* Commands added with `addOnExitCommands()`, including the signal added with `addSignalOnExitCommand()`, run when the
+  commands complete or throw an error, but not when the script calls `exit`. After `exit 3010`, which EC2Launch v2 uses
+  to reboot the instance and run the script again, they run at the end of the run after the reboot. After any other
+  `exit`, no signal is sent, as with `UserData.forWindows()`.
+* Switching an existing instance to the new format is a user data change like any other: the instance is
+  replaced if `userDataCausesReplacement` is `true`, which is the default when `initOptions` is passed to the
+  `Instance`. Otherwise CloudFormation updates the user data and restarts the instance (an instance with an
+  instance store root volume is replaced), and a script with frequency `once` does not run again on it.
+
 ## Importing existing subnet
 
 To import an existing Subnet, call `Subnet.fromSubnetAttributes()` or

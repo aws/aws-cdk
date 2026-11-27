@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "b6fa7a6f1c60fd3d41ab059e94c76335cc4d1cd2def779b9d675aae123874e32": {
+      "displayName": "integ-userdata-ec2launch-v2 Template",
+      "source": {
+        "path": "integ-userdata-ec2launch-v2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9691d3c6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b6fa7a6f1c60fd3d41ab059e94c76335cc4d1cd2def779b9d675aae123874e32.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
