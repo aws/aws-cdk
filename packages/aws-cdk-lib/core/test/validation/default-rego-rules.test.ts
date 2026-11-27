@@ -391,10 +391,272 @@ describe('default GameLift rules', () => {
   });
 });
 
+describe('default ElastiCache rules', () => {
+  test('CDK-ElastiCache-001 fires when a multi node group uses a parameter group without cluster mode', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const parameterGroup = new core.CfnResource(stack, 'ParameterGroup', {
+      type: 'AWS::ElastiCache::ParameterGroup',
+      properties: { ...PARAMETER_GROUP_BASE, Properties: { 'maxmemory-policy': 'allkeys-lru' } },
+    });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        NumNodeGroups: 2,
+        CacheParameterGroupName: parameterGroup.ref,
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-001',
+      description: expect.stringContaining('does not set cluster-enabled to yes'),
+    }));
+  });
+
+  test('CDK-ElastiCache-001 fires when the parameter group sets no parameters at all', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const parameterGroup = new core.CfnResource(stack, 'ParameterGroup', {
+      type: 'AWS::ElastiCache::ParameterGroup',
+      properties: { ...PARAMETER_GROUP_BASE },
+    });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        NumNodeGroups: 2,
+        CacheParameterGroupName: parameterGroup.ref,
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-001',
+      description: expect.stringContaining('does not set cluster-enabled to yes'),
+    }));
+  });
+
+  test('CDK-ElastiCache-001 does not fire when the parameter group turns cluster mode on', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const parameterGroup = new core.CfnResource(stack, 'ParameterGroup', {
+      type: 'AWS::ElastiCache::ParameterGroup',
+      properties: { ...PARAMETER_GROUP_BASE, Properties: { 'cluster-enabled': 'yes' } },
+    });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        NumNodeGroups: 2,
+        CacheParameterGroupName: parameterGroup.ref,
+      },
+    });
+
+    expect(elastiCacheViolations(app.synth())).toEqual([]);
+  });
+
+  test('CDK-ElastiCache-001 does not fire when cluster mode is left open by the template', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const clusterEnabled = new core.CfnParameter(stack, 'ClusterEnabled', { type: 'String' });
+    const parameterGroup = new core.CfnResource(stack, 'ParameterGroup', {
+      type: 'AWS::ElastiCache::ParameterGroup',
+      properties: { ...PARAMETER_GROUP_BASE, Properties: { 'cluster-enabled': clusterEnabled.valueAsString } },
+    });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        NumNodeGroups: 2,
+        CacheParameterGroupName: parameterGroup.ref,
+      },
+    });
+
+    expect(elastiCacheViolations(app.synth())).toEqual([]);
+  });
+
+  test('CDK-ElastiCache-001 does not fire for a parameter group the template does not define', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        NumNodeGroups: 2,
+        CacheParameterGroupName: 'default.redis7.cluster.on',
+      },
+    });
+
+    expect(elastiCacheViolations(app.synth())).toEqual([]);
+  });
+
+  test('CDK-ElastiCache-002 fires for user group access control without encryption in transit', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        UserGroupIds: ['my-user-group'],
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-002',
+      description: expect.stringContaining('UserGroupIds is set without encryption in transit'),
+    }));
+  });
+
+  test('CDK-ElastiCache-002 does not fire when encryption in transit is left open by the template', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const transitEncryption = new core.CfnParameter(stack, 'TransitEncryption', { type: 'String' });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        UserGroupIds: ['my-user-group'],
+        TransitEncryptionEnabled: transitEncryption.valueAsString,
+      },
+    });
+
+    expect(elastiCacheViolations(app.synth())).toEqual([]);
+  });
+
+  test('CDK-ElastiCache-002 does not fire when encryption in transit is spelled as a string', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        UserGroupIds: ['my-user-group'],
+        // CloudFormation coerces this to a boolean, so the rule must read it as one
+        TransitEncryptionEnabled: 'true',
+      },
+    });
+
+    expect(elastiCacheViolations(app.synth())).toEqual([]);
+  });
+
+  test('CDK-ElastiCache-003 fires for an AUTH token without encryption in transit', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        AuthToken: 'a-sufficiently-long-auth-token',
+        TransitEncryptionEnabled: false,
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-003',
+      description: expect.stringContaining('AuthToken is set without encryption in transit'),
+    }));
+  });
+
+  test('CDK-ElastiCache-004 fires for data tiering on a node type that does not support it', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        CacheNodeType: 'cache.t4g.micro',
+        DataTieringEnabled: true,
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-004',
+      description: expect.stringContaining('data tiering is enabled on node type cache.t4g.micro'),
+    }));
+  });
+
+  test('CDK-ElastiCache-004 fires when data tiering is spelled as a string', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        CacheNodeType: 'cache.t4g.micro',
+        // CloudFormation coerces this to a boolean, so the rule must read it as one
+        DataTieringEnabled: 'true',
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-004',
+      description: expect.stringContaining('data tiering is enabled on node type cache.t4g.micro'),
+    }));
+  });
+
+  test('CDK-ElastiCache-004 does not fire when the node type is unresolved at synth time', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const nodeType = new core.CfnParameter(stack, 'NodeType', { type: 'String' });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        CacheNodeType: nodeType.valueAsString,
+        DataTieringEnabled: true,
+      },
+    });
+
+    expect(elastiCacheViolations(app.synth())).toEqual([]);
+  });
+
+  test('no ElastiCache findings for compliant resources', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const parameterGroup = new core.CfnResource(stack, 'ParameterGroup', {
+      type: 'AWS::ElastiCache::ParameterGroup',
+      properties: { ...PARAMETER_GROUP_BASE, Properties: { 'cluster-enabled': 'yes' } },
+    });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        CacheNodeType: 'cache.r6gd.xlarge',
+        NumNodeGroups: 2,
+        CacheParameterGroupName: parameterGroup.ref,
+        DataTieringEnabled: true,
+        TransitEncryptionEnabled: true,
+        UserGroupIds: ['my-user-group'],
+      },
+    });
+    new core.CfnResource(stack, 'AuthTokenReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        TransitEncryptionEnabled: true,
+        AuthToken: 'a-sufficiently-long-auth-token',
+      },
+    });
+
+    expect(elastiCacheViolations(app.synth())).toEqual([]);
+  });
+});
+
 const FLEET_BASE = {
   Name: 'my-fleet',
   BuildId: 'build-1234',
   EC2InstanceType: 'c5.large',
+};
+
+const REPLICATION_GROUP_BASE = {
+  ReplicationGroupDescription: 'my replication group',
+  CacheNodeType: 'cache.r7g.large',
+  Engine: 'redis',
+};
+
+const PARAMETER_GROUP_BASE = {
+  CacheParameterGroupFamily: 'redis7',
+  Description: 'my parameter group',
 };
 
 function testApp() {
@@ -429,4 +691,9 @@ function pluginViolations(report: PolicyValidationReportJson) {
   return report.pluginReports
     .filter((r) => r.pluginName === 'CloudFormation Validate')
     .flatMap((r) => r.violations);
+}
+
+function elastiCacheViolations(asm: cxapi.CloudAssembly) {
+  return pluginViolations(loadValidationReport(asm))
+    .filter((v) => v.ruleName.startsWith('CDK-ElastiCache'));
 }

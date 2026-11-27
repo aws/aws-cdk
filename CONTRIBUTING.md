@@ -1443,8 +1443,9 @@ be upstreamed to the validation engine later.
 
 ### Current rules
 
-The current rules cover Amazon GameLift resources
-(`packages/aws-cdk-lib/core/lib/validation/rules/gamelift-fleet.rego`):
+#### Amazon GameLift
+
+`packages/aws-cdk-lib/core/lib/validation/rules/gamelift-fleet.rego`:
 
 | Rule ID | Checks |
 |---------|--------|
@@ -1467,6 +1468,32 @@ then activates into `ERROR` state because no server process can start. These
 rules only fire when the build is defined in the same template; a fleet
 referencing an imported build (a literal build ID) is not checked, since the
 build's operating system is not knowable from the template.
+
+#### Amazon ElastiCache
+
+`packages/aws-cdk-lib/core/lib/validation/rules/elasticache-replication-group.rego`:
+
+| Rule ID | Checks |
+|---------|--------|
+| `CDK-ElastiCache-001` | A replication group with more than one node group names a parameter group that sets `cluster-enabled: yes` |
+| `CDK-ElastiCache-002` | A replication group using `UserGroupIds` enables encryption in transit |
+| `CDK-ElastiCache-003` | A replication group with an `AuthToken` enables encryption in transit |
+| `CDK-ElastiCache-004` | Data tiering is only enabled on an `r6gd` node type |
+
+`AWS::ElastiCache::ReplicationGroup` has no L2 construct — neither in
+`aws-cdk-lib` nor in `aws-elasticache-alpha`, which covers serverless caches
+and users only — so there is no construct-level validation these checks could
+live in instead. Every one of them is a combination the service refuses at
+`CreateReplicationGroup`, rolling back the stack mid-deployment, while each
+property on its own is schema-valid. Rule 001 is cross-resource: cluster mode
+is a property of the *parameter group*, so the rule joins the replication group
+to the `AWS::ElastiCache::ParameterGroup` it references and reads
+`cluster-enabled` there. It only fires when the parameter group is defined in
+the same template; a group referenced by name (`default.redis7.cluster.on`, or
+one created outside the app) is not checked, since its parameters are not
+knowable from the template. None of the four judge a value the template leaves
+open at synthesis — a `Ref` to a stack parameter without a default — so a
+template that only decides these settings at deploy time is left alone.
 
 ## Versioning and Release
 
