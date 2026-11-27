@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "GatewayKnowledgeBasesTarget/DefaultTest": {
+      "stacks": [
+        "cdk-agentcore-gateway-knowledge-bases-target"
+      ],
+      "assertionStack": "GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayKnowledgeBasesTargetDefaultTestDeployAssert59190245"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
+}

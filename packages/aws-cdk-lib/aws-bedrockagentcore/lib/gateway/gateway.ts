@@ -19,6 +19,7 @@ import type * as kms from '../../../aws-kms';
 import type { IPolicyEngine } from '../policy/policy-engine-base';
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
+import type { AddConnectorTargetOptions, AddKnowledgeBasesTargetOptions } from './targets/target';
 import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
 import type { IFunction } from '../../../aws-lambda';
@@ -838,6 +839,42 @@ export class Gateway extends GatewayBase {
     });
 
     return target;
+  }
+
+  /**
+   * Add a connector target to this gateway
+   * This is a convenience method that creates a GatewayTarget associated with this gateway.
+   * No permissions are granted to the gateway role: grant it what the connector needs.
+   *
+   * @param id The construct id for the target
+   * @param props Properties for the connector target
+   * @returns The created GatewayTarget
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html
+   */
+  @MethodMetadata()
+  public addConnectorTarget(
+    id: string,
+    props: AddConnectorTargetOptions,
+  ): GatewayTarget {
+    return GatewayTarget.forConnector(this, id, { ...props, gateway: this });
+  }
+
+  /**
+   * Add a target backed by Amazon Bedrock Managed Knowledge Bases to this gateway
+   * This is a convenience method that creates a GatewayTarget associated with this gateway
+   *
+   * @param id The construct id for the target
+   * @param props Properties for the knowledge bases target
+   * @returns The created GatewayTarget
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-connector-managed-kb.html
+   */
+  @MethodMetadata()
+  public addKnowledgeBasesTarget(
+    id: string,
+    props: AddKnowledgeBasesTargetOptions,
+  ): GatewayTarget {
+    // Knowledge base permissions are automatically granted in KnowledgeBasesTargetConfiguration.bind()
+    return GatewayTarget.forKnowledgeBases(this, id, { ...props, gateway: this });
   }
 
   /**

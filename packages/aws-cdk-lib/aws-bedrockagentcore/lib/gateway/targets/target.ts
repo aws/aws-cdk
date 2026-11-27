@@ -10,6 +10,8 @@ import { propertyInjectable } from '../../../../core/lib/prop-injectable';
 import { validateStringFieldLength, validateFieldPattern } from '../../common/validation-helpers';
 import type { IGateway } from '../gateway-base';
 import { GATEWAY_SYNC_PERMS } from '../perms';
+import type { ConnectorTargetConfigurationProps, KnowledgeBasesTargetConfigurationProps } from './connector-target-configuration';
+import { ConnectorTargetConfiguration, KnowledgeBasesTargetConfiguration } from './connector-target-configuration';
 import type { ApiSchema } from './schema/api-schema';
 import type { ToolSchema } from './schema/tool-schema';
 import type { IGatewayTarget, IMcpGatewayTarget } from './target-base';
@@ -18,7 +20,7 @@ import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfigu
 import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import { Lazy, Token, Names } from '../../../../core';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
-import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
+import { CredentialProviderType, GatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { GatewayIamRoleCredentialProviderConfig } from '../outbound-auth/iam-role';
 
 /******************************************************************************
@@ -216,6 +218,44 @@ export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
    * @default - No metadata configuration
    */
   readonly metadataConfiguration?: MetadataConfiguration;
+}
+
+/**
+ * Options for adding a target backed by Amazon Bedrock Managed Knowledge Bases to a gateway
+ *
+ * At least one of `agenticRetrieve` and `retrieve` is required.
+ */
+export interface AddKnowledgeBasesTargetOptions extends GatewayTargetCommonProps, KnowledgeBasesTargetConfigurationProps {
+}
+
+/**
+ * Properties for creating a Gateway Target backed by Amazon Bedrock Managed Knowledge Bases
+ *
+ * At least one of `agenticRetrieve` and `retrieve` is required.
+ */
+export interface GatewayTargetKnowledgeBasesProps extends AddKnowledgeBasesTargetOptions {
+  /**
+   * The gateway this target belongs to
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly gateway: IGateway;
+}
+
+/**
+ * Options for adding a connector target to a gateway
+ */
+export interface AddConnectorTargetOptions extends GatewayTargetCommonProps, ConnectorTargetConfigurationProps {
+}
+
+/**
+ * Properties for creating a connector-based Gateway Target
+ */
+export interface GatewayTargetConnectorProps extends AddConnectorTargetOptions {
+  /**
+   * The gateway this target belongs to
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly gateway: IGateway;
 }
 
 /**
@@ -440,6 +480,58 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   }
 
   /**
+   * Create a connector-based target
+   * Convenience method for creating a target that uses a connector, a pre-built integration
+   * with an AWS service or a third-party tool. No permissions are granted to the gateway role:
+   * grant it what the connector needs. For Amazon Bedrock Managed Knowledge Bases, prefer
+   * `forKnowledgeBases()`, which also sets up permissions.
+   *
+   * @param scope The construct scope
+   * @param id The construct id
+   * @param props The properties for the connector target
+   * @returns A new GatewayTarget instance
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html
+   */
+  public static forConnector(
+    scope: Construct,
+    id: string,
+    props: GatewayTargetConnectorProps,
+  ): GatewayTarget {
+    const { gateway, gatewayTargetName, description, ...configuration } = props;
+    return new GatewayTarget(scope, id, {
+      gateway,
+      gatewayTargetName,
+      description,
+      targetConfiguration: ConnectorTargetConfiguration.create(configuration),
+    });
+  }
+
+  /**
+   * Create a target backed by Amazon Bedrock Managed Knowledge Bases
+   * Convenience method for creating a connector target that exposes managed knowledge bases
+   * as MCP tools. The gateway role is granted the permissions the configured tools need.
+   *
+   * @param scope The construct scope
+   * @param id The construct id
+   * @param props The properties for the knowledge bases target
+   * @returns A new GatewayTarget instance
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-connector-managed-kb.html
+   */
+  public static forKnowledgeBases(
+    scope: Construct,
+    id: string,
+    props: GatewayTargetKnowledgeBasesProps,
+  ): GatewayTarget {
+    const { gateway, gatewayTargetName, description, ...configuration } = props;
+    return new GatewayTarget(scope, id, {
+      gateway,
+      gatewayTargetName,
+      description,
+      targetConfiguration: KnowledgeBasesTargetConfiguration.create(configuration),
+    });
+  }
+
+  /**
    * The ARN of the gateway target
    * @attribute
    */
@@ -537,6 +629,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     );
 
     this.validateIamCredentialProviderTargetType();
+    this.validateConnectorCredentialProviders();
 
     // Bind the target configuration
     // This sets up permissions and dependencies
@@ -605,7 +698,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   /**
    * Determines the credential provider configurations based on target type
    *
-   * - Lambda & Smithy: Default to IAM role if not provided
+   * - Lambda, Smithy & Connector: Default to IAM role if not provided
    * - MCP Server: Return undefined if not provided (service handles NoAuth)
    * - OpenAPI & API Gateway: Return as-is (must be explicitly provided, service handles automatically)
    *
@@ -623,6 +716,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     switch (this.targetType) {
       case McpTargetType.LAMBDA:
       case McpTargetType.SMITHY_MODEL:
+      case McpTargetType.CONNECTOR:
         return [GatewayCredentialProvider.fromIamRole()];
 
       case McpTargetType.MCP_SERVER:
@@ -672,6 +766,27 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       throw new ValidationError(
         lit`IamCredentialProviderUnsupportedTargetType`,
         `IamCredentialProvider with explicit service/region is only supported for MCP Server and OpenAPI targets, got target type "${this.targetType}"`,
+        this,
+      );
+    }
+  }
+
+  /**
+   * Validates that connector targets only use the gateway IAM role credential provider.
+   * The Bedrock AgentCore service does not support any other credential provider type for
+   * connector targets.
+   */
+  private validateConnectorCredentialProviders(): void {
+    if (this.targetType !== McpTargetType.CONNECTOR || !this.credentialProviderConfigurations) {
+      return;
+    }
+    const unsupported = this.credentialProviderConfigurations.find(
+      (c) => c.credentialProviderType !== CredentialProviderType.GATEWAY_IAM_ROLE,
+    );
+    if (unsupported) {
+      throw new ValidationError(
+        lit`ConnectorTargetCredentialProviderUnsupported`,
+        `connector targets only support the ${CredentialProviderType.GATEWAY_IAM_ROLE} credential provider, got ${JSON.stringify(unsupported.credentialProviderType)}; use GatewayCredentialProvider.fromIamRole() or omit credentialProviderConfigurations`,
         this,
       );
     }
