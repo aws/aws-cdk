@@ -482,7 +482,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -857,6 +857,470 @@
   },
   "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3": {
    "Type": "AWS::ECS::Cluster"
+  },
+  "CustomTaskRole3C6B13FD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomTaskRoleDefaultPolicyDCED45C2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "QueueProcessingServiceWithCustomTaskRoleEcsProcessingQueue97941786",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomTaskRoleDefaultPolicyDCED45C2",
+    "Roles": [
+     {
+      "Ref": "CustomTaskRole3C6B13FD"
+     }
+    ]
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleEcsProcessingDeadLetterQueue04E2CD35": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueueProcessingServiceWithCustomTaskRoleEcsProcessingQueue97941786": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "QueueProcessingServiceWithCustomTaskRoleEcsProcessingDeadLetterQueue04E2CD35",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDef529786CD": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "QUEUE_NAME",
+        "Value": {
+         "Fn::GetAtt": [
+          "QueueProcessingServiceWithCustomTaskRoleEcsProcessingQueue97941786",
+          "QueueName"
+         ]
+        }
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03"
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefQueueProcessingContainerLogGroupBA37AF56"
+        },
+        "awslogs-stream-prefix": "QueueProcessingServiceWithCustomTaskRole",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "QueueProcessingContainer"
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefExecutionRoleC148129A",
+      "Arn"
+     ]
+    },
+    "Family": "awsecspatternsqueueQueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefCC12D82B",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "CustomTaskRole3C6B13FD",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefQueueProcessingContainerLogGroupBA37AF56": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefExecutionRoleC148129A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefExecutionRoleDefaultPolicyFD71EA45": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefQueueProcessingContainerLogGroupBA37AF56",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefExecutionRoleDefaultPolicyFD71EA45",
+    "Roles": [
+     {
+      "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDefExecutionRoleC148129A"
+     }
+    ]
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceEBD314E3": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "EnableECSManagedTags": false,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceSecurityGroup242DB539",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+       },
+       {
+        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": {
+     "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingTaskDef529786CD"
+    }
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceSecurityGroup242DB539": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-patterns-queue/QueueProcessingServiceWithCustomTaskRole/QueueProcessingFargateService/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTarget0AD96443": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 2,
+    "MinCapacity": 0,
+    "ResourceId": {
+     "Fn::Join": [
+      "",
+      [
+       "service/",
+       {
+        "Ref": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
+       },
+       "/",
+       {
+        "Fn::GetAtt": [
+         "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceEBD314E3",
+         "Name"
+        ]
+       }
+      ]
+     ]
+    },
+    "RoleARN": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+      ]
+     ]
+    },
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs"
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetCpuScaling0D171C6C": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "awsecspatternsqueueQueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetCpuScaling68B70D56",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTarget0AD96443"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+     },
+     "TargetValue": 50
+    }
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy4DCBE02C": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "awsecspatternsqueueQueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy92FBA466",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTarget0AD96443"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "MetricAggregationType": "Maximum",
+     "StepAdjustments": [
+      {
+       "MetricIntervalUpperBound": 0,
+       "ScalingAdjustment": -1
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerAlarm21DCFAF4": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy4DCBE02C"
+     }
+    ],
+    "AlarmDescription": "Lower threshold scaling alarm",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::GetAtt": [
+        "QueueProcessingServiceWithCustomTaskRoleEcsProcessingQueue97941786",
+        "QueueName"
+       ]
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Maximum",
+    "Threshold": 0
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicy3AEB5C4C": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "awsecspatternsqueueQueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicy3A7E6C24",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTarget0AD96443"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "MetricAggregationType": "Maximum",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": 0,
+       "MetricIntervalUpperBound": 400,
+       "ScalingAdjustment": 1
+      },
+      {
+       "MetricIntervalLowerBound": 400,
+       "ScalingAdjustment": 5
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
+  },
+  "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperAlarmBD0D2EB4": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "QueueProcessingServiceWithCustomTaskRoleQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicy3AEB5C4C"
+     }
+    ],
+    "AlarmDescription": "Upper threshold scaling alarm",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::GetAtt": [
+        "QueueProcessingServiceWithCustomTaskRoleEcsProcessingQueue97941786",
+        "QueueName"
+       ]
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Maximum",
+    "Threshold": 100
+   },
+   "DependsOn": [
+    "CustomTaskRoleDefaultPolicyDCED45C2",
+    "CustomTaskRole3C6B13FD"
+   ]
   }
  },
  "Outputs": {
@@ -888,6 +1352,38 @@
    "Value": {
     "Fn::GetAtt": [
      "QueueProcessingServiceEcsProcessingQueue552F0B37",
+     "Arn"
+    ]
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleSQSDeadLetterQueue1DE4A6B6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "QueueProcessingServiceWithCustomTaskRoleEcsProcessingDeadLetterQueue04E2CD35",
+     "QueueName"
+    ]
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleSQSDeadLetterQueueArn3EA7930C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "QueueProcessingServiceWithCustomTaskRoleEcsProcessingDeadLetterQueue04E2CD35",
+     "Arn"
+    ]
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleSQSQueueA5836C99": {
+   "Value": {
+    "Fn::GetAtt": [
+     "QueueProcessingServiceWithCustomTaskRoleEcsProcessingQueue97941786",
+     "QueueName"
+    ]
+   }
+  },
+  "QueueProcessingServiceWithCustomTaskRoleSQSQueueArn5618C3DD": {
+   "Value": {
+    "Fn::GetAtt": [
+     "QueueProcessingServiceWithCustomTaskRoleEcsProcessingQueue97941786",
      "Arn"
     ]
    }

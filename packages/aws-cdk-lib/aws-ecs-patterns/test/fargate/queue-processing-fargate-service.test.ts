@@ -5,6 +5,7 @@ import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
+import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
@@ -1046,5 +1047,27 @@ test('test Fargate queue worker service construct - with healthCheckGracePeriod'
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     HealthCheckGracePeriodSeconds: 120,
+  });
+});
+
+test('Queue Processing Fargate Service - with custom task role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskRole = iam.Role.fromRoleArn(stack, 'CustomTaskRole', 'arn:aws:iam::123456789012:role/CustomTaskRole');
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    taskRole,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    TaskRoleArn: 'arn:aws:iam::123456789012:role/CustomTaskRole',
   });
 });

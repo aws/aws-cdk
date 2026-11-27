@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type * as ec2 from '../../../aws-ec2';
 import type { HealthCheck } from '../../../aws-ecs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
+import type { IRole } from '../../../aws-iam';
 import type { Duration } from '../../../core';
 import { FeatureFlags, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -21,6 +22,16 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default - QueueProcessingContainer
    */
   readonly containerName?: string;
+
+  /**
+   * The task IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   * This role is not used when `taskDefinition` is provided.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - A task role is automatically created for you.
+   */
+  readonly taskRole?: IRole;
 
   /**
    * The health check command and associated configuration parameters for the container.
@@ -92,6 +103,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
         ephemeralStorageGiB: props.ephemeralStorageGiB,
         family: props.family,
         runtimePlatform: props.runtimePlatform,
+        taskRole: props.taskRole,
       });
 
       const containerName = props.containerName ?? 'QueueProcessingContainer';

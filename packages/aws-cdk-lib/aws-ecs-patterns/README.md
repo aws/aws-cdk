@@ -354,6 +354,19 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
+To run the queue processing tasks with a custom IAM task role, use the `taskRole` property:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskRole: iam.Role;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  taskRole,
+});
+```
+
 ## Scheduled Tasks
 
 To define a task that runs periodically, there are 2 options:

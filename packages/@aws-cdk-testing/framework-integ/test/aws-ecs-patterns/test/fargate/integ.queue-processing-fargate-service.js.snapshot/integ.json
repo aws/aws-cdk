@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "55.0.0",
   "testCases": {
     "queueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "queueProcessingFargateServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "queueProcessingFargateServiceTestDefaultTestDeployAssert73AFD2F6"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
 }
