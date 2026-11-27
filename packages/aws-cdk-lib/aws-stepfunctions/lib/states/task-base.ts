@@ -7,10 +7,16 @@ import * as cdk from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
+<<<<<<< HEAD
+import { StateGraph } from '../state-graph';
+import { Credentials } from '../task-credentials';
+import { CatchProps, ICatchable, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+=======
 import type { StateGraph } from '../state-graph';
 import type { Credentials } from '../task-credentials';
 import type { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { QueryLanguage } from '../types';
+>>>>>>> main
 
 /**
  * Base options for all task states
@@ -130,7 +136,7 @@ export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions
  * For some resource types, more specific subclasses of Task may be available
  * which are more convenient to use.
  */
-export abstract class TaskStateBase extends State implements INextable {
+export abstract class TaskStateBase extends State implements INextable, ICatchable {
   public readonly endStates: INextable[];
 
   protected abstract readonly taskMetrics?: TaskMetricsConfig;
@@ -170,7 +176,7 @@ export abstract class TaskStateBase extends State implements INextable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): TaskStateBase {
+  public addCatch(handler: IChainable, props: CatchProps = {}): ICatchable {
     super._addCatch(handler.startState, props);
     return this;
   }
