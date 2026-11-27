@@ -380,6 +380,39 @@ const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
 });
 ```
 
+#### Service Connect
+
+The following code is a basic Service Connect private integration of HTTP API:
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { HttpServiceConnectIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+const vpc = new ec2.Vpc(this, 'VPC');
+const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('Web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  portMappings: [{ name: 'api', containerPort: 80 }],
+});
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [{ portMappingName: 'api' }],
+  },
+});
+
+const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpServiceConnectIntegration('DefaultIntegration', service, {
+    vpcLink,
+  }),
+});
+```
+
+The integration uses the discovery URL of the service's Service Connect service (the Cloud Map service ECS creates for it) as the integration URI. When the service has more than one Service Connect service, specify which one with the `discoveryName` option.
+
 ### Request Parameters
 
 Request parameter mapping allows API requests from clients to be modified before they reach backend integrations.

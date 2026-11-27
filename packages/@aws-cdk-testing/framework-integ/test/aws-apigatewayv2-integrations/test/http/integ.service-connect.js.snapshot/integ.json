@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ.service-connect": {
+      "stacks": [
+        "integ-service-connect-integration"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
