@@ -3098,6 +3098,14 @@ export class SqlServerEngineVersion {
    * @deprecated SQL Server 13.00.6475.1.v1 is no longer supported by Amazon RDS.
    */
   public static readonly VER_13_00_6475_1_V1 = SqlServerEngineVersion.of('13.00.6475.1.v1', '13.00');
+  /** Version "13.00.6480.4.v1". */
+  public static readonly VER_13_00_6480_4_V1 = SqlServerEngineVersion.of('13.00.6480.4.v1', '13.00');
+  /** Version "13.00.6485.1.v1". */
+  public static readonly VER_13_00_6485_1_V1 = SqlServerEngineVersion.of('13.00.6485.1.v1', '13.00');
+  /** Version "13.00.6490.1.v1". */
+  public static readonly VER_13_00_6490_1_V1 = SqlServerEngineVersion.of('13.00.6490.1.v1', '13.00');
+  /** Version "13.00.6500.1.v1". */
+  public static readonly VER_13_00_6500_1_V1 = SqlServerEngineVersion.of('13.00.6500.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -3165,6 +3173,18 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3505_1_V1 = SqlServerEngineVersion.of('14.00.3505.1.v1', '14.00');
   /** Version "14.00.3515.1.v1". */
   public static readonly VER_14_00_3515_1_V1 = SqlServerEngineVersion.of('14.00.3515.1.v1', '14.00');
+  /** Version "14.00.3520.4.v1". */
+  public static readonly VER_14_00_3520_4_V1 = SqlServerEngineVersion.of('14.00.3520.4.v1', '14.00');
+  /** Version "14.00.3525.1.v1". */
+  public static readonly VER_14_00_3525_1_V1 = SqlServerEngineVersion.of('14.00.3525.1.v1', '14.00');
+  /** Version "14.00.3530.2.v1". */
+  public static readonly VER_14_00_3530_2_V1 = SqlServerEngineVersion.of('14.00.3530.2.v1', '14.00');
+  /** Version "14.00.3540.1.v1". */
+  public static readonly VER_14_00_3540_1_V1 = SqlServerEngineVersion.of('14.00.3540.1.v1', '14.00');
+  /** Version "14.00.3550.4.v1". */
+  public static readonly VER_14_00_3550_4_V1 = SqlServerEngineVersion.of('14.00.3550.4.v1', '14.00');
+  /** Version "14.00.3560.2.v1". */
+  public static readonly VER_14_00_3560_2_V1 = SqlServerEngineVersion.of('14.00.3560.2.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
@@ -3223,6 +3243,18 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4445_1_V1 = SqlServerEngineVersion.of('15.00.4445.1.v1', '15.00');
   /** Version "15.00.4455.2.v1". */
   public static readonly VER_15_00_4455_2_V1 = SqlServerEngineVersion.of('15.00.4455.2.v1', '15.00');
+  /** Version "15.00.4460.4.v1". */
+  public static readonly VER_15_00_4460_4_V1 = SqlServerEngineVersion.of('15.00.4460.4.v1', '15.00');
+  /** Version "15.00.4465.1.v1". */
+  public static readonly VER_15_00_4465_1_V1 = SqlServerEngineVersion.of('15.00.4465.1.v1', '15.00');
+  /** Version "15.00.4470.1.v1". */
+  public static readonly VER_15_00_4470_1_V1 = SqlServerEngineVersion.of('15.00.4470.1.v1', '15.00');
+  /** Version "15.00.4480.2.v1". */
+  public static readonly VER_15_00_4480_2_V1 = SqlServerEngineVersion.of('15.00.4480.2.v1', '15.00');
+  /** Version "15.00.4490.9.v1". */
+  public static readonly VER_15_00_4490_9_V1 = SqlServerEngineVersion.of('15.00.4490.9.v1', '15.00');
+  /** Version "15.00.4500.2.v1". */
+  public static readonly VER_15_00_4500_2_V1 = SqlServerEngineVersion.of('15.00.4500.2.v1', '15.00');
 
   /** Version "16.00" (only a major version, without a specific minor version). */
   public static readonly VER_16 = SqlServerEngineVersion.of('16.00', '16.00');
@@ -3266,6 +3298,33 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4230_2_V1 = SqlServerEngineVersion.of('16.00.4230.2.v1', '16.00');
   /** Version "16.00.4236.2.v1". */
   public static readonly VER_16_00_4236_2_V1 = SqlServerEngineVersion.of('16.00.4236.2.v1', '16.00');
+  /** Version "16.00.4245.2.v1". */
+  public static readonly VER_16_00_4245_2_V1 = SqlServerEngineVersion.of('16.00.4245.2.v1', '16.00');
+  /** Version "16.00.4250.1.v1". */
+  public static readonly VER_16_00_4250_1_V1 = SqlServerEngineVersion.of('16.00.4250.1.v1', '16.00');
+  /** Version "16.00.4255.1.v1". */
+  public static readonly VER_16_00_4255_1_V1 = SqlServerEngineVersion.of('16.00.4255.1.v1', '16.00');
+  /** Version "16.00.4265.3.v1". */
+  public static readonly VER_16_00_4265_3_V1 = SqlServerEngineVersion.of('16.00.4265.3.v1', '16.00');
+  /** Version "16.00.4295.3.v1". */
+  public static readonly VER_16_00_4295_3_V1 = SqlServerEngineVersion.of('16.00.4295.3.v1', '16.00');
+  /** Version "16.00.4305.5.v1". */
+  public static readonly VER_16_00_4305_5_V1 = SqlServerEngineVersion.of('16.00.4305.5.v1', '16.00');
+
+  /** Version "17.00" (only a major version, without a specific minor version). */
+  public static readonly VER_17 = SqlServerEngineVersion.of('17.00', '17.00');
+  /** Version "17.00.4045.5.v1". */
+  public static readonly VER_17_00_4045_5_V1 = SqlServerEngineVersion.of('17.00.4045.5.v1', '17.00');
+  /** Version "17.00.4055.5.v1". */
+  public static readonly VER_17_00_4055_5_V1 = SqlServerEngineVersion.of('17.00.4055.5.v1', '17.00');
+  /** Version "17.00.4065.4.v1". */
+  public static readonly VER_17_00_4065_4_V1 = SqlServerEngineVersion.of('17.00.4065.4.v1', '17.00');
+  /** Version "17.00.4075.5.v1". */
+  public static readonly VER_17_00_4075_5_V1 = SqlServerEngineVersion.of('17.00.4075.5.v1', '17.00');
+  /** Version "17.00.5005.3.v1". */
+  public static readonly VER_17_00_5005_3_V1 = SqlServerEngineVersion.of('17.00.5005.3.v1', '17.00');
+  /** Version "17.00.5035.5.v1". */
+  public static readonly VER_17_00_5035_5_V1 = SqlServerEngineVersion.of('17.00.5035.5.v1', '17.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.

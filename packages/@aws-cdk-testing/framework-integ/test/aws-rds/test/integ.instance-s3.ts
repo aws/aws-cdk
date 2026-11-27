@@ -6,6 +6,10 @@ import { IntegTestBaseStack } from './integ-test-base-stack';
 import { DatabaseInstance, DatabaseInstanceEngine, LicenseModel } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
+/**
+ * Integration test for SQL Server S3 import/export.
+ * Uses the latest available SQL Server engine version (including SQL Server 2025).
+ */
 const app = new cdk.App();
 const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-instance-s3-integ');
 
