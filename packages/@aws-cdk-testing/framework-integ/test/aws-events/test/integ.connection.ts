@@ -38,3 +38,5 @@ deployedConncention.expect(ExpectedResult.objectLike({
 
 const assertionProvider = deployedConncention.node.tryFindChild('SdkProvider') as AssertionsProvider;
 assertionProvider.addPolicyStatementFromSdkCall('events', 'DescribeConnection');
+
+app.synth();

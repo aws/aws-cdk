@@ -52,3 +52,5 @@ integTest.assertions.awsApiCall('S3', 'getObject', {
 }).expect(ExpectedResult.objectLike({
   Body: stack2.userPool.userPoolId,
 }));
+
+app.synth();

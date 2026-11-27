@@ -23,3 +23,5 @@ const app = new cdk.App();
 new IntegTest(app, 'cdk-integ-bucket-domain-name', {
   testCases: [new TestStack(app, 'aws-cdk-domain-name')],
 });
+
+app.synth();

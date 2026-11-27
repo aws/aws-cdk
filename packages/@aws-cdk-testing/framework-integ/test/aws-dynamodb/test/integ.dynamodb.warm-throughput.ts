@@ -39,3 +39,5 @@ const stack = new TestStack(app, 'warm-throughput-stack', {});
 new IntegTest(app, 'warm-throughput-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

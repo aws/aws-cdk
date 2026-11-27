@@ -59,3 +59,5 @@ new IntegTest(app, 'CrossRegionSSMReferenceTest', {
 //   Type: 'String',
 //   Value: stringValue,
 // }));
+
+app.synth();

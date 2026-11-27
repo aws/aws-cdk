@@ -91,3 +91,5 @@ policy2.upperAlarm?.addAlarmAction(lambdaAction2);
 new integ.IntegTest(app, 'lambda-alarm-multiple-stepscalingpolicy-test', {
   testCases: [stack],
 });
+
+app.synth();

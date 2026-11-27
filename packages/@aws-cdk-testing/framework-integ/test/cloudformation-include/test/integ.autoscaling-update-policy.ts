@@ -13,3 +13,5 @@ new inc.CfnInclude(stack, 'Stack', {
 new integ.IntegTest(app, 'AutoScalingUpdatePolicyTest', {
   testCases: [stack],
 });
+
+app.synth();

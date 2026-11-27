@@ -83,3 +83,5 @@ const purgeQueueAssertion = integTest.assertions.httpApiCall(
   },
 );
 purgeQueueAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
+
+app.synth();

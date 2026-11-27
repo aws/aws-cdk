@@ -38,3 +38,5 @@ integ.assertions
       }),
     ]),
   }));
+
+app.synth();

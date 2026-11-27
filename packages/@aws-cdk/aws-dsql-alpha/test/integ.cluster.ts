@@ -38,3 +38,5 @@ const stack = new TestStack(app, 'aws-cdk-dsql-stack');
 new IntegTest(app, 'aws-cdk-dsql-integ', {
   testCases: [stack],
 });
+
+app.synth();

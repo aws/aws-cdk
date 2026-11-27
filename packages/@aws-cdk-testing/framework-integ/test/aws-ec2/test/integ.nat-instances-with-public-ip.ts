@@ -34,3 +34,5 @@ const stack = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances-v2-with-publi
 new IntegTest(app, 'nat-instance-v2-with-public-ip-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

@@ -136,3 +136,5 @@ new integ.IntegTest(app, 'SSMParameterStoreSharingTest', {
   // skip the update workflow to avoid re-accepting the invitation error
   stackUpdateWorkflow: false,
 });
+
+app.synth();

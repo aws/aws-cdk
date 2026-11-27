@@ -61,3 +61,5 @@ vpc.publicSubnets.forEach((subnet) => {
 new IntegTest(app, 'cdk-integ-alb-extended-log', {
   testCases: [stack],
 });
+
+app.synth();

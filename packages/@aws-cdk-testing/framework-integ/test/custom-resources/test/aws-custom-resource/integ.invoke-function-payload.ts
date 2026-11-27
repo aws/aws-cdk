@@ -46,3 +46,5 @@ new cdk.CfnOutput(stack, 'FunctionPayload', {
 new IntegTest(app, 'AwsCustomResourceInvokePayloadInteg', {
   testCases: [stack],
 });
+
+app.synth();

@@ -42,3 +42,5 @@ const producer = new Producer(app, 'ProducerStack');
 new IntegTest(app, 'cdk-integ-bucket-sharing', {
   testCases: [new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket })],
 });
+
+app.synth();

@@ -69,3 +69,5 @@ const client = userpool.addClient('myuserpoolclient', {
 new Secret(stack, 'Secret', {
   secretStringValue: client.userPoolClientSecret,
 });
+
+app.synth();

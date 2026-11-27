@@ -48,3 +48,5 @@ const stack = new TestStack(app, 'CCI-Integ-Test', { env: { region: 'eu-west-1' 
 new IntegTest(app, 'table-v2-CCI-test', {
   testCases: [stack],
 });
+
+app.synth();

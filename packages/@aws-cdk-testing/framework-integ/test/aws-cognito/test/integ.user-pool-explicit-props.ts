@@ -106,3 +106,5 @@ function dummyTrigger(name: string): IFunction {
     code: Code.fromInline('foo'),
   });
 }
+
+app.synth();

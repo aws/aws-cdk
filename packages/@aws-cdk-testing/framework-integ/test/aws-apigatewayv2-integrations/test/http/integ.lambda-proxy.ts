@@ -29,3 +29,5 @@ const endpoint = new HttpApi(stack, 'LambdaProxyApi', {
 new CfnOutput(stack, 'Endpoint', {
   value: endpoint.url!,
 });
+
+app.synth();

@@ -19,3 +19,5 @@ new imagebuilder.ImagePipeline(stack, 'ImagePipeline-Container', { recipe: conta
 new integ.IntegTest(app, 'ImagePipelineTest-Container-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

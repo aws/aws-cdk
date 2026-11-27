@@ -131,3 +131,5 @@ integ.assertions.awsApiCall('EC2', 'describeSubnets', {
     },
   ],
 }));
+
+app.synth();

@@ -127,3 +127,5 @@ firstAssertion
   .next(secondAssertion)
   .next(thirdAssertion)
   .next(fourthAssertion);
+
+app.synth();

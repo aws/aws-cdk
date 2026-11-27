@@ -43,3 +43,5 @@ bus.addToResourcePolicy(new iam.PolicyStatement({
 new IntegTest(app, 'IntegTest-EventBusStack', {
   testCases: [stack],
 });
+
+app.synth();

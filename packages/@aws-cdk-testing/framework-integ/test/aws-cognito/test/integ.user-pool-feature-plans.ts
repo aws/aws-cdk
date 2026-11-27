@@ -21,3 +21,5 @@ new UserPool(stack, 'userpool-plus-plan', {
 });
 
 new IntegTest(app, 'IntegTest', { testCases: [stack] });
+
+app.synth();

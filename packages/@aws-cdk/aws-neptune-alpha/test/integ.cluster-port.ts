@@ -33,3 +33,5 @@ new DatabaseCluster(stack, 'Database', {
 new integ.IntegTest(app, 'NeptuneClusterPortTest', {
   testCases: [stack],
 });
+
+app.synth();

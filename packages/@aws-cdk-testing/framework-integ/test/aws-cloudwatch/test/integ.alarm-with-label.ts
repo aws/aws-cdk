@@ -31,3 +31,5 @@ const app = new App();
 new IntegTest(app, 'cdk-cloudwatch-alarms-with-label-integ-test', {
   testCases: [new AlarmWithLabelIntegrationTest(app, 'AlarmWithLabelIntegrationTest')],
 });
+
+app.synth();

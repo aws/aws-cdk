@@ -43,3 +43,5 @@ new IntegTest(app, 'KafkaVersionIntegTest', {
     new KafkaVersionTest(app, 'KafkaVersionTestStack'),
   ],
 });
+
+app.synth();

@@ -96,3 +96,5 @@ eventVerification.assertAtPath('Policy', ExpectedResult.objectLike({
     })],
   ),
 }));
+
+app.synth();

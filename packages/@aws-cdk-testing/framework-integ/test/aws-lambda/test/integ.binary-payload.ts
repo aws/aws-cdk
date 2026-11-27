@@ -59,3 +59,4 @@ invokeWithString.provider.addToRolePolicy({
 invokeWithByteArray.expect(ExpectedResult.objectLike({ Payload: { name: 'world' } }));
 invokeWithString.expect(ExpectedResult.objectLike({ Payload: { name: 'world' } }));
 
+app.synth();

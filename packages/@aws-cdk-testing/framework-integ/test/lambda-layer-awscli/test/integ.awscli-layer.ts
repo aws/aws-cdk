@@ -51,3 +51,5 @@ new integ.IntegTest(app, 'lambda-layer-awscli-integ-test', {
     },
   },
 });
+
+app.synth();

@@ -92,3 +92,5 @@ new Rule(stack, 'MySuffixEqualsIgnoreCase', {
 new IntegTest(app, 'IntegTest-BatchDefaultEnvVarsStack', {
   testCases: [stack],
 });
+
+app.synth();

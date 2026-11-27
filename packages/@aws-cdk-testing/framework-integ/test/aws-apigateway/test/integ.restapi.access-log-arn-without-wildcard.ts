@@ -49,3 +49,5 @@ getStage.expect(ExpectedResult.objectLike({
     }),
   },
 }));
+
+app.synth();

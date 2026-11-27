@@ -50,3 +50,5 @@ new IntegTest(app, 'proxy-sql-server-integ-test', {
     },
   },
 });
+
+app.synth();

@@ -47,3 +47,5 @@ new route53.HttpsRecord(zone, 'HttpsAlias', {
 new IntegTest(app, 'aws-cdk-route53-cloudfront-alias-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

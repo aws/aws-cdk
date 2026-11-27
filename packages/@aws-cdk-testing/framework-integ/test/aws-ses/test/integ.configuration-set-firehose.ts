@@ -60,3 +60,5 @@ integTest.assertions.awsApiCall('sesv2', 'getConfigurationSetEventDestinations',
     }),
   ]),
 }));
+
+app.synth();

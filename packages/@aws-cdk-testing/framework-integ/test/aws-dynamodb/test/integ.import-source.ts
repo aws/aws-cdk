@@ -126,3 +126,5 @@ const getFromIonTable = getFromTable(dynamoStack.ionTable.tableName);
 const getFromCsvTable = getFromTable(dynamoStack.csvTable.tableName);
 
 getFromDynamoDBJsonTable.next(getFromIonTable).next(getFromCsvTable);
+
+app.synth();

@@ -21,3 +21,5 @@ new CfnOutput(stack, 'Domain', {
 });
 
 new IntegTest(app, 'IntegTest', { testCases: [stack] });
+
+app.synth();

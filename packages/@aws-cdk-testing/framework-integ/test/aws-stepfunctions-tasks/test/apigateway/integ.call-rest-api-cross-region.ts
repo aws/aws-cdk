@@ -63,3 +63,5 @@ new cdk.CfnOutput(sfnStack, 'stateMachineArn', {
 new IntegTest(app, 'call-rest-api-cross-region', {
   testCases: [apiStack, sfnStack],
 });
+
+app.synth();

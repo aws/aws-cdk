@@ -49,3 +49,5 @@ const stack = new RegionalNatGatewayStack(app, 'RegionalNatGatewayStack');
 new IntegTest(app, 'regional-nat-gateway-integ', {
   testCases: [stack],
 });
+
+app.synth();

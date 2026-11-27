@@ -49,3 +49,5 @@ integ.assertions.awsApiCall('RDS', 'describeDBClusters', {
 }).expect(ExpectedResult.objectLike({
   DBClusters: [{ MasterUserSecret: { SecretStatus: 'active' } }],
 }));
+
+app.synth();

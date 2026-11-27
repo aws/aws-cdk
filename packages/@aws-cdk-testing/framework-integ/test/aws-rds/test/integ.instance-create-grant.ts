@@ -29,3 +29,5 @@ instance.grantConnect(role);
 new IntegTest(app, 'instance-create-grant-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

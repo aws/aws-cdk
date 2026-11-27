@@ -36,3 +36,5 @@ const app = new App();
 const stack = new TestStack(app, 'cdk-integ-opensearch-min');
 
 new IntegTest(app, 'integ-openseach-min', { testCases: [stack] });
+
+app.synth();

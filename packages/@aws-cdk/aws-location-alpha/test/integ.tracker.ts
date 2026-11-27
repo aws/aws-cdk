@@ -60,3 +60,5 @@ test.assertions.awsApiCall('location', 'ListTrackerConsumersCommand', { TrackerN
       stack.geofenceCollectionForAdd2.geofenceCollectionArn,
     ],
   }));
+
+app.synth();

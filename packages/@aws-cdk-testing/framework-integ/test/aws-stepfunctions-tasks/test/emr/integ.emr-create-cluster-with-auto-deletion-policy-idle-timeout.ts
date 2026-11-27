@@ -82,3 +82,5 @@ describe.expect(ExpectedResult.objectLike({
   interval: Duration.seconds(10),
   totalTimeout: Duration.minutes(5),
 });
+
+app.synth();

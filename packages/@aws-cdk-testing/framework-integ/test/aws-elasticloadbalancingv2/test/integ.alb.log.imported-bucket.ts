@@ -47,3 +47,5 @@ new IntegTest(app, 'cdk-integ-alb-log-imported-bucket', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

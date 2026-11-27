@@ -41,3 +41,5 @@ new integ.IntegTest(app, 'NetworkConnectorTest', {
   testCases: [stack],
   diffAssets: false,
 });
+
+app.synth();

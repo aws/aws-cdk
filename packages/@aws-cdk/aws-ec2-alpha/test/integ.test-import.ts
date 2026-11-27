@@ -110,3 +110,5 @@ new IntegTest(app, 'integtest-model', {
   testCases: [importStack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

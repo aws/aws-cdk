@@ -94,3 +94,5 @@ const resp2 = integ.assertions.awsApiCall('CognitoIdentityServiceProvider', 'des
 resp2.assertAtPath('UserPoolClient.AnalyticsConfiguration.ApplicationId', ExpectedResult.stringLikeRegexp('.*'));
 resp2.assertAtPath('UserPoolClient.AnalyticsConfiguration.RoleArn', ExpectedResult.stringLikeRegexp('arn:aws:iam::.*:role/.*'));
 resp2.assertAtPath('UserPoolClient.AnalyticsConfiguration.ExternalId', ExpectedResult.stringLikeRegexp('.*'));
+
+app.synth();

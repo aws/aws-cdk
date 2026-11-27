@@ -118,3 +118,5 @@ integ.assertions.httpApiCall(httpApi.apiEndpoint + '/thirdroute/subroute').expec
   body: 'success-hit-third-lambda',
   status: 200,
 }));
+
+app.synth();

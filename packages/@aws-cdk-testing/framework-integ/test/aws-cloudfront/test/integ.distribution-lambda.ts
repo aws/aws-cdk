@@ -44,3 +44,5 @@ new IntegTest(app, 'integ-distribution-lambda-test', {
     },
   },
 });
+
+app.synth();

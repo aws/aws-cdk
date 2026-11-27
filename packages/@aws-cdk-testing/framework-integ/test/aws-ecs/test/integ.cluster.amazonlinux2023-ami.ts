@@ -80,3 +80,5 @@ new EC2CapacityProvider(stack, 'Neuron', {
 new integ.IntegTest(app, 'ClusterAL2023', {
   testCases: [stack],
 });
+
+app.synth();

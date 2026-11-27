@@ -105,3 +105,5 @@ testCase.assertions
         body: { object: EGRESS_OBJECT_BODY },
       })),
   );
+
+app.synth();

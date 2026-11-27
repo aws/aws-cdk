@@ -33,3 +33,5 @@ func.grantInvoke(policy);
 new IntegTest(app, 'PolicyInteg', {
   testCases: [stack],
 });
+
+app.synth();

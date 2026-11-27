@@ -30,3 +30,5 @@ new IntegTest(app, 'iam-policy-statement-sid', {
   testCases: [new PolicyStatementSidStack(app, 'PolicyStatementSidStack')],
   diffAssets: true,
 });
+
+app.synth();

@@ -41,3 +41,5 @@ const app = new App();
 new integ.IntegTest(app, 'ConfigurationSetInteg', {
   testCases: [new TestStack(app, 'cdk-ses-configuration-set-integ')],
 });
+
+app.synth();

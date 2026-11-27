@@ -38,3 +38,5 @@ const testCase = new LateBoundDeploymentStageStack(app);
 new IntegTest(app, 'lambda-api-latebound-deploymentstage', {
   testCases: [testCase],
 });
+
+app.synth();

@@ -70,3 +70,5 @@ new IntegTest(app, 'apigatewayv2-aws-integration-sqs-integ-test', {
     },
   },
 });
+
+app.synth();

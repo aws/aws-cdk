@@ -221,3 +221,5 @@ new apigw.LambdaRestApi(stack, 'MyRestAPI', {
 });
 
 new IntegTest(app, 'PropertyInjectorTest', { testCases: [stack] });
+
+app.synth();

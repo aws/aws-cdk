@@ -108,3 +108,5 @@ metrics.writeIOPS({ period }).createAlarm(stack, 'WriteIOPSAlarm', {
 new IntegTest(app, 'rds-instance-metrics-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

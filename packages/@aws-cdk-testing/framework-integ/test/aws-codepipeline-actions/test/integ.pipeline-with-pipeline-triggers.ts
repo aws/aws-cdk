@@ -215,3 +215,5 @@ integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', {
     }],
   },
 }));
+
+app.synth();

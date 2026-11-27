@@ -41,3 +41,5 @@ const call = integ.assertions.httpApiCall(`https://${distribution.distributionDo
 call.expect(ExpectedResult.objectLike({
   body: 'ecb13420-3826-4f11-a1b5-a4ac2f65c7c6',
 }));
+
+app.synth();

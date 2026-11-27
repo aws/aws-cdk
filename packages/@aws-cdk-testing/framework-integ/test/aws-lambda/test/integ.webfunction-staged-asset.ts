@@ -71,3 +71,5 @@ for (const fn of [automatic, automaticSecond, specific]) {
     .httpApiCall(`https://${fn.endpoint.domainName}/`)
     .expect(integ.ExpectedResult.objectLike({ status: 403 }));
 }
+
+app.synth();

@@ -65,3 +65,5 @@ test.assertions.awsApiCall('amplify', 'GetAppCommand', {
       },
     },
   }));
+
+app.synth();

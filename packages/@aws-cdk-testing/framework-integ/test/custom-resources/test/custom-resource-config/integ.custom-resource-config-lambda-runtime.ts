@@ -25,3 +25,5 @@ new integ.IntegTest(app, 'integ-test-custom-resource-config-lambda-runtime', {
   testCases: [stack],
   diffAssets: false,
 });
+
+app.synth();

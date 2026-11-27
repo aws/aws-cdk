@@ -27,3 +27,5 @@ const integ = new IntegTest(app, 's3-origin-oac-list-access', {
 
 const call = integ.assertions.httpApiCall(`https://${distribution.distributionDomainName}/test.html`);
 call.expect(ExpectedResult.objectLike({ status: 404 }));
+
+app.synth();

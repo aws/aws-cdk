@@ -72,3 +72,5 @@ new IntegTest(app, 'aws-cdk-nested-stack-in-product-stack-integ', {
     },
   })],
 });
+
+app.synth();

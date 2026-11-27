@@ -45,3 +45,5 @@ new IntegTest(app, 'aws-cdk-s3-integ-test', {
   testCases: [testCase],
   regions: [testCase.region],
 });
+
+app.synth();

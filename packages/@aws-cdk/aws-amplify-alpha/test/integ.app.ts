@@ -48,3 +48,5 @@ new IntegTest(app, 'cdk-amplify-app-integ', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

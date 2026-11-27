@@ -32,3 +32,4 @@ new IntegTest(app, 'DualStackTesting', {
   testCases: [stack],
 });
 
+app.synth();

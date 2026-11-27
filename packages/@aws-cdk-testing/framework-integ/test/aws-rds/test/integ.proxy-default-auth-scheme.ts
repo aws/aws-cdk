@@ -35,3 +35,5 @@ proxy.grantConnect(role, 'database-user');
 new integ.IntegTest(app, 'database-proxy-default-auth-scheme-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

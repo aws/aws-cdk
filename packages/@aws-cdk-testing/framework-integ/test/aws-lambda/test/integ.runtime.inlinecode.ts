@@ -100,3 +100,5 @@ new CfnOutput(stack, 'NODEJS_26_X-functionName', { value: node26xfn.functionName
 new integ.IntegTest(app, 'lambda-runtime-inlinecode', {
   testCases: [stack],
 });
+
+app.synth();

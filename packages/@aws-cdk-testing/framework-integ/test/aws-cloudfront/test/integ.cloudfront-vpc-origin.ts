@@ -73,3 +73,5 @@ new cloudfront.VpcOrigin(stack, 'VpcOriginFromNLB', {
 new IntegTest(stack, 'cloudfront-vpc-origin-test', {
   testCases: [stack],
 });
+
+app.synth();

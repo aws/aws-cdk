@@ -28,3 +28,5 @@ const stack = new TestStack(app, 'cdk-amplify-branch-compute-role');
 new IntegTest(app, 'amplify-branch-compute-role', {
   testCases: [stack],
 });
+
+app.synth();

@@ -18,3 +18,5 @@ new UserPool(stack, 'userpool-custom-threat-protection', {
 });
 
 new IntegTest(app, 'IntegTest', { testCases: [stack] });
+
+app.synth();

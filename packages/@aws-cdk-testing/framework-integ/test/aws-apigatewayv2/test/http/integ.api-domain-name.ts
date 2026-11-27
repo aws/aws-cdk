@@ -49,3 +49,4 @@ new IntegTest(app, 'http-api', {
   enableLookups: true,
 });
 
+app.synth();

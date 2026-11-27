@@ -71,3 +71,5 @@ for (const queue of [stack.servicePrincipalQueue, stack.principalAndResourceQueu
     },
   }));
 }
+
+app.synth();

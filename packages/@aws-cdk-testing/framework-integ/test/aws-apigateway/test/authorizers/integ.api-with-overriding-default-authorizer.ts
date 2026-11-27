@@ -68,3 +68,5 @@ api.root.addMethod('GET', new MockIntegration({
 new IntegTest(app, 'apigateway-with-overriding-default-authorizer', {
   testCases: [stack],
 });
+
+app.synth();

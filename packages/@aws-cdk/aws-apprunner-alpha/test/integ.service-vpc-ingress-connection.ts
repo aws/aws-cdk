@@ -42,3 +42,5 @@ new integ.IntegTest(app, 'AppRunnerVpcIngressConnection', {
 });
 
 new cdk.CfnOutput(stack, 'Vpc Ingress Connection Domain name', { value: `https://${vpcIngressConnection.domainName}` });
+
+app.synth();

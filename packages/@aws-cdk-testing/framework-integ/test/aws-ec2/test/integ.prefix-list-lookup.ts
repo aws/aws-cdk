@@ -21,3 +21,5 @@ new integ.IntegTest(app, 'prefixlist-from-lookup-integ', {
   enableLookups: true,
   testCases: [stack],
 });
+
+app.synth();

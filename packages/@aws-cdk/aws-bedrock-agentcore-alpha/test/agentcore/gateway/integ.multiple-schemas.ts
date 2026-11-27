@@ -73,3 +73,4 @@ new integ.IntegTest(app, 'MultipleSchemasIntegTest', {
   testCases: [stack],
 });
 
+app.synth();

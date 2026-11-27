@@ -69,3 +69,5 @@ new IntegTest(app, 'cdk-dynamodb-customized-role-integ', {
   testCases: [stack, stack2],
   diffAssets: true,
 });
+
+app.synth();

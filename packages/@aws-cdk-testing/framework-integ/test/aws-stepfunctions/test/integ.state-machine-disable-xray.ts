@@ -12,3 +12,5 @@ new sfn.StateMachine(stack, 'StateMachine', {
 });
 
 new IntegTest(app, 'StateMachineDisableXray', { testCases: [stack] });
+
+app.synth();

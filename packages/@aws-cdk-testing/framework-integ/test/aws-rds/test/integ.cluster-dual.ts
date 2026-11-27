@@ -55,3 +55,5 @@ new rds.DatabaseCluster(stack, 'Ipv4Cluster', {
 new IntegTest(app, 'cluster-dual-test', {
   testCases: [stack],
 });
+
+app.synth();

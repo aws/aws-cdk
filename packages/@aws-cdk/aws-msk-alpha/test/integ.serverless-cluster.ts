@@ -34,3 +34,5 @@ const stack = new ServelessStack(app, 'msk-serverless-stack');
 new IntegTest(app, 'msk-serverless-integ', {
   testCases: [stack],
 });
+
+app.synth();

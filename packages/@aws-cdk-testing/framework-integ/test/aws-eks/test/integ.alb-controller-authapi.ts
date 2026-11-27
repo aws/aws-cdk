@@ -44,3 +44,5 @@ const stack = new EksClusterStack(app, 'integ-eks-stack');
 new IntegTest(app, 'integtest', {
   testCases: [stack],
 });
+
+app.synth();

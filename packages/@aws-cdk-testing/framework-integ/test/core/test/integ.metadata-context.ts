@@ -49,3 +49,5 @@ CfnResourceMetadataContext.of(subsystem, {
 new integ.IntegTest(app, 'MetadataContextInteg', {
   testCases: [stack],
 });
+
+app.synth();

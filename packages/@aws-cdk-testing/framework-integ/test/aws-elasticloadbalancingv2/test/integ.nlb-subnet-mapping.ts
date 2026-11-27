@@ -111,3 +111,5 @@ new elbv2.NetworkLoadBalancer(stack, 'InternalLb', {
 new integ.IntegTest(app, 'NlbSubnetMappingStackTest', {
   testCases: [stack],
 });
+
+app.synth();

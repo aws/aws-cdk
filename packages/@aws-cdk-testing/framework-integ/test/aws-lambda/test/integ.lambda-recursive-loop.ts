@@ -34,3 +34,5 @@ new lambda.Function(stack, 'LambdaWithDefaultRecursionLoopProtection', {
 new IntegTest(app, 'LambdaRecursiveLoopTest', {
   testCases: [stack],
 });
+
+app.synth();

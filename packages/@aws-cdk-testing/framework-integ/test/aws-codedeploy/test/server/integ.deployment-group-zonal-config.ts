@@ -60,3 +60,5 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
 new integ.IntegTest(app, 'ServerDeploymentGroupZonalConfig', {
   testCases: [stack],
 });
+
+app.synth();

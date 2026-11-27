@@ -47,3 +47,5 @@ stage.node.addDependency(account);
 new IntegTest(app, 'aws-cdk-aws-apigatewayv2-websocket-stage-test', {
   testCases: [stack],
 });
+
+app.synth();

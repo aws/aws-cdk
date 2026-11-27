@@ -20,3 +20,5 @@ new imagebuilder.Component(stack, 'S3AssetComponent', {
 new integ.IntegTest(app, 'ComponentTest', {
   testCases: [stack],
 });
+
+app.synth();

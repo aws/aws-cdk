@@ -33,3 +33,5 @@ new rds.DatabaseCluster(stack, 'DatabaseClusterPostgresql', {
 new integ.IntegTest(app, 'EnableLocalWriteForwardingClusterStackInteg', {
   testCases: [stack],
 });
+
+app.synth();

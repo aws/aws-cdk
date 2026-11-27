@@ -45,3 +45,4 @@ new IntegTest(app, 'integ-test', {
   stackUpdateWorkflow: false,
 });
 
+app.synth();

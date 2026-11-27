@@ -134,3 +134,5 @@ productionVariant.metricGpuMemoryUtilization().createAlarm(stack, 'GPUMemoryUtil
 new IntegTest(app, 'integtest-endpoint-alarms', {
   testCases: [stack],
 });
+
+app.synth();

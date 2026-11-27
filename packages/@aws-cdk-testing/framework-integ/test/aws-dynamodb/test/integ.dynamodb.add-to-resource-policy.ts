@@ -96,3 +96,4 @@ new IntegTest(app, 'add-to-resource-policy-integ-test', {
   testCases: [stack],
 });
 
+app.synth();

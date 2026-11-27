@@ -24,3 +24,5 @@ new signer.SigningProfile(stack, 'SigningProfileWithName', {
 new IntegTest(app, 'cdk-integ-signer-signing-profile', {
   testCases: [stack],
 });
+
+app.synth();

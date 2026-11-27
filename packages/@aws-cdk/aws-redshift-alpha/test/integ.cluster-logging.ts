@@ -51,3 +51,5 @@ RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY);
 new integ.IntegTest(app, 'CloudWatchLoggingInteg', {
   testCases: [stack],
 });
+
+app.synth();

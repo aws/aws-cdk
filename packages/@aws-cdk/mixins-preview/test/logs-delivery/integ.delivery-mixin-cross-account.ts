@@ -152,3 +152,5 @@ const sourceStack = new SourceStack(app, 'source-stack', {
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [destStack, sourceStack],
 });
+
+app.synth();

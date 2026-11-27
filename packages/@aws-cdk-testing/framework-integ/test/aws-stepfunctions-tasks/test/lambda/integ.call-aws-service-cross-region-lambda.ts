@@ -119,3 +119,5 @@ integ.assertions
       '.*"statusCode":200.*"status":"success".*"message":"Hello from target Lambda".*',
     ),
   }));
+
+app.synth();

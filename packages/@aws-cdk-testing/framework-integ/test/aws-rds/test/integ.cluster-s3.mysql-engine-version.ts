@@ -30,3 +30,4 @@ new IntegTest(app, 'aws-cdk-rds-s3-mysql-engine-version-integ-test', {
   testCases: [stack],
 });
 
+app.synth();

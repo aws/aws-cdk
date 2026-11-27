@@ -21,3 +21,5 @@ new elbv2.NetworkLoadBalancer(stack, 'LB', {
 });
 
 new IntegTest(app, 'IntegTest', { testCases: [stack] });
+
+app.synth();

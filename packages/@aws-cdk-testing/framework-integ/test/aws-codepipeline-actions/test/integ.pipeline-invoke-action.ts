@@ -102,3 +102,5 @@ awsApiCall1.assertAtPath('pipeline.stages.0.name', ExpectedResult.stringLikeRege
 awsApiCall1.assertAtPath('pipeline.stages.1.name', ExpectedResult.stringLikeRegexp('Build'));
 awsApiCall1.assertAtPath('pipeline.stages.1.actions.0.name', ExpectedResult.stringLikeRegexp('Build'));
 awsApiCall1.assertAtPath('pipeline.stages.1.actions.1.name', ExpectedResult.stringLikeRegexp('Invoke'));
+
+app.synth();

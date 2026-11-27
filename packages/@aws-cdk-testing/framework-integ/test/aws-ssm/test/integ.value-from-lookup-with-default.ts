@@ -41,3 +41,4 @@ getParameterResult.expect(integ.ExpectedResult.objectLike({
   },
 }));
 
+app.synth();

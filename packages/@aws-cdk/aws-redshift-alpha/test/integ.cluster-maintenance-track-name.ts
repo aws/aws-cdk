@@ -43,3 +43,5 @@ const redshiftStack = new RedshiftStack(stack, 'RedshiftMaintenanceTrackNameInte
 new integ.IntegTest(app, 'RedshiftMaintenanceTrackNameInteg', {
   testCases: [redshiftStack],
 });
+
+app.synth();

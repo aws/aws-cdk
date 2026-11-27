@@ -44,3 +44,5 @@ new CfnOutput(stack, 'SignInLink', {
     redirectUri: 'https://example.com',
   }),
 });
+
+app.synth();

@@ -31,3 +31,5 @@ new CfnOutput(stack, 'SignInUrl', {
     redirectUri: 'https://example.com',
   }),
 });
+
+app.synth();

@@ -100,3 +100,7 @@ new IntegTest(app, 'Route53RenameCrossAccountInteg', {
   testCases: [oldChildStack, newChildStack],
   diffAssets: true,
 });
+
+app.synth();
+oldApp.synth();
+newApp.synth();

@@ -57,3 +57,5 @@ const stack = new TestStack(app, 'aws-cdk-docdb-removal-policy-snapshot-stack');
 new IntegTest(app, 'aws-cdk-docdb-removal-policy-snapshot-integ', {
   testCases: [stack],
 });
+
+app.synth();

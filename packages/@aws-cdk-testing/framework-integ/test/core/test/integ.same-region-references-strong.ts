@@ -40,3 +40,5 @@ new IntegTest(app, 'SameRegionStrongReferenceTest', {
   regions: ['us-east-1'],
   diffAssets: true,
 });
+
+app.synth();

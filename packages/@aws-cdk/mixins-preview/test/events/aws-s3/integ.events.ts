@@ -158,3 +158,4 @@ new integ.IntegTest(app, 'Bucket-Test', {
   ],
 });
 
+app.synth();

@@ -29,3 +29,5 @@ const testCase = new TestStack(app, 'integ-bastionhost-disable-al2023-feature-fl
 new IntegTest(app, 'bastionhost-disable-al2023-feature-flag-test', {
   testCases: [testCase],
 });
+
+app.synth();

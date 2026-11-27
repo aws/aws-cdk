@@ -23,3 +23,5 @@ const stack = new TargetGroupCrossZoneStack(app, 'nlb-target-group-cross-zone-st
 new IntegTest(app, 'nlb-target-group-cross-zone-test-stack', {
   testCases: [stack],
 });
+
+app.synth();

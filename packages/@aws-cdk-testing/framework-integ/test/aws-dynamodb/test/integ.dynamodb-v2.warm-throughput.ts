@@ -47,3 +47,5 @@ const stack = new TestStack(app, 'warm-throughput-stack-v2', { env: { region: 'e
 new IntegTest(app, 'warm-throughput-integ-test-v2', {
   testCases: [stack],
 });
+
+app.synth();

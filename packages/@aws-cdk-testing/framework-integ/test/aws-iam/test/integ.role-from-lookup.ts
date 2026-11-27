@@ -33,3 +33,5 @@ new IntegTest(app, 'integ-iam-role-from-lookup', {
     postDestroy: [`aws iam delete-role --role-name ${roleName}`],
   },
 });
+
+app.synth();

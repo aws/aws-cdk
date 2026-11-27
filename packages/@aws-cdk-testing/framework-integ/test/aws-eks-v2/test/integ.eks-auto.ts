@@ -84,3 +84,5 @@ const stack2 = new EksAutoModeNodePoolsStack(app, 'eks-auto-mode-empty-nodepools
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-integ', {
   testCases: [stack1, stack2],
 });
+
+app.synth();

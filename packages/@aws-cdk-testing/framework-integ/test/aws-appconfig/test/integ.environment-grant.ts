@@ -22,3 +22,5 @@ env.grantReadConfig(user);
 new IntegTest(app, 'appconfig-environment', {
   testCases: [stack],
 });
+
+app.synth();

@@ -38,3 +38,5 @@ const testCase = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances', {
 new IntegTest(app, 'integ-test', {
   testCases: [testCase],
 });
+
+app.synth();

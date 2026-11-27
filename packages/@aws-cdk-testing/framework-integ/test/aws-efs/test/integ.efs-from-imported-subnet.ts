@@ -32,3 +32,5 @@ new FileSystem(stack, 'FileSystem', {
 new IntegTest(app, 'efs-from-imported-subnet-test', {
   testCases: [stack],
 });
+
+app.synth();

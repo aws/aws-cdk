@@ -59,3 +59,5 @@ new appsync.GraphqlApi(stack, 'api', {
 new integ.IntegTest(app, 'GraphqlApiLambdaPermissionTest', {
   testCases: [stack],
 });
+
+app.synth();

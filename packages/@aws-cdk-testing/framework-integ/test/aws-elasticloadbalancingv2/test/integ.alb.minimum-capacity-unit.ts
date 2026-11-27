@@ -35,3 +35,5 @@ new IntegTest(app, 'MinimumCapacityUnitAlbInteg', {
     new TestStack(app, 'MinimumCapacityUnitAlbStack'),
   ],
 });
+
+app.synth();

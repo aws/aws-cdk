@@ -43,3 +43,5 @@ violating.addPropertyOverride('RoutingStrategy.FleetId', 'fleet-11111111-2222-33
 new IntegTest(app, 'DefaultRegoRulesTest', {
   testCases: [stack],
 });
+
+app.synth();

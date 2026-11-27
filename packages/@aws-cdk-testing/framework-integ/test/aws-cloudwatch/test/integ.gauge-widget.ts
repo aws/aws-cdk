@@ -39,3 +39,5 @@ dashboard.addWidgets(widget);
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
+
+app.synth();

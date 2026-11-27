@@ -19,3 +19,5 @@ const dist = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
 });
 
 new cdk.CfnOutput(stack, 'DistributionDomainName', { value: dist.domainName });
+
+app.synth();

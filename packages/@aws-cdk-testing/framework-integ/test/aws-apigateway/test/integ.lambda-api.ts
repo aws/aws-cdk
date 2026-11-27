@@ -47,3 +47,5 @@ const call = integ.assertions.httpApiCall(testCase.api.deploymentStage.urlForPat
 call.expect(ExpectedResult.objectLike({
   body: { message: 'Hello' },
 }));
+
+app.synth();

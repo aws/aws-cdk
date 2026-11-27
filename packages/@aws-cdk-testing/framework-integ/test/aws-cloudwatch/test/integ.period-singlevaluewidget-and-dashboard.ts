@@ -27,3 +27,5 @@ const testCase = new TestStack(app, 'aws-cdk-cloudwatch-singlevaluewidget-period
 new IntegTest(app, 'singlevaluewidget-with-period', {
   testCases: [testCase],
 });
+
+app.synth();

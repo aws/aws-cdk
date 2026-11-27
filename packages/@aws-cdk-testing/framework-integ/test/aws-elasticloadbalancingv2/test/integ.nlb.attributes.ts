@@ -22,3 +22,5 @@ new elbv2.NetworkLoadBalancer(stack, 'NLB', {
 new integ.IntegTest(app, 'nlb-attlibutes-integ', {
   testCases: [stack],
 });
+
+app.synth();

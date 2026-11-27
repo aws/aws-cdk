@@ -29,3 +29,5 @@ new rds.DatabaseCluster(stack, 'DatabaseCluster', {
 new IntegTest(app, 'test-cluster-applyimmediately-integ', {
   testCases: [stack],
 });
+
+app.synth();

@@ -191,3 +191,5 @@ for (const stack of [stackLatest, stackPrevious]) {
     ]),
   }));
 }
+
+app.synth();

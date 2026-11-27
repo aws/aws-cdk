@@ -73,3 +73,5 @@ const testCase = new TestStack(app, 'integ-ec2-multiple-instances-in-stack');
 new IntegTest(app, 'instance-test', {
   testCases: [testCase],
 });
+
+app.synth();

@@ -118,3 +118,5 @@ getMetadataLocation.expect(
     versionToken: Match.stringLikeRegexp('.+'),
   }),
 );
+
+app.synth();

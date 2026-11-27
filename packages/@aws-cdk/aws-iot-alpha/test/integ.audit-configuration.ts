@@ -61,3 +61,5 @@ const testCase = new TestStack(app, 'IotAuditConfigurationTestStack');
 new integ.IntegTest(app, 'IotAuditConfigurationTest', {
   testCases: [testCase],
 });
+
+app.synth();

@@ -40,3 +40,5 @@ integ.assertions.awsApiCall('CloudFront', 'describeFunction', {
     }),
   }),
 );
+
+app.synth();

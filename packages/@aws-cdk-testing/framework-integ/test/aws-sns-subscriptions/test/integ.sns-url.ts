@@ -38,3 +38,5 @@ const stack = new SnsToUrlStack(app, 'SnsToUrlStack');
 new integ.IntegTest(app, 'cdk-integ', {
   testCases: [stack],
 });
+
+app.synth();

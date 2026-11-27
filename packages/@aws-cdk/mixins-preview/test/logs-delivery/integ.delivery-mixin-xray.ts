@@ -33,3 +33,5 @@ memory2.with(CfnMemoryLogsMixin.TRACES.toDestination(destination));
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],
 });
+
+app.synth();

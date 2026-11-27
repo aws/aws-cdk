@@ -95,3 +95,5 @@ new route53.ARecord(stack, 'AliasRecord', {
 new IntegTest(app, 'cdk-route53-ebs-hostedzoneid-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

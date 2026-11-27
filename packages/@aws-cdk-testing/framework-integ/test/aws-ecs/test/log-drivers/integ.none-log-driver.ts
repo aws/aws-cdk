@@ -21,3 +21,4 @@ new integ.IntegTest(app, 'cdk-ecs-none-log-driver-test', {
   testCases: [stack],
 });
 
+app.synth();

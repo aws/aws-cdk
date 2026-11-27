@@ -25,3 +25,5 @@ integTest.assertions.httpApiCall(api.urlForPath('/pets')).expect(ExpectedResult.
   status: 200,
   ok: true,
 }));
+
+app.synth();

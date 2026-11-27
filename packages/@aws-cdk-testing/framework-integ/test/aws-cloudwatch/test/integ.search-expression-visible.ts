@@ -35,3 +35,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-search-expression-visible', {
   testCases: [new SearchExpressionVisibleIntegrationTest(app, 'SearchExpressionVisibleIntegrationTest')],
 });
+
+app.synth();

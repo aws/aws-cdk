@@ -26,3 +26,5 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-Container', {
 new integ.IntegTest(app, 'LifecyclePolicyTest-Container-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

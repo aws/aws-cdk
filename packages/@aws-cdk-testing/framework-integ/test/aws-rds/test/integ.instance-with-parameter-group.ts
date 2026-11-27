@@ -37,3 +37,5 @@ new IntegTest(app, 'rds-instance-with-parameter-group-integ-test', {
     },
   },
 });
+
+app.synth();

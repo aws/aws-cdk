@@ -74,3 +74,5 @@ new cdk.CfnOutput(stack, 'LogGroupArn', {
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeObservabilityNoResourcePolicyTest', {
   testCases: [stack],
 });
+
+app.synth();

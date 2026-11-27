@@ -33,3 +33,5 @@ new IntegTest(app, 'cdk-ses-receipt-integ', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

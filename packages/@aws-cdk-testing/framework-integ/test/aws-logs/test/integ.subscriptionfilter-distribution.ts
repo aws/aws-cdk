@@ -27,3 +27,5 @@ const testCase = new SubscriptionFilterDistributionIntegStack(app, 'aws-cdk-subs
 new IntegTest(app, 'integ-test', {
   testCases: [testCase],
 });
+
+app.synth();

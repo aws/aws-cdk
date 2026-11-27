@@ -115,3 +115,5 @@ target.attachToApplicationTargetGroup(blueTargetGroup);
 new integ.IntegTest(app, 'aws-ecs-linear', {
   testCases: [stack],
 });
+
+app.synth();

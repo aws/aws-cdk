@@ -60,3 +60,5 @@ const stack = new KafkaQueueEventSourceTest(app, 'lambda-event-source-kafka-queu
 new integ.IntegTest(app, 'LambdaEventSourceKafkaQueueTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -68,3 +68,5 @@ new cdk.CfnOutput(stack, 'PipelineConsoleLink', {
 new IntegTest(app, 'ecr-source-action', {
   testCases: [stack],
 });
+
+app.synth();

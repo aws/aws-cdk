@@ -23,3 +23,5 @@ new integ.IntegTest(app, 'integ-test-custom-resource-config-removal-policy-logGr
   testCases: [stack],
   diffAssets: false,
 });
+
+app.synth();

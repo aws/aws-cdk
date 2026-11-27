@@ -149,3 +149,5 @@ albCall.expect(ExpectedResult.objectLike({ status: 200 }));
 
 const nlbCall = integ.assertions.httpApiCall(`https://${distribution.distributionDomainName}/nlb/index.html`);
 nlbCall.expect(ExpectedResult.objectLike({ status: 200 }));
+
+app.synth();

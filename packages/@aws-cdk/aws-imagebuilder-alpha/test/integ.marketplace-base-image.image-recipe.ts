@@ -15,3 +15,5 @@ new cdk.CfnOutput(stack, 'ImageRecipeArn', { value: imageRecipe.imageRecipeArn }
 new integ.IntegTest(app, 'ImageRecipeTest-MarketplaceBaseImage', {
   testCases: [stack],
 });
+
+app.synth();

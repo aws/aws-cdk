@@ -48,3 +48,5 @@ repoOnEvent.onEvent('OnEventTargetLambda', {
 new IntegTest(app, 'cdk-ecr-integ-test-basic', {
   testCases: [stack],
 });
+
+app.synth();

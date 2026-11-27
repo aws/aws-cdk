@@ -135,3 +135,5 @@ integTest.assertions.invokeFunction({
 }).expect(integ.ExpectedResult.objectLike({
   Payload: '[[true,true]]',
 }));
+
+app.synth();

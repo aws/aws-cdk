@@ -114,3 +114,5 @@ for (const call of [fullContentCall, metadataOnlyCall]) {
     Resource: ['*'],
   });
 }
+
+app.synth();

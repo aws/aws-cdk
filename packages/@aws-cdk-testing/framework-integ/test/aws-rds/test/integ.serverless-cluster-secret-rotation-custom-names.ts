@@ -44,3 +44,4 @@ new IntegTest(app, 'cdk-rds-integ-secret-rotation', {
   testCases: [stack],
 });
 
+app.synth();

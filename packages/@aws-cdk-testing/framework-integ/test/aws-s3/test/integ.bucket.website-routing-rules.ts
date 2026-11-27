@@ -21,3 +21,5 @@ new s3.Bucket(stack, 'MyBucketWithRoutingRules', {
 new IntegTest(app, 'cdk-integ-s3-bucket', {
   testCases: [stack],
 });
+
+app.synth();

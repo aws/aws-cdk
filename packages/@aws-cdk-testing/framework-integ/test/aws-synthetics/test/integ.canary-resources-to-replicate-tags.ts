@@ -35,3 +35,5 @@ const testStack = new TestStack(app, 'SyntheticsCanaryResourcesToReplicateTagsSt
 new IntegTest(app, 'SyntheticsCanaryResourcesToReplicateTags', {
   testCases: [testStack],
 });
+
+app.synth();

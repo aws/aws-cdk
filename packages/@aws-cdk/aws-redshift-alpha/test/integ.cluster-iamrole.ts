@@ -98,3 +98,5 @@ new integ.IntegTest(app, 'IamRoleInteg', {
     singleProviderRoleTestStack,
   ],
 });
+
+app.synth();

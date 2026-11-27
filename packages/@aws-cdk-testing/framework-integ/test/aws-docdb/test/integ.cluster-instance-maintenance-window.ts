@@ -70,3 +70,5 @@ integ.assertions.awsApiCall('DocDB', 'describeDBInstances', {
     },
   ],
 }));
+
+app.synth();

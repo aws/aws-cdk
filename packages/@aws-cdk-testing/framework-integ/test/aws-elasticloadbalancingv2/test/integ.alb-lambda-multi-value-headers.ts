@@ -89,3 +89,5 @@ listener.addAction('DefaultAction', {
 new IntegTest(app, 'integ-alb-lambda-multi-value-headers', {
   testCases: [stack],
 });
+
+app.synth();

@@ -88,3 +88,5 @@ new IntegTest(app, 'StackSetPipelineStackInteg', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

@@ -63,3 +63,4 @@ new integ.IntegTest(app, 'BedrockAgentCoreOnlineEvaluation', {
   testCases: [stack],
 });
 
+app.synth();

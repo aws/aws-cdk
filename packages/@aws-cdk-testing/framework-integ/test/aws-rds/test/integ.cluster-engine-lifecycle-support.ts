@@ -30,3 +30,5 @@ const stack = new TestStack(app, 'RdsClusterEngineLifecycleSupportStack');
 new IntegTest(app, 'RdsClusterEngineLifecycleSupportInteg', {
   testCases: [stack],
 });
+
+app.synth();

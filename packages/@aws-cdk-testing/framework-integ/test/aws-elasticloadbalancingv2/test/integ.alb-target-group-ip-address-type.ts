@@ -38,3 +38,5 @@ const stack = new TestStack(app, 'AlbTargetGroupIpAddressTypeTestStack');
 new IntegTest(app, 'AlbTargetGroupIpAddressTypeTestInteg', {
   testCases: [stack],
 });
+
+app.synth();

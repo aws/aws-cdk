@@ -12,3 +12,5 @@ const role = new iam.Role(stack, 'UserRole', {
 const stream = new Stream(stack, 'myStream');
 
 stream.grantReadWrite(role);
+
+app.synth();

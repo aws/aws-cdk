@@ -73,3 +73,4 @@ new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });
 
+app.synth();

@@ -29,3 +29,5 @@ const app = new App();
 new IntegTest(app, 'integ-test', {
   testCases: [new TestCase(app, 'integ-ec2-prefix-list-test')],
 });
+
+app.synth();

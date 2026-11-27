@@ -118,3 +118,5 @@ const integ = new IntegTest(app, 'CreateModelCustomizationJob', {
 integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: stateMachine.stateMachineArn,
 }).waitForAssertions();
+
+app.synth();

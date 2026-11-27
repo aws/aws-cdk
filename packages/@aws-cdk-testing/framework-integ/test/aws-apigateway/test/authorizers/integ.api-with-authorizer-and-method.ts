@@ -37,3 +37,5 @@ restApi.root
 new IntegTest(app, 'apigateway-with-authorizer-and-proxy', {
   testCases: [stack],
 });
+
+app.synth();

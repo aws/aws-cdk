@@ -52,3 +52,5 @@ integ.assertions.awsApiCall('CloudFront', 'getDistributionConfig', {
     }),
   }),
 );
+
+app.synth();

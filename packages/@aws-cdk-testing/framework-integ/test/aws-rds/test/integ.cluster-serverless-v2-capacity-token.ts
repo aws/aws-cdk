@@ -33,3 +33,5 @@ const app = new App();
 new IntegTest(app, 'integ-test-serverless-v2-capacity-token', {
   testCases: [new TestStack(app, 'integ-aurora-serverlessv2-cluster-capacity-token')],
 });
+
+app.synth();

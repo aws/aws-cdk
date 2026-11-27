@@ -93,3 +93,5 @@ const stack = new MetricsDashboard(app, 'MetricsDashboard');
 new integ.IntegTest(app, 'Metrics-Test', {
   testCases: [stack],
 });
+
+app.synth();

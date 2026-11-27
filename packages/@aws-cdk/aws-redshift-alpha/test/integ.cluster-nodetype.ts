@@ -35,3 +35,5 @@ new RedshiftRA3LargeTestStack(stack, 'redshift-ra3-large-integ');
 new integ.IntegTest(app, 'RA3LargeNodeIntegTest', {
   testCases: [stack],
 });
+
+app.synth();

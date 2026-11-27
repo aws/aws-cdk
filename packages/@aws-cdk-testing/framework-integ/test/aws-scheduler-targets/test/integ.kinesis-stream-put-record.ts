@@ -59,3 +59,4 @@ getRecords.assertAtPath(
   totalTimeout: cdk.Duration.minutes(10),
 });
 
+app.synth();

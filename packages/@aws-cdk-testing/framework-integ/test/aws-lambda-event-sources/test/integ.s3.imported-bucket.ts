@@ -29,3 +29,5 @@ new IntegTest(app, 'issue-4324', {
     stack2,
   ],
 });
+
+app.synth();

@@ -47,3 +47,5 @@ receiveMessage.expect(ExpectedResult.objectLike({
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(5),
 });
+
+app.synth();

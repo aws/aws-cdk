@@ -50,3 +50,4 @@ new integ.IntegTest(app, 'InstanceLifecyclePolicyTest', {
   testCases: [stack],
 });
 
+app.synth();

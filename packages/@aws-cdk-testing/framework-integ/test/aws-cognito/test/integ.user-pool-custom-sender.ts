@@ -50,3 +50,5 @@ new CfnOutput(stack, 'UserPoolId', {
 new CfnOutput(stack, 'ClientId', {
   value: client.userPoolClientId,
 });
+
+app.synth();

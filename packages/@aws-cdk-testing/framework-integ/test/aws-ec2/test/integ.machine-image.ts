@@ -70,3 +70,5 @@ new IntegTest(app, 'integ-test', {
   testCases: [new TestCase(app, 'integ-ec2-machine-image-test')],
   enableLookups: true,
 });
+
+app.synth();

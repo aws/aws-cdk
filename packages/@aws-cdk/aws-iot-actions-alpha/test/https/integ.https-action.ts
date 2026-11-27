@@ -75,3 +75,5 @@ integ.assertions.awsApiCall('IoT', 'getTopicRule', {
     },
   }),
 );
+
+app.synth();

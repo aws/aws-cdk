@@ -59,3 +59,5 @@ const stack = new TestStack(app, 'CidrRoutingConfig');
 new IntegTest(app, 'CidrRoutingConfigInteg', {
   testCases: [stack],
 });
+
+app.synth();

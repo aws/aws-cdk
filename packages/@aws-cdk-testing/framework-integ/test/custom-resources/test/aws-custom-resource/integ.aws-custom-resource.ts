@@ -136,3 +136,5 @@ integTest.assertions.awsApiCall('SNS', 'listTopics').expect(ExpectedResult.objec
     { TopicArn: testStack.topicArn },
   ]),
 }));
+
+app.synth();

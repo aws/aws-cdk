@@ -115,3 +115,5 @@ target.attachToApplicationTargetGroup(blueTargetGroup);
 new integ.IntegTest(app, 'aws-ecs-canary', {
   testCases: [stack],
 });
+
+app.synth();

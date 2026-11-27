@@ -122,3 +122,5 @@ integTest.assertions.awsApiCall('DynamoDB', 'batchGetItem', {
     ],
   },
 })).waitForAssertions();
+
+app.synth();

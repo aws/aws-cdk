@@ -19,3 +19,5 @@ new IntegTest(app, 'cdk-integ-auto-delete-images', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

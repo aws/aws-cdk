@@ -13,3 +13,5 @@ new route53.PublicHostedZone(stack, 'HostedZone', {
 new IntegTest(app, 'route53-accelerated-recovery-integ', {
   testCases: [stack],
 });
+
+app.synth();

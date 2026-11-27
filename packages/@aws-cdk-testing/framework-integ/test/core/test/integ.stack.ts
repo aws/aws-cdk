@@ -19,3 +19,5 @@ stack.exportStringListValue(['someValue', 'anotherValue'], {
 });
 
 new IntegTest(app, 'stack', { testCases: [stack] });
+
+app.synth();

@@ -23,3 +23,5 @@ new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
 new integ.IntegTest(app, 'ContainerRecipeTest-S3', {
   testCases: [stack],
 });
+
+app.synth();

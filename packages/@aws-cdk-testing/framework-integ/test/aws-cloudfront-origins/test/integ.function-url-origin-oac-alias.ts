@@ -100,3 +100,5 @@ lambdaAliasUrlHttpCall.assertions.httpApiCall(aliasUrl.url).expect(ExpectedResul
   status: 403,
   body: 'Forbidden',
 }));
+
+app.synth();

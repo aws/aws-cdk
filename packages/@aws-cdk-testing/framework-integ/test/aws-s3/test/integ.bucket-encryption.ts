@@ -65,3 +65,5 @@ getBucketEncryptionCalls[0].provider.addToRolePolicy({
   Action: ['s3:GetEncryptionConfiguration'],
   Resource: ['*'],
 });
+
+app.synth();

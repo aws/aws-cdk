@@ -48,3 +48,5 @@ integTest.assertions.awsApiCall('eks', 'describeNodegroup', {
     },
   },
 }));
+
+app.synth();

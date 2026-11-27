@@ -131,3 +131,5 @@ integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
     },
   }],
 }));
+
+app.synth();

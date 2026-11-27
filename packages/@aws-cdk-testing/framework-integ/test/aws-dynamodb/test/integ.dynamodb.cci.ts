@@ -26,3 +26,5 @@ const stack = new TestStack(app, 'CCI-Integ-Test-TableV1', { env: { region: 'eu-
 new IntegTest(app, 'table-v1-CCI-test', {
   testCases: [stack],
 });
+
+app.synth();

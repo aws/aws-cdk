@@ -103,3 +103,5 @@ getSubstituted.provider.addToRolePolicy({
 getSubstituted.expect(ExpectedResult.objectLike({
   Body: Match.stringLikeRegexp(testStack.destinationBucket.bucketName),
 }));
+
+app.synth();

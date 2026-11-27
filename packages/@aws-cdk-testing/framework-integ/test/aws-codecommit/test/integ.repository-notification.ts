@@ -20,3 +20,5 @@ repository.notifyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 new IntegTest(app, 'codecommit-notification-test', {
   testCases: [stack],
 });
+
+app.synth();

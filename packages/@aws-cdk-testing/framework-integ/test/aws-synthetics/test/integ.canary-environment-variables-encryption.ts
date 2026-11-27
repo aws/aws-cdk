@@ -29,3 +29,5 @@ new Canary(stack, 'Canary', {
 new IntegTest(app, 'IntegCanaryEnvironmentVariablesEncryptionTest', {
   testCases: [stack],
 });
+
+app.synth();

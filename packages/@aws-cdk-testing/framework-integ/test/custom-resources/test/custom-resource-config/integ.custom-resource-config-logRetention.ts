@@ -23,3 +23,4 @@ new integ.IntegTest(app, 'integ-test-custom-resource-config-logRetention', {
   diffAssets: false,
 });
 
+app.synth();

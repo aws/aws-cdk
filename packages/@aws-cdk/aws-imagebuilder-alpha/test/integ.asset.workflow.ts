@@ -26,3 +26,5 @@ new imagebuilder.Workflow(stack, 'S3AssetWorkflow', {
 new integ.IntegTest(app, 'WorkflowTest-Asset', {
   testCases: [stack],
 });
+
+app.synth();

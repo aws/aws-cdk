@@ -73,3 +73,5 @@ new IntegTest(app, 'aws-cdk-customresources-service-timeout-integ-test', {
   testCases: [createParameterStack, getParameterStack],
   diffAssets: true,
 });
+
+app.synth();

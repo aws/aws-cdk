@@ -25,3 +25,4 @@ new IntegTest(app, 'cluster-database-insights-integ-test', {
   testCases: [stack],
 });
 
+app.synth();

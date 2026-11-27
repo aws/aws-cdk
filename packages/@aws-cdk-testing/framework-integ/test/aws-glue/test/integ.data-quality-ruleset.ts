@@ -54,3 +54,5 @@ new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
 new IntegTest(app, 'glue-data-quality-ruleset', {
   testCases: [stack],
 });
+
+app.synth();

@@ -38,3 +38,5 @@ test.assertions.awsApiCall('ECS', 'describeServices', {
 }).expect(integ.ExpectedResult.objectLike({
   services: [{ loadBalancers: [] }],
 }));
+
+app.synth();

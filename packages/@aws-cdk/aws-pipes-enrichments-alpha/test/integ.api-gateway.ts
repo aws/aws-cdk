@@ -110,3 +110,5 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
 })).waitForAssertions({
   totalTimeout: cdk.Duration.seconds(30),
 });
+
+app.synth();

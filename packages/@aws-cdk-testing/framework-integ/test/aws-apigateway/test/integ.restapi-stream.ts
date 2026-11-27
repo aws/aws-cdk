@@ -50,3 +50,5 @@ call.expect(ExpectedResult.objectLike({
   status: 200,
   body: 'Hello, streaming world!',
 }));
+
+app.synth();

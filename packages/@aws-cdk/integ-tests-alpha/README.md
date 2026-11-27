@@ -31,12 +31,14 @@ we would need to create a file to contain our integration test application.
 
 ```ts
 const app = new App();
-const stack = new Stack();
+const stack = new Stack(app, 'stack');
 new lambda.Function(stack, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
+
+app.synth();
 ```
 
 This is a self contained CDK application which we could deploy by running
@@ -46,7 +48,7 @@ cdk deploy --app 'node test/integ.my-function.js'
 ```
 
 In order to turn this into an integration test, all that is needed is to
-use the `IntegTest` construct.
+use the `IntegTest` construct, before the call to `app.synth()`.
 
 ```ts
 declare const app: App;
@@ -120,6 +122,8 @@ new IntegTest(app, 'DifferentArchitectures', {
     }),
   ],
 });
+
+app.synth();
 ```
 
 This is all the instruction you need for the integration test runner to know
@@ -151,6 +155,8 @@ const testCase = new IntegTest(app, 'CustomizedDeploymentWorkflow', {
     },
   },
 });
+
+app.synth();
 ```
 
 ### IntegTestCaseStack

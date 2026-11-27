@@ -32,3 +32,5 @@ new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
 new integ.IntegTest(app, 'aws-cdk-rds-read-replica-with-allocated-storage-test', {
   testCases: [stack],
 });
+
+app.synth();

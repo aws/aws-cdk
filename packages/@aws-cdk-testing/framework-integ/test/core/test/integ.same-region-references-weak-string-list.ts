@@ -43,3 +43,5 @@ new IntegTest(app, 'SameRegionWeakStringListTest', {
   regions: ['eu-central-1'],
   diffAssets: true,
 });
+
+app.synth();

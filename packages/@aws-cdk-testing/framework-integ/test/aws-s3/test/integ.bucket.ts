@@ -29,3 +29,5 @@ otherwiseEncryptedBucket.grantRead(user);
 new IntegTest(app, 'cdk-integ-s3-bucket', {
   testCases: [stack],
 });
+
+app.synth();

@@ -55,3 +55,5 @@ const testCase = new integ.IntegTest(app, 'WebFunctionCopyLogRedactionTest', {
 testCase.assertions.invokeFunction({ functionName: checker.functionName })
   .expect(integ.ExpectedResult.objectLike({ Payload: '"marker-found/no-secret"' }))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(5), interval: cdk.Duration.seconds(30) });
+
+app.synth();

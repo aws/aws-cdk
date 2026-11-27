@@ -135,3 +135,5 @@ new glue.S3Table(stack, 'TableMultiple', {
 new IntegTest(app, 'GluePartitionProjectionTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -96,3 +96,5 @@ invoke.provider.addToRolePolicy({
   Resource: '*',
 });
 invoke.assertAtPath('Body', ExpectedResult.stringLikeRegexp('Artifact info:.*This file exists for test purposes only and is not a real SageMaker Model artifact'));
+
+app.synth();

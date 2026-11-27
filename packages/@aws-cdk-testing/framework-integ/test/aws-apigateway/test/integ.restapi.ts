@@ -105,3 +105,4 @@ new IntegTest(app, 'apigateway-restapi', {
   testCases: [testCase],
 });
 
+app.synth();

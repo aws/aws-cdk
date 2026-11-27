@@ -58,3 +58,5 @@ new CfnOutput(stack, 'SignInLink', {
 new IntegTest(app, 'integ-user-pool-idp-google-test', {
   testCases: [stack],
 });
+
+app.synth();

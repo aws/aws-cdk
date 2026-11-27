@@ -28,3 +28,5 @@ new CfnOutput(stack, 'User3Output', { value: imported3.principalAccount! });
 new IntegTest(stack, 'integ-test', {
   testCases: [stack],
 });
+
+app.synth();

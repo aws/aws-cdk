@@ -27,3 +27,5 @@ const stack = new SNSInteg(app, 'sns-fifo-throughput-scope');
 new IntegTest(app, 'sns-fifo-throughput-scope-test', {
   testCases: [stack],
 });
+
+app.synth();

@@ -14,3 +14,4 @@ new IntegTest(app, 'http-api', {
   testCases: [stack],
 });
 
+app.synth();

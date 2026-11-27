@@ -14,3 +14,5 @@ new chatbot.SlackChannelConfiguration(testStack, 'MySlackChannel', {
 new IntegTest(app, 'integ-chatbot-user-role-required', {
   testCases: [testStack],
 });
+
+app.synth();

@@ -41,3 +41,5 @@ fn.addToRolePolicy(cognitoPolicy);
 new IntegTest(app, 'lambda-circular', {
   testCases: [stack],
 });
+
+app.synth();

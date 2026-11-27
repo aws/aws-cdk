@@ -16,3 +16,5 @@ new cdk.CfnOutput(stack, 'ImageRecipeVersion', { value: imageRecipe.imageRecipeV
 new integ.IntegTest(app, 'ImageRecipeTest-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

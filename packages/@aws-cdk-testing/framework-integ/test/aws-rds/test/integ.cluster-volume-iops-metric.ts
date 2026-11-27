@@ -37,3 +37,4 @@ new IntegTest(app, 'cluster-volume-iops-metric-integ-test', {
   testCases: [stack],
 });
 
+app.synth();

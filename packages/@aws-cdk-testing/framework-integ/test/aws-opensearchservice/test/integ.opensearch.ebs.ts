@@ -39,3 +39,5 @@ new IntegTest(app, 'Integ', {
   testCases: [stack],
   regions: ['us-east-1', 'us-east-2', 'us-west-2', 'eu-west-1', 'ca-central-1'],
 });
+
+app.synth();

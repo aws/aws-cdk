@@ -34,3 +34,5 @@ const deleteQueueAssertion = integ.assertions.awsApiCall('SQS', 'deleteQueue', {
 });
 
 getQueueUrlAssertion.next(deleteQueueAssertion);
+
+app.synth();

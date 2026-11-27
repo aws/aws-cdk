@@ -32,3 +32,5 @@ new IntegTest(app, 'integ-lambda-event-source-kinesis-stream-consumer', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

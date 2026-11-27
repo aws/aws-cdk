@@ -50,3 +50,5 @@ new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
 new IntegTest(app, 'cdk-instance-engine-lifecycle-support-test', {
   testCases: [stack],
 });
+
+app.synth();

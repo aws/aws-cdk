@@ -62,3 +62,5 @@ const stack = new TestStack(app, 'aws-cdk-glue-crawler');
 new integ.IntegTest(app, 'EcsDeploymentConfigTest', {
   testCases: [stack],
 });
+
+app.synth();

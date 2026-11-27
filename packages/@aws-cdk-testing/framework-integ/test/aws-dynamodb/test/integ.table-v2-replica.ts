@@ -52,3 +52,5 @@ const invoke = integTest.assertions.invokeFunction({ functionName: 'global-table
 invoke.expect(ExpectedResult.objectLike({
   Payload: Match.stringLikeRegexp('status_code.*200'),
 }));
+
+app.synth();

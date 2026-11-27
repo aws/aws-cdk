@@ -37,3 +37,5 @@ tag_assertion.expect(ExpectedResult.objectLike({
     Owner: 'CDKTeam',
   },
 }));
+
+app.synth();

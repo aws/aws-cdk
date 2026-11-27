@@ -22,3 +22,5 @@ new PromQLAlarm(stack, 'MinimalPromQLAlarm', {
 new IntegTest(app, 'PromQLAlarmIntegTest', {
   testCases: [stack],
 });
+
+app.synth();

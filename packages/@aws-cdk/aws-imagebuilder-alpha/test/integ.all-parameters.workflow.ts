@@ -147,3 +147,5 @@ new imagebuilder.Workflow(stack, 'InlineWorkflow', {
 new integ.IntegTest(app, 'WorkflowTest-AllParameters', {
   testCases: [stack],
 });
+
+app.synth();

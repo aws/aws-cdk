@@ -20,3 +20,5 @@ new integ.IntegTest(app, 'PlaceIndexTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-place-index')],
   regions: LOCATION_SUPPORTED_REGIONS,
 });
+
+app.synth();

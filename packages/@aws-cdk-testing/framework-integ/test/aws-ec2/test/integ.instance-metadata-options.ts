@@ -49,3 +49,5 @@ const testCase = new TestStack(app, 'integ-ec2-instance-metadata-options');
 new IntegTest(app, 'instance-metadata-options-test', {
   testCases: [testCase],
 });
+
+app.synth();

@@ -72,3 +72,5 @@ const checker = logRedactionChecker(stack, 'LogChecker', {
 test.assertions.invokeFunction({ functionName: checker.functionName })
   .expect(integ.ExpectedResult.objectLike({ Payload: '"marker-found/no-secret"' }))
   .waitForAssertions({ totalTimeout: Duration.minutes(5), interval: Duration.seconds(30) });
+
+app.synth();

@@ -23,3 +23,5 @@ logGroup.metricIncomingLogEvents().createAlarm(stack, 'IncomingEventsPerInstance
 new IntegTest(app, 'LogGroupMetrics', {
   testCases: [stack],
 });
+
+app.synth();

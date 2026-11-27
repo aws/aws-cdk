@@ -119,3 +119,5 @@ gateway2.addGatewayRoute('gateway2-route-grpc', {
     },
   }),
 });
+
+app.synth();

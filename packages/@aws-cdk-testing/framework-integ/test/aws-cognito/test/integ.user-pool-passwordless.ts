@@ -29,3 +29,5 @@ new CfnOutput(stack, 'user-pool-passwordless', {
 });
 
 new IntegTest(app, 'IntegTest', { testCases: [stack] });
+
+app.synth();

@@ -42,3 +42,5 @@ const stack = new DistributionMetricsTestStack(app, 'MyTestStack');
 new IntegTest(app, 'MyTest', {
   testCases: [stack],
 });
+
+app.synth();

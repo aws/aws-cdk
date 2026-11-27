@@ -133,3 +133,5 @@ new IntegTest(app, 'Route53CrossAccountInteg', {
   testCases: [childStack, childOptInStack, childOptInStackWithAssumeRoleRegion],
   diffAssets: true,
 });
+
+app.synth();

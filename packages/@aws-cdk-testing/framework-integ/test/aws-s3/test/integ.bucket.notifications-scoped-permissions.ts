@@ -64,3 +64,5 @@ template.hasResourceProperties('AWS::IAM::Policy', {
     ]),
   },
 });
+
+app.synth();

@@ -36,3 +36,5 @@ new ecs.FargateService(stack, 'FargateService', {
 new IntegTest(app, 'FargateWindowsEphemeralStorage', {
   testCases: [stack],
 });
+
+app.synth();

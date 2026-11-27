@@ -87,3 +87,5 @@ for (const testCase of [sdkV3testCase, sdkV3BundledSdk]) {
     Payload: 'null',
   }));
 }
+
+app.synth();

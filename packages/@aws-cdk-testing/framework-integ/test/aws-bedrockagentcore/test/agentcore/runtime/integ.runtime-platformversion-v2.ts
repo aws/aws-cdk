@@ -55,3 +55,5 @@ test.assertions.invokeFunction({
   functionName: verifier.functionName,
   payload: JSON.stringify({ agentRuntimeId: runtime.agentRuntimeId }),
 }).expect(integ.ExpectedResult.objectLike({ Payload: '"V2"' }));
+
+app.synth();

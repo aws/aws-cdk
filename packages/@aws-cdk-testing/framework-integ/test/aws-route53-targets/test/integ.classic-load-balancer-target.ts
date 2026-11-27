@@ -58,3 +58,5 @@ const testCase = new TestStack(app, 'aws-cdk-route53-classic-load-balancer-integ
 new IntegTest(app, 'aws-cdk-route53-classic-load-balancer-integ-test', {
   testCases: [testCase],
 });
+
+app.synth();

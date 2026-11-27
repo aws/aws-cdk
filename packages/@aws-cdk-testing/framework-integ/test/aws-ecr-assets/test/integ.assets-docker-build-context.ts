@@ -24,3 +24,5 @@ new IntegTest(app, 'DockerBuildContextTest', {
     stack,
   ],
 });
+
+app.synth();

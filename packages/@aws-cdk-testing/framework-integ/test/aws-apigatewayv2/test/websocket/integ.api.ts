@@ -16,3 +16,4 @@ new IntegTest(app, 'web-socket-api', {
   testCases: [stack],
 });
 
+app.synth();

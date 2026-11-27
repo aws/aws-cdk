@@ -25,3 +25,5 @@ new glue.Connection(stack, 'NetworkConnectionFromVpc', {
   network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
   securityGroups: [sg],
 });
+
+app.synth();

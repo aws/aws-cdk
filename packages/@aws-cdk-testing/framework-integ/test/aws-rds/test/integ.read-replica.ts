@@ -70,3 +70,5 @@ mysqlReadReplicaInstance.grantConnect(role, user.userName);
 new IntegTest(app, 'read-replica-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

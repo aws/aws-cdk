@@ -18,3 +18,5 @@ const stack = new TestStack(app);
 new IntegTest(app, 'kms-key-rotation', {
   testCases: [stack],
 });
+
+app.synth();

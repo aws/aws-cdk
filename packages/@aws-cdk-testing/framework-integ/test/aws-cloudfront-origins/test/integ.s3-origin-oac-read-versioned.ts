@@ -27,3 +27,5 @@ const integ = new IntegTest(app, 's3-origin-oac-read-versioned-access', {
 integ.assertions.awsApiCall('S3', 'getBucketPolicy', {
   Bucket: bucket.bucketName,
 }).expect(ExpectedResult.objectLike({ Policy: Match.serializedJson(Match.objectLike({ Statement: [{ Action: ['s3:GetObject', 's3:GetObjectVersion'] }] })) }));
+
+app.synth();

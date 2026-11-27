@@ -82,3 +82,5 @@ new IntegTest(app, 'IntegTest', {
     new TestStack(app, 'Stack1'),
   ],
 });
+
+app.synth();

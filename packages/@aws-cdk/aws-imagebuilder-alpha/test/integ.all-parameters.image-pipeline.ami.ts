@@ -58,3 +58,5 @@ imagePipeline.onCVEDetected('ImageBuildCVEDetectedTriggerRule');
 new integ.IntegTest(app, 'ImagePipelineTest-AMI-AllParameters', {
   testCases: [stack],
 });
+
+app.synth();

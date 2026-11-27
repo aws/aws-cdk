@@ -19,3 +19,5 @@ new IntegTest(app, 'aws-cdk-serverless-cache-memcached-integ', {
   regions: ['us-east-1'],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

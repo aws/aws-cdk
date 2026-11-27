@@ -43,3 +43,5 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
 new IntegTest(app, 'IntegTest', {
   testCases: [stack],
 });
+
+app.synth();

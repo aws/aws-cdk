@@ -15,3 +15,5 @@ taskDefinition.addContainer('Container', {
 new IntegTest(app, 'TaskDefinitionContainerRestartPolicy', {
   testCases: [stack],
 });
+
+app.synth();

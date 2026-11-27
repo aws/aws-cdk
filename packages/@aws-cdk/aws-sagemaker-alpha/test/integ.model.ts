@@ -143,3 +143,5 @@ new sagemaker.Model(stack, 'NetworkIsolationModel', {
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });
+
+app.synth();

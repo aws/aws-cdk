@@ -153,3 +153,5 @@ stack.deliveryStreamsToTest.forEach(deliveryStream => {
   api.waiterProvider?.addPolicyStatementFromSdkCall('s3', 'GetObject', [stack.bucket.arnForObjects('*')]);
   putDataCall.next(waitForResultCall);
 });
+
+app.synth();

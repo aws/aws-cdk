@@ -155,3 +155,5 @@ for (const functionName of [fn.functionName, cfnFunction.ref]) {
     Payload: integ.Match.stringLikeRegexp('Hello, world!'),
   }));
 }
+
+app.synth();

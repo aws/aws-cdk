@@ -43,3 +43,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-dashboard-and-widget-with-start-and-end', {
   testCases: [new TestStack(app, 'DashboardAndWidgetWithStartAndEnd')],
 });
+
+app.synth();

@@ -30,3 +30,5 @@ new IntegTest(app, 'AutoRetryLimit', {
   testCases: [autoRetryLimitTest],
   stackUpdateWorkflow: true,
 });
+
+app.synth();

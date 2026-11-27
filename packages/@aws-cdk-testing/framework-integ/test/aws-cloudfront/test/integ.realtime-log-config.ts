@@ -28,3 +28,5 @@ new cloudfront.RealtimeLogConfig(stack, 'RealtimeLog', {
 new IntegTest(stack, 'realtime-log-config', {
   testCases: [stack],
 });
+
+app.synth();

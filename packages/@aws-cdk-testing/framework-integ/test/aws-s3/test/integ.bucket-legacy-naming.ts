@@ -37,3 +37,5 @@ new IntegTest(app, 'aws-cdk-s3-integ-test', {
 // In the synthesized template, verify:
 // 1. The bucket names imported using different methods (Bucket.fromBucketName, Bucket.fromBucketArn, Bucket.fromBucketAttributes) are not modified and contain underscores.
 // 2. The policy attached to the role includes the correct bucket ARNs with underscores for all three imported buckets.
+
+app.synth();

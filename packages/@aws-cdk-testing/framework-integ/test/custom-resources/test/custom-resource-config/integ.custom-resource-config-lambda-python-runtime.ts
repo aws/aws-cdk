@@ -31,3 +31,5 @@ new integ.IntegTest(app, 'integ-test-custom-resource-config-lambda-python-runtim
   testCases: [stack],
   diffAssets: false,
 });
+
+app.synth();

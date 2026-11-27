@@ -45,3 +45,5 @@ const app = new App();
 const stack = new TestStack(app, 'cdk-integ-opensearch-gp3');
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
+
+app.synth();

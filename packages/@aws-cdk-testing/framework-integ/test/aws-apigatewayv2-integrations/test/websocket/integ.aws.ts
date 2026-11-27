@@ -72,3 +72,5 @@ new IntegTest(app, 'apigatewayv2-aws-integration-integ-test', {
     },
   },
 });
+
+app.synth();

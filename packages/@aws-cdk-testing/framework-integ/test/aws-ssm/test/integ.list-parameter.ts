@@ -80,3 +80,5 @@ actualAttrs.expect(ExpectedResult.objectLike({
     }),
   ]),
 }));
+
+app.synth();

@@ -94,3 +94,5 @@ new cdk.CfnOutput(stack, 'ContainerRecipeVersion', { value: containerRecipe.cont
 new integ.IntegTest(app, 'ContainerRecipeTest-AllParameters', {
   testCases: [stack],
 });
+
+app.synth();

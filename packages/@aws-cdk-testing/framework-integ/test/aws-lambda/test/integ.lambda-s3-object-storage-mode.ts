@@ -93,3 +93,5 @@ test.assertions.invokeFunction({
 }).expect(ExpectedResult.objectLike({
   StatusCode: 200,
 }));
+
+app.synth();

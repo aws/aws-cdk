@@ -25,3 +25,4 @@ new integ.IntegTest(app, 'InstanceIo2Test', {
   testCases: [stack],
 });
 
+app.synth();

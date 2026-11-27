@@ -55,3 +55,5 @@ new Alias(stack, 'ContainerImageSnapstartAlias', {
 new integ.IntegTest(app, 'lambda-runtime-management', {
   testCases: [stack],
 });
+
+app.synth();

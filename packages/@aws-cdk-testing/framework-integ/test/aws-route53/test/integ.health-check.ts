@@ -304,3 +304,5 @@ recoveryControlHealthCheckCreated.expect(
     },
   }),
 );
+
+app.synth();

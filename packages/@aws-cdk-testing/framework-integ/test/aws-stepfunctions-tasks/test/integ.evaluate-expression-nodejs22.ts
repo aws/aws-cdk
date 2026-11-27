@@ -26,3 +26,5 @@ const app = new App();
 new integ.IntegTest(app, 'EvaluateExpressionNodejs22', {
   testCases: [new TestStack(app, 'evaluate-expression-nodejs22')],
 });
+
+app.synth();

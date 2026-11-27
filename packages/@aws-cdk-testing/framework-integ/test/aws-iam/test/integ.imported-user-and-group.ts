@@ -59,3 +59,5 @@ test.assertions
       integ.Match.stringLikeRegexp('^DefaultPolicyintegiamimportedprincipal2Group.{8}$'),
     ]),
   }));
+
+app.synth();

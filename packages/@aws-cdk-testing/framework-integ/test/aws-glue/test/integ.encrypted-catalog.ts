@@ -88,3 +88,5 @@ indexes.expect(integ.ExpectedResult.objectLike({
     { IndexName: 'test', IndexStatus: 'ACTIVE' },
   ],
 }));
+
+app.synth();

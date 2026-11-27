@@ -34,3 +34,5 @@ integ.assertions.httpApiCall(`http://${service.loadBalancer.loadBalancerDnsName}
   totalTimeout: Duration.minutes(5),
   interval: Duration.seconds(10),
 });
+
+app.synth();

@@ -33,3 +33,5 @@ const stack = new TestStack(app, 'LimitlessClusterStack');
 new IntegTest(app, 'LimitlessClusterInteg', {
   testCases: [stack],
 });
+
+app.synth();

@@ -36,3 +36,5 @@ new efs.FileSystem(stack, 'existFileSystemReplication', {
 new integ.IntegTest(app, 'efsReplicationIntegTest', {
   testCases: [stack],
 });
+
+app.synth();

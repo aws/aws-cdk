@@ -38,3 +38,5 @@ function lambdaProxyEndpoint(s: Stack): HttpApi {
     defaultIntegration: new HttpLambdaIntegration('DefaultIntegration', handler),
   });
 }
+
+app.synth();

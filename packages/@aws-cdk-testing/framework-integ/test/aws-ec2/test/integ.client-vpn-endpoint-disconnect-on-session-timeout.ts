@@ -65,3 +65,5 @@ new IntegTest(app, 'client-vpn-endpoint-integ', {
     }),
   ],
 });
+
+app.synth();

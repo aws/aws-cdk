@@ -68,3 +68,5 @@ new IntegTest(app, 'client-vpn-endpoint-integ', {
   ],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

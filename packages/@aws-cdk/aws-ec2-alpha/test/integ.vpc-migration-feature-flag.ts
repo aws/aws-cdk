@@ -92,3 +92,5 @@ new IntegTest(app, 'VpcMigrationFeatureFlagTest', {
   testCases: [enabledStack, disabledStack],
   diffAssets: true,
 });
+
+app.synth();

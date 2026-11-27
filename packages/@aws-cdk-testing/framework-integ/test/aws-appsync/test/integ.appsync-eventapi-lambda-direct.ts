@@ -88,3 +88,5 @@ integTest.assertions.invokeFunction({
     msg: 'HandlerExecutionError',
   }),
 }));
+
+app.synth();

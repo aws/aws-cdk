@@ -30,3 +30,5 @@ new cdk.CfnOutput(stack, 'ImageId', { value: image.imageId });
 new integ.IntegTest(app, 'ImageTest-AMI-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

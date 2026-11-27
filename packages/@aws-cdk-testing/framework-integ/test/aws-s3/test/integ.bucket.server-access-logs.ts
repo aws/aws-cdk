@@ -48,3 +48,5 @@ new s3.Bucket(stack, 'MyBucket5', {
 new IntegTest(app, 'cdk-integ-s3-access-logs', {
   testCases: [stack],
 });
+
+app.synth();

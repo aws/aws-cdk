@@ -42,3 +42,5 @@ userpoolV3.addClient('Client', {
 new integ.IntegTest(app, 'PreTokenGenerationIntegTest', {
   testCases: [stack],
 });
+
+app.synth();

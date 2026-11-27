@@ -73,3 +73,5 @@ integTest.assertions.awsApiCall('SQS', 'receiveMessage', {
 }).expect(ExpectedResult.objectLike({
   Messages: [{ Body: message2 }],
 }));
+
+app.synth();

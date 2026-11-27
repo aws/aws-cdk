@@ -164,3 +164,5 @@ integTest.assertions.awsApiCall('Athena', 'listNotebookMetadata', {
       }),
     ]),
   }));
+
+app.synth();

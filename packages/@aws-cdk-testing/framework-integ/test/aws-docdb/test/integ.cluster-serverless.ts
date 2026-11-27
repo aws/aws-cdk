@@ -34,3 +34,5 @@ new IntegTest(app, 'aws-cdk-docdb-cluster-serverless-integ', {
   testCases: [stack],
   regions: DOCDB_SERVERLESS_SUPPORTED_REGIONS,
 });
+
+app.synth();

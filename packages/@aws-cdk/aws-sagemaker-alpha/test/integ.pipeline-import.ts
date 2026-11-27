@@ -116,3 +116,5 @@ new IntegTest(app, 'sagemaker-alpha-pipeline-import-test', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

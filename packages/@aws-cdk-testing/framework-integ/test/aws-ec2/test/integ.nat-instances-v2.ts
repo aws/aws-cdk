@@ -52,3 +52,5 @@ const integ = new IntegTest(app, 'nat-instance-v2-integ-test', {
 
 integ.assertions.httpApiCall(stack.apiUrl, {})
   .expect(ExpectedResult.objectLike({ status: 200 }));
+
+app.synth();

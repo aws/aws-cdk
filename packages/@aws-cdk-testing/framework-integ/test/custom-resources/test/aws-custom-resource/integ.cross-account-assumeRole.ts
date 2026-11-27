@@ -112,3 +112,5 @@ crossAccountOptInStack.addDependency(roleStack);
 new IntegTest(app, 'CrossAccountCRTest', {
   testCases: [crossAccountStack, crossAccountOptInStack],
 });
+
+app.synth();

@@ -79,3 +79,4 @@ new integ.IntegTest(app, 'Key-Test', {
   ],
 });
 
+app.synth();

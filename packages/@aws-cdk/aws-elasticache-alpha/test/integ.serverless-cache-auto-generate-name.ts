@@ -34,3 +34,5 @@ new IntegTest(app, 'aws-cdk-serverless-cache-integ-auto-generate-name', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

@@ -22,3 +22,5 @@ new rds.DatabaseInstance(stack, 'Instance', {
 new IntegTest(app, 'instance-s3-postgres', {
   testCases: [stack],
 });
+
+app.synth();

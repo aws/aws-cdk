@@ -37,3 +37,5 @@ numberOfMessagesVisibleMetric.createAlarm(stack, 'Alarm', {
 new IntegTest(app, 'metric-with-dimensions-test', {
   testCases: [stack],
 });
+
+app.synth();

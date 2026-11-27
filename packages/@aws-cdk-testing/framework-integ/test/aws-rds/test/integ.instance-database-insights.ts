@@ -37,3 +37,5 @@ const stack = new TestStack(app, 'aws-cdk-rds-integ-instance-database-insights')
 new IntegTest(app, 'integ-instance-database-insights', {
   testCases: [stack],
 });
+
+app.synth();

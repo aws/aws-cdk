@@ -51,3 +51,5 @@ stack.lambdaFunctions.forEach((fn) => {
     Payload: '256',
   }));
 });
+
+app.synth();

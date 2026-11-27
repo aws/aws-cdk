@@ -25,3 +25,5 @@ fargateTaskDefinition.addContainer('FargateContainer', {
 new IntegTest(app, 'TaskDefinitionEnableFaultInjection', {
   testCases: [stack],
 });
+
+app.synth();

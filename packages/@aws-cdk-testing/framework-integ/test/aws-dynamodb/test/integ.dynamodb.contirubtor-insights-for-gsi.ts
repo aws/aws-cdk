@@ -42,3 +42,5 @@ table.addGlobalSecondaryIndex({
 new IntegTest(app, 'aws-cdk-dynamodb-contributor-insights-for-gsi-test', {
   testCases: [stack],
 });
+
+app.synth();

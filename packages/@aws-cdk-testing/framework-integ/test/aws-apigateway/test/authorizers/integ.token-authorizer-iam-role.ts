@@ -56,3 +56,5 @@ restapi.root.addMethod('ANY', new MockIntegration({
 new IntegTest(app, 'iam-token-authorizer', {
   testCases: [stack],
 });
+
+app.synth();

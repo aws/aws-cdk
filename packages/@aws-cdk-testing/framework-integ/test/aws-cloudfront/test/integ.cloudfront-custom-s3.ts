@@ -38,3 +38,5 @@ new IntegTest(app, 'integ-cloudfront-custom-s3', {
   diffAssets: true,
   enableLookups: true,
 });
+
+app.synth();

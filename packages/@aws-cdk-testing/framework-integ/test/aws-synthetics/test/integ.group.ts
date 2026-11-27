@@ -71,3 +71,5 @@ new Group(stack, 'TestGroup', {
 new IntegTest(app, 'SyntheticsGroupIntegTest', {
   testCases: [stack],
 });
+
+app.synth();

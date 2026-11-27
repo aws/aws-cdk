@@ -44,3 +44,5 @@ new lambda.Function(stack, 'Lambda_with_IPv6_VPC', {
 new IntegTest(app, 'DualStackTesting', {
   testCases: [stack],
 });
+
+app.synth();

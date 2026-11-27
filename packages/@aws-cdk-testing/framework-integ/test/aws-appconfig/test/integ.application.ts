@@ -22,3 +22,5 @@ Application.addAgentToEcs(taskDef);
 new IntegTest(app, 'appconfig-application', {
   testCases: [stack],
 });
+
+app.synth();

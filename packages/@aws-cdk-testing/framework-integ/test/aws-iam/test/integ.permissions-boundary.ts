@@ -31,3 +31,5 @@ new IntegTest(app, 'integ-test', {
   testCases: [stack],
   enableLookups: true,
 });
+
+app.synth();

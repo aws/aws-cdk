@@ -15,3 +15,5 @@ new ec2.Vpc(stack, 'MyVpc', {
 new IntegTest(app, 'vpc-reserved-azs', {
   testCases: [stack],
 });
+
+app.synth();

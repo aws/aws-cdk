@@ -51,3 +51,5 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 new IntegTest(app, 'call-rest-api', {
   testCases: [stack],
 });
+
+app.synth();

@@ -51,3 +51,5 @@ const stack = new PipelineStack(app, 'PipelineStack');
 new integ.IntegTest(app, 'PipelineStackInteg', {
   testCases: [stack],
 });
+
+app.synth();

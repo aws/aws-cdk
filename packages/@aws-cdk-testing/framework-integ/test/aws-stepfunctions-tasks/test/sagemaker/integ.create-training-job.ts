@@ -69,3 +69,5 @@ new CfnOutput(stack, 'stateMachineArn', {
 new CfnOutput(stack, 'stateMachineArn2', {
   value: smWithoutInputData.stateMachineArn,
 });
+
+app.synth();

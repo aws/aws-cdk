@@ -25,3 +25,5 @@ new integ.IntegTest(app, 'ServerAccessLogsSseKmsTest', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

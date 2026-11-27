@@ -54,3 +54,5 @@ test.assertions.awsApiCall('Batch', 'listConsumableResources', {
     totalQuantity: 50,
   }],
 }));
+
+app.synth();

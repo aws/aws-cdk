@@ -22,3 +22,5 @@ containerDistributionConfiguration.addContainerDistributions({
 new integ.IntegTest(app, 'DistributionConfigurationTest', {
   testCases: [stack],
 });
+
+app.synth();

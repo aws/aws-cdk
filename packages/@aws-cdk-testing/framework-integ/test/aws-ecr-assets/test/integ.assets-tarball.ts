@@ -27,3 +27,5 @@ new IntegTest(app, 'LoadFromTarball', {
     stack,
   ],
 });
+
+app.synth();

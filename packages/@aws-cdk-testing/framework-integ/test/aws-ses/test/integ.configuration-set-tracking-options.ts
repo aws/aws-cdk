@@ -40,3 +40,5 @@ new integ.IntegTest(app, 'ConfigurationSetInteg', {
   })],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

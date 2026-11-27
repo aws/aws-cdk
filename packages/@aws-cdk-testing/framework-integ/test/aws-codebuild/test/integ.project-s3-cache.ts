@@ -69,3 +69,5 @@ const integ = new IntegTest(app, 'codebuild-s3-cache-integ', {
     }],
   }));
 });
+
+app.synth();

@@ -47,3 +47,5 @@ integ.assertions.awsApiCall('RDS', 'describeDBInstances', {
 }).expect(ExpectedResult.objectLike({
   DBInstances: [{ MasterUserSecret: { SecretStatus: 'active' } }],
 }));
+
+app.synth();

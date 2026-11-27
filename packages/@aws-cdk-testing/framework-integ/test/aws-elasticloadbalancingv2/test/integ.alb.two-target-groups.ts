@@ -30,3 +30,5 @@ new IntegTest(app, 'issue-24805', {
     new AddTwoTargetGroupsAtOnce(app, 'Basic'),
   ],
 });
+
+app.synth();

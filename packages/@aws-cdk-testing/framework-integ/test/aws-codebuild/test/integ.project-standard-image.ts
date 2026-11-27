@@ -32,3 +32,5 @@ new IntegTest(app, 'integ-project-standard-images', {
     new ImageTestStack(app, 'Standard8', LinuxBuildImage.STANDARD_8_0),
   ],
 });
+
+app.synth();

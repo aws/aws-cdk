@@ -44,3 +44,5 @@ integrationTest.assertions.awsApiCall('Inspector', 'listAssessmentRuns', {
   interval: cdk.Duration.seconds(30),
   totalTimeout: cdk.Duration.minutes(10),
 });
+
+app.synth();

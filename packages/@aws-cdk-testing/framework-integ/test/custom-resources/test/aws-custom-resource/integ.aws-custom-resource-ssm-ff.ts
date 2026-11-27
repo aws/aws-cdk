@@ -65,3 +65,5 @@ getParameterStack.addDependency(createParameterStack);
 new IntegTest(app, 'AwsCustomResourceSsmInteg', {
   testCases: [createParameterStack, getParameterStack],
 });
+
+app.synth();

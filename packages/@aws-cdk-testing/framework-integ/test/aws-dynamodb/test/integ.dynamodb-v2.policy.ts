@@ -50,3 +50,5 @@ const stack = new TestStack(app, 'ResourcePolicyTest-v2');
 new IntegTest(app, 'table-v2-resource-policy-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

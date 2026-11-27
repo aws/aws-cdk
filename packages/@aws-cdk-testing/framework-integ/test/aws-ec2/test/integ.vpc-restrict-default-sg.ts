@@ -26,3 +26,5 @@ res.expect(ExpectedResult.objectLike({
     IpPermissionsEgress: [],
   })]),
 }));
+
+app.synth();

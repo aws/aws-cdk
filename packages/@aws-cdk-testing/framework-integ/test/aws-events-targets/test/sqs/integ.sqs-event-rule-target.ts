@@ -66,3 +66,5 @@ new IntegTest(app, 'integ.sqs-event-rule-target', {
     'AWS::Events::Rule',
   ],
 });
+
+app.synth();

@@ -146,3 +146,5 @@ const testCase = new TestStack(app, 'aws-cdk-elasticbeanstalk-integ');
 new IntegTest(app, 'aws-cdk-elasticbeanstalk-integ-test', {
   testCases: [testCase],
 });
+
+app.synth();

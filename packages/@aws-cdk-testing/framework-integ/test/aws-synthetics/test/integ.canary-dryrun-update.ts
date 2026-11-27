@@ -31,3 +31,5 @@ const testStack = new TestStack(app, 'SyntheticsCanaryDryRunAndUpdateStack');
 new IntegTest(app, 'SyntheticsCanaryDryRunAndUpdate', {
   testCases: [testStack],
 });
+
+app.synth();
