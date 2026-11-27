@@ -1,0 +1,52 @@
+{
+  "/appconfig-configuration-kms/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/appconfig-configuration-kms/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/appconfig-configuration-kms/DefaultTest/DeployAssert/AwsApiCallAppConfiggetConfigurationProfilec1a5644a5e5dd1af762927fe4911b699/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/appconfig-configuration-kms/DefaultTest/DeployAssert/AwsApiCallAppConfiggetConfigurationProfilec1a5644a5e5dd1af762927fe4911b699/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallAppConfiggetConfigurationProfilec1a5644a5e5dd1af762927fe4911b699"
+    }
+  ],
+  "/appconfig-configuration-kms/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/appconfig-configuration-kms/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/appconfig-configuration-kms/DefaultTest/DeployAssert/AwsApiCallAppConfiggetConfigurationProfilec1a5644a5e5dd1af762927fe4911b699/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallAppConfiggetConfigurationProfilec1a5644a5e5dd1af762927fe4911b699"
+    }
+  ]
+}
