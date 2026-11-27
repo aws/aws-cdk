@@ -213,6 +213,11 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 });
 ```
 
+The assets of a Product Stack are published as assets of the stack that contains the asset bucket,
+and are then copied into the asset bucket by a deployment that is created in that same stack.
+If the asset bucket is defined in a different stack than the Product Stack's parent, the assets
+show up in the asset manifest of the asset bucket's stack, not in the one of the parent stack.
+
 When a product containing an asset is shared with a spoke account, the corresponding asset bucket
 will automatically grant read permissions to the spoke account.
 Note, it is not recommended using a referenced bucket as permissions cannot be added from CDK.
