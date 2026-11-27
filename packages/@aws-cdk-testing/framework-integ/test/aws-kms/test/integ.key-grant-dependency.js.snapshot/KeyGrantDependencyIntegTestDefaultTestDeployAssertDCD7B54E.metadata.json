@@ -1,0 +1,128 @@
+{
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "KeyGrantDependencyIntegTestDefaultTestDeployAssertDCD7B54E.template.json"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicye76d967add731ba70d6d11ec26b60d11/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicye76d967add731ba70d6d11ec26b60d11/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallKMSgetKeyPolicye76d967add731ba70d6d11ec26b60d11"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicyb44999bada342a9afdce0a44f970ef96/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicyb44999bada342a9afdce0a44f970ef96/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallKMSgetKeyPolicyb44999bada342a9afdce0a44f970ef96"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicy802bd88b91c2850e5b802c0c346d02ee/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicy802bd88b91c2850e5b802c0c346d02ee/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallKMSgetKeyPolicy802bd88b91c2850e5b802c0c346d02ee"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicye76d967add731ba70d6d11ec26b60d11/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallKMSgetKeyPolicye76d967add731ba70d6d11ec26b60d11"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicyb44999bada342a9afdce0a44f970ef96/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallKMSgetKeyPolicyb44999bada342a9afdce0a44f970ef96"
+    }
+  ],
+  "/KeyGrantDependencyIntegTest/DefaultTest/DeployAssert/AwsApiCallKMSgetKeyPolicy802bd88b91c2850e5b802c0c346d02ee/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallKMSgetKeyPolicy802bd88b91c2850e5b802c0c346d02ee"
+    }
+  ]
+}

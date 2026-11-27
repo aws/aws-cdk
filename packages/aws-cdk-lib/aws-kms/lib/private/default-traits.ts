@@ -44,7 +44,8 @@ class CfnKeyWithPolicy implements IResourceWithPolicyV2 {
       this.policyDocument.addStatements(statement);
       this.key.keyPolicy = this.policyDocument.toJSON();
 
-      return { statementAdded: true, policyDependable: this.policyDocument };
+      // The key policy is a property of the CfnKey, so depending on the statement means depending on the key
+      return { statementAdded: true, policyDependable: this.key };
     }
     return { statementAdded: false };
   }
