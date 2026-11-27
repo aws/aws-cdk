@@ -550,6 +550,26 @@ const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Ser
 });
 ```
 
+### Availability Zone rebalancing
+
+Amazon ECS [Availability Zone rebalancing](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html)
+redistributes tasks across Availability Zones to keep the service balanced. Use `availabilityZoneRebalancing`
+to configure it on the underlying Fargate service. When enabled, `maxHealthyPercent` must be greater than 100.
+
+```ts
+declare const cluster: ecs.Cluster;
+const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  maxHealthyPercent: 200,
+  availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+});
+```
+
 ### Set deployment configuration on QueueProcessingService
 
 ```ts

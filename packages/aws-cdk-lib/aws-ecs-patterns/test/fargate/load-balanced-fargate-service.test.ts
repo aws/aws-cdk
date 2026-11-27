@@ -2646,3 +2646,63 @@ describe('NetworkLoadBalancedFargateService', () => {
     });
   });
 });
+
+describe('Fargate patterns availabilityZoneRebalancing', () => {
+  test('ApplicationLoadBalancedFargateService omits AvailabilityZoneRebalancing by default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: Match.absent(),
+    });
+  });
+
+  test.each([
+    ecs.AvailabilityZoneRebalancing.ENABLED,
+    ecs.AvailabilityZoneRebalancing.DISABLED,
+  ])('ApplicationLoadBalancedFargateService passes availabilityZoneRebalancing %s through', (value) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      maxHealthyPercent: 200,
+      availabilityZoneRebalancing: value,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: value,
+    });
+  });
+
+  test('NetworkLoadBalancedFargateService passes availabilityZoneRebalancing through', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      maxHealthyPercent: 200,
+      availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: 'ENABLED',
+    });
+  });
+});
