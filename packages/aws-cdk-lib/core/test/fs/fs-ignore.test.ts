@@ -123,3 +123,27 @@ describe('DockerIgnoreStrategy', () => {
     expect(strategyPermits(strategy, permits)).toEqual(permits);
   });
 });
+
+describe('IgnoreStrategy.none()', () => {
+  const paths = [
+    '/tmp/some/file/path',
+    '/tmp/.dockerignore',
+    '/tmp/node_modules',
+  ];
+
+  test('ignores nothing', () => {
+    const strategy = IgnoreStrategy.none();
+
+    expect(strategyPermits(strategy, paths)).toEqual(paths);
+    expect(paths.filter(p => strategy.completelyIgnores(p))).toEqual([]);
+  });
+
+  test('still ignores nothing after patterns are added', () => {
+    const strategy = IgnoreStrategy.none();
+    strategy.add('*');
+    strategy.add('node_modules');
+
+    expect(strategyPermits(strategy, paths)).toEqual(paths);
+    expect(paths.filter(p => strategy.completelyIgnores(p))).toEqual([]);
+  });
+});

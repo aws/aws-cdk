@@ -206,8 +206,10 @@ be immediately followed by delete and an update back to the original state, resp
 
 - A custom resource is updated whenever any of its properties change. It is not
   re-executed when its source code changes.
-- Boolean properties are stringified. `true` and `false` in `Properties` are turned
-  into `"true"` and `"false"`.
+- All scalar property values are stringified. `true` and `false` in `Properties` are turned
+  into `"true"` and `"false"`; numbers are turned into `"42"`; lists and objects of numbers are
+  turned into `["80", "443"]`, `{ "port": "443" }`. Number literals are stringified
+  using a Java built-in, so the decimal representation of non-integers may change.
 - When releasing a new version of a custom resource, be aware that you may still
   get properties from any of its previous versions.
 - If you return a different PhysicalId from a custom resource during an Update,

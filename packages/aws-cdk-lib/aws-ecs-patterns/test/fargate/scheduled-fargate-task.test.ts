@@ -2,6 +2,7 @@ import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ScheduledFargateTask } from '../../lib';
 import { acknowledgeTestValidationRules } from '../util';
@@ -667,6 +668,34 @@ test('Can create a scheduled Fargate Task - with customized container name', () 
           },
         },
         Name: 'ScheduledContainer2',
+      },
+    ],
+  });
+});
+
+test('Scheduled Fargate Task - with custom role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = iam.Role.fromRoleArn(stack, 'CustomRole', 'arn:aws:iam::123456789012:role/CustomRole');
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    role,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        RoleArn: 'arn:aws:iam::123456789012:role/CustomRole',
       },
     ],
   });

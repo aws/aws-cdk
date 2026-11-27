@@ -1,20 +1,15 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, the concrete-fix rule, the 3-7 comment budget, review tone, the shared what-NOT-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, when to offer a fix, the bar a finding must meet to be posted, review tone, the shared what-not-to-flag exclusions, the finding-output contract (ruleId + reference fields), and how a rule's conditional severity reads. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
 
-The shared base every CDK review-dimension skill (`cdk-regression-review`,
-`cdk-security-review`, `cdk-testing-review`, `cdk-documentation-review`, `cdk-construct-design-review`) applies, so
-these rules never drift. A dimension skill decides *what* it flags and how to calibrate
-it; it never redefines anything below.
-
 ## Severity — rate by the harm it does when it triggers
 
 Ask one question of every finding: **if this ships and the code path is reached, what
-breaks, and how badly?** That answer sets the tier — not the wording, not how confident
-you are it triggers. Three tiers, keyed to the *kind* of harm:
+breaks, and how badly?** That answer sets the tier. Three tiers, keyed to the *kind* of
+harm:
 
 - **BLOCKING** — the harm is **damage**. Something concretely breaks: data is lost, a
   security boundary opens, a customer's stack fails or silently does the wrong thing.
@@ -36,27 +31,23 @@ you are it triggers. Three tiers, keyed to the *kind* of harm:
   grouping with identical effect.
 
 A finding's `severity` field takes exactly one of these three words —
-`BLOCKING` / `RECOMMENDED` / `OPTIONAL` — and there is no second vocabulary. If a source
-you ported used a High/Medium/Low, Critical/Major/Minor, or P0/P1/P2 palette, map it onto
-these three by harm and drop the palette.
+`BLOCKING` / `RECOMMENDED` / `OPTIONAL`. A rule with a conditional severity is one rule: its
+header carries the primary severity, and its body states when it up- or down-tiers.
 
 ### Calibrate the harm honestly
 
 The tier is right only if you rate the harm honestly. Four ways it slips:
 
-- **Confidence is not severity.** Rate by the harm *when* the path is reached, not by how
-  sure you are it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
-  its blast radius — never demoted to OPTIONAL "to be safe." OPTIONAL means genuinely
-  negligible harm, not a hedge for a real defect you are unsure fires.
+- **Confidence is not severity.** Rate by the harm *when* the path is reached, however sure
+  you are that it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
+  its blast radius. OPTIONAL means genuinely negligible harm.
 - **Politeness is not severity.** A blocking issue raised as a gentle question — "Can we
-  scope this to a specific ARN?" — still blocks. Rate the harm the change asserts, not its
-  interrogative surface.
-- **No harm, no finding.** Clean code reports nothing — do not manufacture a nit. A change
-  that merely *mentions* IAM, encryption, or a secret is not a finding; a concrete new harm
-  is. Inventing a low-severity finding out of a non-finding is the most common way a review
-  inflates.
+  scope this to a specific ARN?" — still blocks. Rate the harm the change asserts.
+- **No harm, no finding.** Clean code reports nothing. A change that merely *mentions* IAM,
+  encryption, or a secret is not a finding; a concrete new harm is. Inventing a low-severity
+  finding out of a non-finding is the most common way a review inflates.
 - **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
-  *new* harm → not a finding. Rate what the diff adds, not the posture it inherited.
+  *new* harm → not a finding. Rate what the diff adds.
 
 When the finding is that the change violates a rule in the aws-cdk repo's own guides
 (`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
@@ -65,14 +56,14 @@ rule stated as a preference is decay → RECOMMENDED. Cite the rule by file + se
 quote it, so the author sees the authority.
 
 Keep **baseline** harm (correctness, security, compliance — must fix) separate from
-**excellence** framing (design that takes a change from correct to better). Excellence is
-not a fourth tier: grade it on the harm scale like any finding, competing for the same
-comment budget. Never report one piece of code as both a must-fix and a design nicety —
-that double-counts it.
+**excellence** framing (design that takes a change from correct to better). Grade
+excellence on the harm scale like any finding, against the same bar. Report one piece of
+code once, as a must-fix or as a design nicety; reporting it as both double-counts it.
 
 ## Make each finding land
 
-A correctly-rated finding still has to be actionable. Every finding carries three things:
+A correctly-rated finding still has to be actionable. Every finding carries a location and evidence, and
+a fix once you have checked one:
 
 - **An exact location** — `path/to/file.ts:L42`, or a range `path/to/file.ts:L42-L50`. A
   finding with no code location stays in the report as a high-level observation; it cannot
@@ -82,37 +73,47 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   linked by file + line) → CDK design guidelines (`docs/DESIGN_GUIDELINES.md`,
   `docs/AGENTS_CONSTRUCT_DESIGN.md`, `docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) →
   CloudFormation resource specification (property/enum correctness) → linked issue / PR
-  discussion (customer context) → existing tests (behavioral expectations). Prefer AWS
-  documentation when sources disagree. Skip a citation only for pure style, an obvious
-  typo or unused import, or a genuine question. **Verify before you cite:** when a finding
-  turns on whether an attribute, mode, default, enum value, or a service/CDK behavior is
-  REAL — or on what CDK's own API, testing, or README guidance says — you MUST search and
-  read the authoritative AWS and CDK documentation available to you and confirm the fact
-  against it before posting; never post from memory. An unverified "X isn't supported" or
+  discussion (customer context) → existing tests (behavioral expectations). When the code
+  and the AWS documentation disagree, report the disagreement and cite both. Skip a citation
+  only for pure style, an obvious typo or unused import, or a genuine question. **Verify
+  before you cite:** when a finding
+  turns on whether an attribute, mode, default or enum value is real for the service, or
+  how the service behaves, search and read the authoritative AWS documentation available
+  to you and confirm the fact against it before posting; confirm what CDK's own API does
+  by reading that code, and what CDK's testing or README guidance says by reading that
+  guide; post only what you have read. An unverified "X isn't supported" or
   "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
-- **A concrete fix** — a code example, or a question framing a specific alternative
-  ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
-  out; never just point at the problem.
+- **A fix, once you have checked it** — a code example, or a question framing a specific
+  alternative ("What do you think about scoping this to the bucket ARN?"). You have checked a
+  fix when you have read that what it uses exists at the reviewed commit and that the code
+  depending on what it changes still fits it, because an unchecked fix can break where it is
+  applied. Without a checked fix, report the problem and its evidence and leave `suggestedFix`
+  null. A fix you suggest follows the same guides as the code under review.
 
 Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
-suggestions as questions where you can; stay direct but not harsh on blocking issues
-("this needs to change because…", not "this is wrong"); acknowledge good work; and drop
-"obviously" and "simply".
+suggestions as questions where you can; stay direct and constructive on blocking issues
+("this needs to change because…"); acknowledge good work; and drop "obviously" and "simply".
 
-## Keep the review to a tight, high-harm set
+## Findings must meet the bar
 
-Target **3-7 comments per review**. Keep every `BLOCKING` finding; then the highest-harm
-`RECOMMENDED` findings; add `OPTIONAL` ones only if the total stays within budget. More
-than seven dilutes the review and buries the damage under polish.
+A finding is posted, at its tier, when it meets the posting conditions below, and only then.
+The number of findings is not a target: there is none to reach and none to stay under, and
+zero comments is the right result for a PR with nothing wrong. A count would choose findings
+by number rather than by merit.
 
 A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
 actionable, and (3) significant enough to stand alone. Keep high-level observations,
-positive notes, and clusters of nits in the review summary, not the posted comments.
+positive notes, and clusters of nits in the review summary.
+
+Spend the review on what the build cannot see. The PR's build already fails on what its
+compiler and linters check, such as a public API with no docstring or an optional props
+property with no `@default` (see
+[`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint)).
 
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.
 
-## What NOT to flag — the shared exclusions
+## What not to flag — the shared exclusions
 
 Every dimension skill applies these five exclusions on top of its own dimension-specific
 carve-outs. None is a finding, at any severity:
@@ -131,24 +132,12 @@ carve-outs. None is a finding, at any severity:
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
 
-Each dimension skill's own `## What NOT to flag` lists only its dimension-specific
-carve-outs; it applies these five in addition.
-
-## Rules-lookup convention
-
-Each dimension skill keeps its detailed rules in a `references/*-rules.md` lookup. Every
-lookup shares one shape so they never drift: rows grouped by family, sorted
-BLOCKING → RECOMMENDED → OPTIONAL within each family, `[id]`s stable. A conditional
-severity is ONE rule — the row header carries the primary severity, the body states when it
-up- or down-tiers. A row marked `(doc-absent detail)` carries reviewer calibration the source
-doc does not state, kept in full. All aws/aws-cdk links reference `main`.
-
 ## Sources
 
-Public aws/aws-cdk `main` guidance these principles cite:
+Public aws/aws-cdk `main` guidance:
 
 - [`AGENTS.md`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md) — the agent-facing
-  repo guide; its rules name their own harm (quoted in the severity worked examples above).
+  repo guide; its rules name their own harm.
 - [`CONTRIBUTING.md`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) — PR
   conventions and breaking-change guidance.
 - [`docs/DESIGN_GUIDELINES.md`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md),

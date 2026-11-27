@@ -1,4 +1,10 @@
 {
+  "/S3Stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "S3Stack.template.json"
+    }
+  ],
   "/S3Stack/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -18,9 +24,8 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -48,9 +53,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -59,7 +62,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/S3Stack/BootstrapVersion": [
@@ -112,20 +115,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/S3Stack/BucketDeployment/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/S3Stack/BucketDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -261,12 +257,6 @@
       "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
     }
   ],
-  "/S3Stack/BucketDeployment/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "BucketDeploymentAwsCliLayerB018DCE1"
-    }
-  ],
   "/S3Stack/BucketDeployment/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -352,12 +342,6 @@
     }
   ],
   "/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/S3Stack/BucketDeployment/AwsCliLayer/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
