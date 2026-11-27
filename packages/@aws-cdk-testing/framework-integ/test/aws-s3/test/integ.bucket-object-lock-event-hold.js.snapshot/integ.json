@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "ObjectLockEventHoldTest/DefaultTest": {
+      "stacks": [
+        "S3ObjectLockEventHold"
+      ],
+      "assertionStack": "ObjectLockEventHoldTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ObjectLockEventHoldTestDefaultTestDeployAssert8011BB79"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.0"
+}
