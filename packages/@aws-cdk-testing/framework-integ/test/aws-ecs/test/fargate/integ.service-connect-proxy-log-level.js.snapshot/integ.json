@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "ServiceConnectProxyLogLevel/DefaultTest": {
+      "stacks": [
+        "aws-ecs-service-connect-proxy-log-level"
+      ],
+      "assertionStack": "ServiceConnectProxyLogLevel/DefaultTest/DeployAssert",
+      "assertionStackName": "ServiceConnectProxyLogLevelDefaultTestDeployAssert417C8FEE"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

@@ -283,6 +283,25 @@ export interface ServiceConnectAccessLogConfiguration {
 }
 
 /**
+ * The log level of the Service Connect proxy container.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ServiceConnectContainerConfiguration.html
+ */
+export enum ServiceConnectProxyLogLevel {
+  /**
+   * Detailed proxy logs, for troubleshooting connectivity between services.
+   *
+   * Debug logging increases the volume of logs that the proxy container writes.
+   */
+  DEBUG = 'debug',
+
+  /**
+   * The default proxy log level.
+   */
+  INFO = 'info',
+}
+
+/**
  * Interface for Service Connect configuration.
  */
 export interface ServiceConnectProps {
@@ -317,6 +336,23 @@ export interface ServiceConnectProps {
    * @default undefined - AWS ECS default is disabled, which means that access logs are not recorded
    */
   readonly accessLogConfiguration?: ServiceConnectAccessLogConfiguration;
+
+  /**
+   * The log level of the Service Connect proxy container.
+   *
+   * Set it to `DEBUG` to collect more detailed proxy logs while you troubleshoot
+   * connectivity between services, and set it back to `INFO` when you finish.
+   * The proxy logs are delivered through `logDriver`.
+   *
+   * A change applies only to tasks that Amazon ECS launches after the service is updated.
+   * Running tasks keep their existing setting until they are replaced. Removing this
+   * property returns the proxy container to its default log level.
+   *
+   * When this property is omitted, nothing is rendered and Amazon ECS uses its default.
+   *
+   * @default ServiceConnectProxyLogLevel.INFO
+   */
+  readonly proxyLogLevel?: ServiceConnectProxyLogLevel;
 }
 
 /**
@@ -1357,6 +1393,7 @@ export abstract class BaseService extends Resource
         format: cfg.accessLogConfiguration.format,
         includeQueryParameters: cfg.accessLogConfiguration.includeQueryParameters ? 'ENABLED' : 'DISABLED',
       } : undefined,
+      containerConfigurations: cfg.proxyLogLevel ? [{ logLevel: cfg.proxyLogLevel }] : undefined,
     });
   }
 
