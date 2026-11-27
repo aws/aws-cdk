@@ -1,7 +1,7 @@
 # CDK Mixins
 
 
-> **Note**: The core Mixins mechanism  is now GA  and available in `constructs` and `aws-cdk-lib` (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`).
+> **Note**: The core Mixins mechanism is now GA and available in `constructs` and `aws-cdk-lib` (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`).
 > All service Mixins are now available in `aws-cdk-lib`.
 > Please update your imports.
 >
@@ -27,22 +27,24 @@ CDK Mixins provide a new, advanced way to add functionality through composable a
 Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
 Mixins can be applied during or after construct construction.
 Mixins are an _addition_, _not_ a replacement for construct properties.
-By itself, they cannot change optionality of properties or change defaults.
+By itself, it cannot change optionality of properties or defaults.
 
 ## Usage and documentation
 
-See the [documentation for CDK Mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) in  `aws-cdk-lib`.
+See the [documentation for CDK Mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) in `aws-cdk-lib`.
 
 ### Built-in Mixins
 
 ### Logs Delivery
 
-Configures vended logs delivery for supported resources to various destinations:
+Vended Logs can delivery to 3 main destinations, a CloudWatch Log Group, an S3 bucket, and a Firehose Delivery Stream. Some resources (mostly Bedrock Agentcore resources) can deliver to a fourth destination, XRay Traces. Setting up Vended Logs delivery to each of these destinations, looks largely the same, you set up the resource which will be the source of the logs, you set up the resource which will be where the logs are delivered to, and you invoke the Mixin to perform the connection.
+
+Configures Vended Logs for a CloudWatch Log Group destination:
 
 ```typescript
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
-// Create CloudFront distribution
+// Create CloudFront distribution (source resource)
 declare const origin: s3.IBucket;
 const distribution = new cloudfront.Distribution(scope, 'Distribution', {
   defaultBehavior: {
@@ -66,6 +68,104 @@ distribution
   }));
 ```
 
+Configures Vended Logs for encrypted and unencrypted S3 Bucket destinations
+For encrypted S3 buckets, if the key is imported/referenced (EX: `kms.Key.fromKeyArn()`), the Mixin cannot update the key policy. Permissions for log delivery must be added manually.
+
+```typescript 
+import * as eventBusMixins from '@aws-cdk/mixins-preview/aws-events/mixins';
+import * as events from 'aws-cdk-lib/aws-events';
+
+const eventBus = new events.EventBus(scope, 'EventBus', {
+  eventBusName: 'my-event-bus',
+  logConfig: {
+    includeDetail: events.IncludeDetail.NONE,
+    level: events.Level.ERROR,
+  },
+});
+
+const logsBucket = new s3.Bucket(scope, 'Bucket');
+
+eventBus.with(eventBusMixins.CfnEventBusLogsMixin.INFO_LOGS.toS3(logsBucket));
+
+// can also set up log delivery ot encrypted buckets
+const key = new kms.Key(scope, 'EncryptionKey', {
+  enabled: true
+});
+
+const encryptedBucket = new s3.Bucket(scope, 'EncryptedBucket', {
+  encryptionKey: key,
+});
+
+// if no key is provided, the Mixin will attempt to find it using EncryptedResources.of()
+eventBus.with(eventBusMixins.CfnEventBusLogsMixin.ERROR_LOGS.toS3(encryptedBucket, { encryptionKey: key }));
+
+```
+
+Configures Vended Logs for a Firehose Delivery Stream destination:
+
+```typescript
+import * as eventBusMixins from '@aws-cdk/mixins-preview/aws-events/mixins';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as cdk from 'aws-cdk-lib/core';
+
+const eventBus = new events.EventBus(scope, 'EventBus', {
+  eventBusName: 'my-event-bus',
+  logConfig: {
+    includeDetail: events.IncludeDetail.NONE,
+    level: events.Level.TRACE,
+  },
+});
+
+const firehoseBucket = new s3.Bucket(scope, 'FirehoseBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+  encryption: s3.BucketEncryption.S3_MANAGED,
+});
+
+const deliveryStream = new firehose.CfnDeliveryStream(scope, 'DeliveryStream', {
+  s3DestinationConfiguration: {
+    bucketArn: firehoseBucket.bucketArn,
+    bufferingHints: {
+      intervalInSeconds: 10,
+      sizeInMBs: 1,
+    },
+    roleArn: new iam.Role(scope, 'FirehoseRole', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+      inlinePolicies: {
+        s3: new iam.PolicyDocument({
+          statements: [new iam.PolicyStatement({
+            actions: ['s3:PutObject'],
+            resources: [firehoseBucket.arnForObjects('*')],
+          })],
+        }),
+      },
+    }).roleArn,
+  },
+  deliveryStreamEncryptionConfigurationInput: {
+    keyType: 'AWS_OWNED_CMK',
+  },
+});
+
+eventBus.with(eventBusMixins.CfnEventBusLogsMixin.ERROR_LOGS.toFirehose(deliveryStream));
+```
+
+Configures Vended Logs for XRay Traces (unlike the other destinations, XRay Traces do not have a resource assoicated with them):
+
+```typescript
+import * as memoryMixins from '@aws-cdk/mixins-preview/aws-bedrockagentcore/mixins';
+import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+
+const memory = new agentcore.CfnMemory(scope, 'Memory', {
+  name: 'agentcore_memory',
+  eventExpiryDuration: 7,
+});
+
+memory.with(memoryMixins.CfnMemoryLogsMixin.TRACES.toXRay());
+```
+
+When using the above methods to set up a Vended Logs configuration, the `CfnDeliveryDestination` resource is created for you as a part of the Mixin. However, there may be cases when you want to define the `CfnDeliveryDestination` resource and have the Mixin set up the rest of the connection. For those cases, use `toDestination()` when working with the Mixin.
+
 Configures vended logs delivery for supported resources when a pre-created destination is provided:
 
 ```typescript
@@ -81,10 +181,27 @@ const distribution = new cloudfront.Distribution(scope, 'Distribution', {
 
 // Create destination bucket
 const destBucket = new s3.Bucket(scope, 'DeliveryBucket');
+const env = destBucket.env;
 // Add permissions to bucket to facilitate log delivery
 const bucketPolicy = new s3.BucketPolicy(scope, 'DeliveryBucketPolicy', {
   bucket: destBucket,
-  document: new iam.PolicyDocument(),
+  document: new iam.PolicyDocument({statements: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [ new iam.ServicePrincipal('delivery.logs.amazonaws.com') ],
+      actions: ['s3:PutObject'],
+      resources: [`${destBucket.bucketArn}/AWSLogs/${env.account}/*`],
+      conditions: {
+        StringEquals: {
+          's3:x-amz-acl': 'bucket-owner-full-control',
+          'aws:SourceAccount': env.account,
+        },
+        ArnLike: {
+          'aws:SourceArn': `arn:aws:logs:${env.region}:${env.account}:delivery-source:*`,
+        },
+      },
+    })
+  ]}),
 });
 // Create S3 delivery destination for logs
 const destination = new logs.CfnDeliveryDestination(scope, 'Destination', {
@@ -97,9 +214,10 @@ distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
 ```
 
-Vended Logs Configuration for Cross Account delivery (only supported for S3 and Firehose destinations)
+Configures Vended Logs delivery cross account using `toDestination` (only supported for S3 and Firehose destinations):
 
 ```typescript
+import * as cdk from 'aws-cdk-lib/core';
 import * as logDestinations from '@aws-cdk/mixins-preview/aws-logs';
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
@@ -107,41 +225,52 @@ const destinationAccount = '123456789012';
 const sourceAccount = '234567890123';
 const region = 'us-east-1';
 
+class DestinationStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    // Create destination bucket
+    const destBucket = new s3.Bucket(this, 'DeliveryBucket');
+    new logDestinations.S3DeliveryDestination(this, 'Destination', {
+      bucket: destBucket,
+      sourceAccountId: sourceAccount,
+    });
+  }
+}
+
+declare const origin: s3.IBucket;
+
+class SourceStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+    // Create CloudFront distribution
+    const distribution = new cloudfront.Distribution(this, 'Distribution', {
+      defaultBehavior: {
+        origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
+      },
+    });
+
+    const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(this, 'Destination', `arn:aws:logs:${region}:${destinationAccount}:delivery-destination:<name of delivery destination>`);
+
+    distribution
+      .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
+  }
+}
+
 const app = new App();
 
-const destStack = new Stack(app, 'destination-stack', {
+const destStack = new DestinationStack(app, 'destination-stack', {
   env: {
     account: destinationAccount,
     region,
   },
 });
 
-// Create destination bucket
-const destBucket = new s3.Bucket(destStack, 'DeliveryBucket');
-new logDestinations.S3DeliveryDestination(destStack, 'Destination', {
-  bucket: destBucket,
-  sourceAccountId: sourceAccount,
-});
-
-const sourceStack = new Stack(app, 'source-stack', {
+const sourceStack = new SourceStack(app, 'source-stack', {
   env: {
     account: sourceAccount,
     region,
   },
 });
-
-// Create CloudFront distribution
-declare const origin: s3.IBucket;
-const distribution = new cloudfront.Distribution(sourceStack, 'Distribution', {
-  defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
-  },
-});
-
-const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(sourceStack, 'Destination', `arn of Delivery Destination in destinationAccount`);
-
-distribution
-  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
 ```
 
 ---

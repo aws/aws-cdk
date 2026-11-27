@@ -5,7 +5,9 @@ import { DeliveryStream, CfnDeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kin
 import { CfnLogGroup, LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
 import { CloudwatchDeliveryDestination, FirehoseDeliveryDestination, S3DeliveryDestination, S3LogsDeliveryPermissionsVersion, XRayDeliveryDestination } from '../../lib/services/aws-logs';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
+
+const IMPORTED_KEY_ID = 'abcd1234-a123-456a-a12b-a123b4cd56ef';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('cross acount destination', () => {
@@ -849,6 +851,8 @@ describe('S3 Destination', () => {
         ]),
       },
     });
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('could not add policy to the provided encryption key'));
   });
 
   test('adds proper key permissions for L2 bucket with L2 key', () => {
@@ -897,6 +901,174 @@ describe('S3 Destination', () => {
         ]),
       },
     });
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('could not add policy to the provided encryption key'));
+  });
+
+  test('uses the provided key for an imported bucket', () => {
+    const key = new Key(stack, 'ProvidedKey');
+    const bucket = Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', {
+      bucket,
+      encryptionKey: key,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('prefers the provided key over the bucket encryption key', () => {
+    const bucketKey = new Key(stack, 'BucketKey');
+    const providedKey = new Key(stack, 'ProvidedKey');
+    const bucket = new Bucket(stack, 'Bucket', { encryptionKey: bucketKey });
+
+    new S3DeliveryDestination(bucket, 'S3Dest', {
+      bucket,
+      encryptionKey: providedKey,
+    });
+
+    // the provided key is the only one whose policy grants the delivery service
+    const granted = Template.fromStack(stack).findResources('AWS::KMS::Key', {
+      Properties: {
+        KeyPolicy: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+          })]),
+        },
+      },
+    });
+    expect(Object.keys(granted)).toEqual([stack.getLogicalId(providedKey.node.defaultChild as CfnKey)]);
+  });
+
+  test('discovers the bucket encryption key when no key is provided', () => {
+    const bucketKey = new Key(stack, 'BucketKey');
+    const bucket = new Bucket(stack, 'Bucket', { encryptionKey: bucketKey });
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  // A bare IBucketRef carries no encryption information, so no key is discoverable.
+  test('grants no key permissions when neither a provided nor a discoverable key exists', () => {
+    const unrelatedKey = new Key(stack, 'UnrelatedKey');
+    const bucket = CfnBucket.fromBucketName(stack, 'RefBucket', 'imported-bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket });
+
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
+    // guards against the assertion above passing because no key exists to be found
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::KMS::Key')))
+      .toEqual([stack.getLogicalId(unrelatedKey.node.defaultChild as CfnKey)]);
+  });
+
+  // An IBucket is always a discoverable encrypted resource, but resolves to no key without a CMK.
+  test('grants no key permissions when an imported bucket has no customer managed key', () => {
+    const unrelatedKey = new Key(stack, 'UnrelatedKey');
+    const bucket = Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket });
+
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::KMS::Key')))
+      .toEqual([stack.getLogicalId(unrelatedKey.node.defaultChild as CfnKey)]);
+  });
+
+  // A bare IKeyRef admits no resource policy at all, so the grant is dropped and the user is told.
+  test.each([
+    ['an arn', (s: Stack) => CfnKey.fromKeyArn(s, 'RefKey', `arn:aws:kms:us-east-1:123456789012:key/${IMPORTED_KEY_ID}`)],
+    ['a key id', (s: Stack) => CfnKey.fromKeyId(s, 'RefKey', IMPORTED_KEY_ID)],
+  ])('warns when the provided key is a bare reference from %s', (_name, makeKey) => {
+    const bucket = new Bucket(stack, 'Bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket, encryptionKey: makeKey(stack) });
+
+    Annotations.fromStack(stack).hasWarning('*',
+      Match.stringLikeRegexp(`could not add policy to the provided encryption key, ${IMPORTED_KEY_ID}`));
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
+  });
+
+  // An imported L2 key cannot take a policy statement either, so it must warn like a bare reference.
+  test('warns when the provided key is an imported L2 key', () => {
+    const bucket = new Bucket(stack, 'Bucket');
+    const key = Key.fromKeyArn(stack, 'ImportedKey', `arn:aws:kms:us-east-1:123456789012:key/${IMPORTED_KEY_ID}`);
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket, encryptionKey: key });
+
+    Annotations.fromStack(stack).hasWarning('*',
+      Match.stringLikeRegexp(`could not add policy to the provided encryption key, ${IMPORTED_KEY_ID}`));
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
   });
 
   test('uses outputFormat when provided', () => {
@@ -978,3 +1150,19 @@ describe('XRay Destination', () => {
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(xrayPolicyLogicalId);
   });
 });
+
+/**
+ * Finds every KMS key in the stack whose key policy grants the log delivery service.
+ */
+function findKeysGrantingDelivery(stack: Stack) {
+  return Template.fromStack(stack).findResources('AWS::KMS::Key', {
+    Properties: {
+      KeyPolicy: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'delivery.logs.amazonaws.com' },
+        })]),
+      },
+    },
+  });
+}

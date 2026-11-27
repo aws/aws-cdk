@@ -21,7 +21,7 @@ const eventBus = new events.EventBus(stack, 'EventBus', {
   },
 });
 
-// Cloudwatch Log Group Destination
+// CloudWatch Log Group Destination
 const logGroup = new logs.LogGroup(stack, 'DeliveryLogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
@@ -38,14 +38,14 @@ const bucket = new s3.Bucket(stack, 'DeliveryBucket', {
   encryptionKey: key,
 });
 
-// Cloudwatch delivery destination to be used with toDestination
+// CloudWatch delivery destination to be used with toDestination
 const deliveryDestination = new CloudwatchDeliveryDestination(stack, 'DeliveryDestination', {
   logGroup,
 });
 
-// Setup error logs delivery to Cloudwatch
+// Setup error logs delivery to CloudWatch
 eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toLogGroup(logGroup));
-// Setup info logs delivery to Cloudwatch via manually created delivery destination
+// Setup info logs delivery to CloudWatch via manually created delivery destination
 eventBus.with(CfnEventBusLogsMixin.INFO_LOGS.toDestination(deliveryDestination));
 // Setup error logs delivery to S3
 eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toS3(bucket));
