@@ -570,3 +570,36 @@ describe('Cross-stack Policy tests', () => {
     engineTemplate.resourceCountIs('AWS::BedrockAgentCore::PolicyEngine', 1);
   });
 });
+
+describe('Policy with imported PolicyEngine', () => {
+  test('synthesizes successfully when PolicyEngine is imported via fromPolicyEngineAttributes', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const engine = PolicyEngine.fromPolicyEngineAttributes(stack, 'ImportedEngine', {
+      policyEngineArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy-engine/example-abc123',
+    });
+
+    const policy = new Policy(stack, 'Policy', {
+      policyEngine: engine,
+      policyName: 'example',
+      definition: 'permit(principal, action, resource);',
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::PolicyEngine', 0);
+    template.resourceCountIs('AWS::BedrockAgentCore::Policy', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'example',
+      PolicyEngineId: 'example-abc123',
+      Definition: {
+        Cedar: {
+          Statement: 'permit(principal, action, resource);',
+        },
+      },
+    });
+    expect(policy.policyEngine).toBe(engine);
+  });
+});
