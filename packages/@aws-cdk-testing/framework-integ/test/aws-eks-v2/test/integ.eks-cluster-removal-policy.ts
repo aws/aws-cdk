@@ -44,7 +44,7 @@ class EksClusterRemovalPolicyStack extends Stack {
     });
     new eks.AccessEntry(this, 'AccessEntry', {
       cluster,
-      principal: accessEntryRole.roleArn,
+      iamPrincipal: accessEntryRole,
       accessPolicies: [accessPolicy],
       removalPolicy: RemovalPolicy.DESTROY,
     });
