@@ -174,14 +174,13 @@ describe('Schedule Group', () => {
     // WHEN
     group.grantReadSchedules(user);
     // THEN
+    // `GetSchedule` is scoped to the schedules in this group, while `ListSchedules` does not
+    // support resource-level permissions and must be granted on `*` (see #38201).
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'scheduler:GetSchedule',
-              'scheduler:ListSchedules',
-            ],
+            Action: 'scheduler:GetSchedule',
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -195,6 +194,11 @@ describe('Schedule Group', () => {
                 ],
               ],
             },
+          },
+          {
+            Action: 'scheduler:ListSchedules',
+            Effect: 'Allow',
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',
