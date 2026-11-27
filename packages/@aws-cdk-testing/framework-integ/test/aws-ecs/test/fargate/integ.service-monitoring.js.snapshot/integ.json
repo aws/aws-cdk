@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ServiceMonitoring/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-service-monitoring"
+      ],
+      "assertionStack": "ServiceMonitoring/DefaultTest/DeployAssert",
+      "assertionStackName": "ServiceMonitoringDefaultTestDeployAssert69F022C0"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
