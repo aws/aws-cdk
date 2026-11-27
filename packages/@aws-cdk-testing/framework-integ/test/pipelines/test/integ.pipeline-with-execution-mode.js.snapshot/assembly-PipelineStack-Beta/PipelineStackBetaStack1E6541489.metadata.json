@@ -1,4 +1,10 @@
 {
+  "/PipelineStack/Beta/Stack1": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PipelineStackBetaStack1E6541489.template.json"
+    }
+  ],
   "/PipelineStack/Beta/Stack1/Queue": [
     {
       "type": "aws:cdk:analytics:construct",

@@ -1,16 +1,16 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "55230618d76770c255c896c26bce0eb3c91b812e77ba4bd487605378f9f65679": {
+    "02c3c224ae48e8c6dd9b4631d404d7542861c28faa0e59da2571801a5a952f8c": {
       "displayName": "cdk-agentcore-gateway-auto-generated-name Template",
       "source": {
         "path": "cdk-agentcore-gateway-auto-generated-name.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-95078dbf": {
+        "current_account-current_region-f6460aed": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "55230618d76770c255c896c26bce0eb3c91b812e77ba4bd487605378f9f65679.json",
+          "objectKey": "02c3c224ae48e8c6dd9b4631d404d7542861c28faa0e59da2571801a5a952f8c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-channel-frame-capture/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivechannelframecaptureDefaultTestDeployAssert61A11B79.template.json"
+    }
+  ],
   "/cdk-integ-medialive-channel-frame-capture/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

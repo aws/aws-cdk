@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-emx-flow-jpegxs/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegemxflowjpegxsDefaultTestDeployAssert9E646691.template.json"
+    }
+  ],
   "/cdk-integ-emx-flow-jpegxs/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

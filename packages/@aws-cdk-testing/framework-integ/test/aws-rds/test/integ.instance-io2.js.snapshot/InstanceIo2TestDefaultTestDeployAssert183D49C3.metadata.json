@@ -1,4 +1,10 @@
 {
+  "/InstanceIo2Test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "InstanceIo2TestDefaultTestDeployAssert183D49C3.template.json"
+    }
+  ],
   "/InstanceIo2Test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

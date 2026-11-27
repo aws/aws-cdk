@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-medialive-channel-global-config": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-medialive-channel-global-config.template.json"
+    }
+  ],
   "/aws-cdk-medialive-channel-global-config/OutputBucket": [
     {
       "type": "aws:cdk:analytics:construct",

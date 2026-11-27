@@ -15,16 +15,16 @@
         }
       }
     },
-    "6a6319738c346005cf782611de6533c3ff19b8aef3bb95b17dd888d263e18faf": {
+    "9cad6d06d91a2d81323d09561651e75f439f60638b7584609217a6ca39cb3056": {
       "displayName": "aws-cdk-cloudwatch-eventbridge-logs Template",
       "source": {
         "path": "aws-cdk-cloudwatch-eventbridge-logs.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a3e9a244": {
+        "current_account-current_region-ddc01d2e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6a6319738c346005cf782611de6533c3ff19b8aef3bb95b17dd888d263e18faf.json",
+          "objectKey": "9cad6d06d91a2d81323d09561651e75f439f60638b7584609217a6ca39cb3056.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -19,7 +19,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x"
+    "Runtime": "nodejs26.x"
    },
    "DependsOn": [
     "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"

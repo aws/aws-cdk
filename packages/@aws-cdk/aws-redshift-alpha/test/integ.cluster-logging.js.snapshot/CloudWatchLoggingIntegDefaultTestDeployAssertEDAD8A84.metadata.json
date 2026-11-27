@@ -1,4 +1,10 @@
 {
+  "/CloudWatchLoggingInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CloudWatchLoggingIntegDefaultTestDeployAssertEDAD8A84.template.json"
+    }
+  ],
   "/CloudWatchLoggingInteg/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

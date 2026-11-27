@@ -11,5 +11,6 @@
       "assertionStackName": "awscdkcustomresourcesservicetimeoutintegtestDefaultTestDeployAssert593A6038"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

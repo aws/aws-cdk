@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-input-mediaconnect-flow/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialiveinputmediaconnectflowDefaultTestDeployAssert2503E041.template.json"
+    }
+  ],
   "/cdk-integ-medialive-input-mediaconnect-flow/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

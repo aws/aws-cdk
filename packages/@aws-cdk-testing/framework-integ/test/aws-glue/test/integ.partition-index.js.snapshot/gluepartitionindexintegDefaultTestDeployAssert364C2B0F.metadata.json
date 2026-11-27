@@ -1,4 +1,10 @@
 {
+  "/glue-partition-index-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "gluepartitionindexintegDefaultTestDeployAssert364C2B0F.template.json"
+    }
+  ],
   "/glue-partition-index-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

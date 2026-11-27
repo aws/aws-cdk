@@ -10,5 +10,6 @@
       "assertionStackName": "codepipelinesourcecodescanactiontestDefaultTestDeployAssert2A960817"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

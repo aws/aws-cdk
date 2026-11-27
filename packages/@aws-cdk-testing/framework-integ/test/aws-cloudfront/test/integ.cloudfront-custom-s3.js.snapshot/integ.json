@@ -10,5 +10,6 @@
       "assertionStackName": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

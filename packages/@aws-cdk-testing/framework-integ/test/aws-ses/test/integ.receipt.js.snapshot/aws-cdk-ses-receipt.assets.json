@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "793fa21dab8ffc39027127c61f7ed6acb3a00bd9e65c0814dab21597cfceb81e": {
       "displayName": "SingletonLambda224e77f9a32e4b4dac32983477abba16/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "859476e13205710a682f0be5b6ed93bf22970cda410e5e47c65a77d661471ab1": {
+    "168004cf8f8f58cec6b4e03c20c9eba965ac620ae0cccb5798f7c7e9d2564a31": {
       "displayName": "aws-cdk-ses-receipt Template",
       "source": {
         "path": "aws-cdk-ses-receipt.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-417290f4": {
+        "current_account-current_region-56d5bfbe": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "859476e13205710a682f0be5b6ed93bf22970cda410e5e47c65a77d661471ab1.json",
+          "objectKey": "168004cf8f8f58cec6b4e03c20c9eba965ac620ae0cccb5798f7c7e9d2564a31.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

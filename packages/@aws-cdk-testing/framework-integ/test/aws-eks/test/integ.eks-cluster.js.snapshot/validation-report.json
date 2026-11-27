@@ -1,0 +1,106 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources: Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-cluster-integ/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ],
+      "suppressedViolations": [
+        {
+          "ruleName": "W2506",
+          "description": "Parameters/SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: Parameter 'SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter' is used as an ImageId but has Type 'AWS::SSM::Parameter::Value<String>' - consider using 'AWS::EC2::Image::Id'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-cluster",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W2506",
+          "reason": "SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.",
+          "acknowledgedAt": "aws-cdk-eks-cluster",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at EksOptimizedImage.getImage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1831:59)\n    at EksClusterStack.assertNodeGroupCustomAmi (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:243:20)\n    at new EksClusterStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:93:14)\n    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:350:15)\n    ...node internals..."
+        },
+        {
+          "ruleName": "W2506",
+          "description": "Parameters/SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: Parameter 'SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter' is used as an ImageId but has Type 'AWS::SSM::Parameter::Value<String>' - consider using 'AWS::EC2::Image::Id'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-cluster",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W2506",
+          "reason": "SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.",
+          "acknowledgedAt": "aws-cdk-eks-cluster",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at EksOptimizedImage.getImage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1831:59)\n    at EksClusterStack.assertNodeGroupCustomAmi (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:243:20)\n    at new EksClusterStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:93:14)\n    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:350:15)\n    ...node internals..."
+        },
+        {
+          "ruleName": "W2506",
+          "description": "Parameters/SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter: Parameter 'SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter' is used as an ImageId but has Type 'AWS::SSM::Parameter::Value<String>' - consider using 'AWS::EC2::Image::Id'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-cluster",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W2506",
+          "reason": "SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.",
+          "acknowledgedAt": "aws-cdk-eks-cluster",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at EksOptimizedImage.getImage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1831:59)\n    at EksClusterStack.assertNodeGroupCustomAmi (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:243:20)\n    at new EksClusterStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:93:14)\n    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:350:15)\n    ...node internals..."
+        },
+        {
+          "ruleName": "W2506",
+          "description": "Parameters/SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: Parameter 'SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter' is used as an ImageId but has Type 'AWS::SSM::Parameter::Value<String>' - consider using 'AWS::EC2::Image::Id'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-cluster",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W2506",
+          "reason": "SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.",
+          "acknowledgedAt": "aws-cdk-eks-cluster",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at EksOptimizedImage.getImage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1831:59)\n    at EksClusterStack.assertNodeGroupCustomAmi (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:243:20)\n    at new EksClusterStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:93:14)\n    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster.js:350:15)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}

@@ -365,7 +365,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9eefbb833d512c88819ff6600d8783cac7a64ffabbd05a9059131f2b8d5007f8.zip"
+     "S3Key": "83210bdf68e80991a9db7f4c3b80792a131303a08efc48e4d6d0ee276dc40adb.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -374,7 +374,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x"
+    "Runtime": "nodejs26.x"
    },
    "DependsOn": [
     "BuildHooksVerifierServiceRoleDefaultPolicy791A5375",

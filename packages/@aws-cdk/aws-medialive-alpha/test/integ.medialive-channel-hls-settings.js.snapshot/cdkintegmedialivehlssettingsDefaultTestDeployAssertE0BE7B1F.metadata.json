@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-hls-settings/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivehlssettingsDefaultTestDeployAssertE0BE7B1F.template.json"
+    }
+  ],
   "/cdk-integ-medialive-hls-settings/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

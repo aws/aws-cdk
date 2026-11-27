@@ -233,7 +233,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "02154fa4fa901cb86e12faa37c99adf61e71f0180e05221439550707fc0638b9.zip"
+     "S3Key": "10d5ae6915b185199ad0d6d9aeadecf32d640bca7428d8b4f5cbbef34751891e.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -244,7 +244,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x"
+    "Runtime": "nodejs26.x"
    },
    "DependsOn": [
     "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"

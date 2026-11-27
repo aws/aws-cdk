@@ -1,0 +1,58 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources: Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "EksKubectlSecurityGroupsTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W9053",
+          "description": "Condition 'Cluster2SingleSecurityGroupKubectlProviderHandlerHasEcrPublic8193E1FE' is equivalent to condition 'Cluster1MultipleSecurityGroupsKubectlProviderHandlerHasEcrPublic95CE49DC' - consider consolidating",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-kubectl-security-groups-test",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W9053",
+          "description": "Condition 'Cluster3DefaultSecurityGroupKubectlProviderHandlerHasEcrPublic7A60CE45' is equivalent to condition 'Cluster1MultipleSecurityGroupsKubectlProviderHandlerHasEcrPublic95CE49DC' - consider consolidating",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-kubectl-security-groups-test",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

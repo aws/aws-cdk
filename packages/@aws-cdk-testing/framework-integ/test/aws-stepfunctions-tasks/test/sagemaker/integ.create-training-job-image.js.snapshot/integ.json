@@ -12,5 +12,6 @@
       "assertionStackName": "SfnSMTrainingJobImageDefaultTestDeployAssert6629FD8C"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

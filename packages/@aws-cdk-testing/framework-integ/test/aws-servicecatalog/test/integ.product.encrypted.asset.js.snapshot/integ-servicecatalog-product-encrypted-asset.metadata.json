@@ -554,13 +554,13 @@
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestProduct/Templatee4fb3ca9ed25/AssetBucket": [
+  "/integ-servicecatalog-product-encrypted-asset/TestProduct/Template6a1c05754477/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestProduct/Template12d2791ced07/AssetBucket": [
+  "/integ-servicecatalog-product-encrypted-asset/TestProduct/Templated0f84ae0fe17/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

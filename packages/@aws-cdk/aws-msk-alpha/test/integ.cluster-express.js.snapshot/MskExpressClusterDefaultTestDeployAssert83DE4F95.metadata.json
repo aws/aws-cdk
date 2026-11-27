@@ -1,4 +1,10 @@
 {
+  "/MskExpressCluster/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MskExpressClusterDefaultTestDeployAssert83DE4F95.template.json"
+    }
+  ],
   "/MskExpressCluster/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

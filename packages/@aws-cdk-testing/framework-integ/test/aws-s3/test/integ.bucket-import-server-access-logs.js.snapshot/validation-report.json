@@ -49,7 +49,7 @@
           "acknowledgedId": "CloudFormation-Validate::W3045",
           "reason": "accessControl is deprecated, but we are still using it for historical reasons.",
           "acknowledgedAt": "aws-cdk-s3-access-logs-target/TargetBucket",
-          "acknowledgedStackTrace": "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at PropertyInjectable.acknowledgeAccessControl (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1557:47)\n    at new Bucket (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1471:18)\n    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-import-server-access-logs.js:46:22)\n    ...node internals..."
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at PropertyInjectable.acknowledgeAccessControl (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1557:47)\n    at new Bucket (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1471:18)\n    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-import-server-access-logs.js:46:22)\n    ...node internals..."
         },
         {
           "ruleName": "W3045",
@@ -76,7 +76,7 @@
           "acknowledgedId": "CloudFormation-Validate::W3045",
           "reason": "accessControl is deprecated, but we are still using it for historical reasons.",
           "acknowledgedAt": "aws-cdk-s3-access-logs-delivery/SourceBucket",
-          "acknowledgedStackTrace": "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at PropertyInjectable.acknowledgeAccessControl (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1557:47)\n    at new Bucket (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1471:18)\n    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-import-server-access-logs.js:55:1)\n    ...node internals..."
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at PropertyInjectable.acknowledgeAccessControl (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1557:47)\n    at new Bucket (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1471:18)\n    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-import-server-access-logs.js:55:1)\n    ...node internals..."
         }
       ]
     }

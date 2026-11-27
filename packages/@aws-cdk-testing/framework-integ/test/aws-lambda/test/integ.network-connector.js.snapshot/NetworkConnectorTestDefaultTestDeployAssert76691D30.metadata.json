@@ -1,4 +1,10 @@
 {
+  "/NetworkConnectorTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "NetworkConnectorTestDefaultTestDeployAssert76691D30.template.json"
+    }
+  ],
   "/NetworkConnectorTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

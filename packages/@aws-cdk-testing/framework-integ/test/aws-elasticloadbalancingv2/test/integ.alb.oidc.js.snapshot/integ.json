@@ -10,5 +10,6 @@
       "assertionStackName": "IntegTestAlbOidcDefaultTestDeployAssert2476ECB6"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

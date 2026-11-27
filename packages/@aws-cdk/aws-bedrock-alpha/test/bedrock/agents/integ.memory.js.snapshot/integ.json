@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "BedrockMemory/DefaultTest": {
       "stacks": [
@@ -20,5 +20,6 @@
       "assertionStackName": "BedrockMemoryDefaultTestDeployAssert5AD90360"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

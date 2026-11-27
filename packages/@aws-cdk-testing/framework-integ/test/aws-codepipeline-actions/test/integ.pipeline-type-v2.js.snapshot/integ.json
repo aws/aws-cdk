@@ -10,5 +10,6 @@
       "assertionStackName": "codepipelinetypev2testDefaultTestDeployAssertD8DB1C31"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

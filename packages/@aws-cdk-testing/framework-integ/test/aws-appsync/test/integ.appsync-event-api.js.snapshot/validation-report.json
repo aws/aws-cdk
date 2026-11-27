@@ -1,0 +1,47 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3031",
+          "description": "DomainName: 'api.*.example.com' does not match pattern '^(\\*[a-z\\d-]*\\.)?([a-z\\d-]+\\.)+[a-z\\d-]+$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "appsync-event-api-stack/EventApi/DomainName",
+              "constructFqn": "aws-cdk-lib.aws_appsync.CfnDomainName",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "appsync-event-api-stack.template.json",
+                "logicalId": "EventApiDomainName1C1CA3FD",
+                "propertyPaths": [
+                  "Properties.DomainName"
+                ]
+              }
+            },
+            {
+              "constructPath": "appsync-event-api-stack/EventApi/DomainAssociation",
+              "constructFqn": "aws-cdk-lib.aws_appsync.CfnDomainNameApiAssociation",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "appsync-event-api-stack.template.json",
+                "logicalId": "EventApiDomainAssociationECB84F09",
+                "propertyPaths": [
+                  "Properties.DomainName"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

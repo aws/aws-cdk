@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "2149a129ab87c93e19bbdbfc0f861cefeee8f1fe360b256c7f66b9bc521c11e3": {
       "displayName": "mts-entry/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "e56d00396395f63c805bd183467ff1e357104ad6a654f316ea54b811c0d19bd5": {
+    "7addea63b475157f011434e599255434277f1a671bcaa27b5481bf033714bbe7": {
       "displayName": "cdk-integ-lambda-nodejs-modules-mts Template",
       "source": {
         "path": "cdk-integ-lambda-nodejs-modules-mts.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d102ce15": {
+        "current_account-current_region-7d772de9": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e56d00396395f63c805bd183467ff1e357104ad6a654f316ea54b811c0d19bd5.json",
+          "objectKey": "7addea63b475157f011434e599255434277f1a671bcaa27b5481bf033714bbe7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

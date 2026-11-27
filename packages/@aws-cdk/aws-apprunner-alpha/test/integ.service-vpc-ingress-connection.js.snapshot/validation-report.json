@@ -1,0 +1,66 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources: Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "AppRunnerVpcIngressConnection/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W3697",
+          "description": "Resource type 'AWS::AppRunner::Service' is from a service in maintenance mode since 2026-03-31. Consider migrating to an alternative",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-apprunner-vpc-ingress-connection/Service/Resource",
+              "constructFqn": "aws-cdk-lib.aws_apprunner.CfnService",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-apprunner-vpc-ingress-connection.template.json",
+                "logicalId": "ServiceDBC79909"
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W3697",
+          "description": "Resource type 'AWS::AppRunner::VpcIngressConnection' is from a service in maintenance mode since 2026-03-31. Consider migrating to an alternative",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-apprunner-vpc-ingress-connection/VpcIngressConnection/Resource",
+              "constructFqn": "aws-cdk-lib.aws_apprunner.CfnVpcIngressConnection",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-apprunner-vpc-ingress-connection.template.json",
+                "logicalId": "VpcIngressConnection4FCCD71F"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,14 +6,18 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at EksGrantAccessWithType._silenceLiteralAzWarning (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new EksGrantAccessWithType (/Users/krantboy/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-grant-access-with-type.js:58:21)",
-        "    at <anonymous> (/Users/krantboy/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-grant-access-with-type.js:138:15)",
+        "    at Validations.acknowledge (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at EksGrantAccessWithType._silenceLiteralAzWarning (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new EksGrantAccessWithType (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-grant-access-with-type.js:58:21)",
+        "    at <anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-grant-access-with-type.js:138:15)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-eks-grant-access-with-type.template.json"
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/Vpc": [
@@ -81,6 +85,18 @@
           ]
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksgrantaccesswithtypeawscdkawseksClusterResourceProvider6AA9A051.nested.template.json"
+    }
+  ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksgrantaccesswithtypeawscdkawseksKubectlProvider56047CC0.nested.template.json"
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/EC2Role": [

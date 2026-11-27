@@ -1,16 +1,16 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "688cb77e4de018e0c62d640095c4e8a1f3cea0a8a355f6d047f99dc9ce796073": {
+    "e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4": {
       "displayName": "cross-region-consumer2/Custom::CrossRegionExportReaderCustomResourceProvider Code",
       "source": {
-        "path": "asset.688cb77e4de018e0c62d640095c4e8a1f3cea0a8a355f6d047f99dc9ce796073",
+        "path": "asset.e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-west-2-ac68e914": {
+        "current_account-us-west-2-245b7751": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "688cb77e4de018e0c62d640095c4e8a1f3cea0a8a355f6d047f99dc9ce796073.zip",
+          "objectKey": "e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4.zip",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }
@@ -31,16 +31,16 @@
         }
       }
     },
-    "d81711e1ffe4f3e21f92a30b5df475c36727f8eec3b93000e3feccfbf57b5eae": {
+    "09cfe0cb6636d97d4c765077f6184e87b79f1cc1d4a4c22fb112d6035651459f": {
       "displayName": "cross-region-consumer2 Template",
       "source": {
         "path": "cross-region-consumer2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2-9d5cc40f": {
+        "current_account-us-west-2-b00450ae": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "d81711e1ffe4f3e21f92a30b5df475c36727f8eec3b93000e3feccfbf57b5eae.json",
+          "objectKey": "09cfe0cb6636d97d4c765077f6184e87b79f1cc1d4a4c22fb112d6035651459f.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

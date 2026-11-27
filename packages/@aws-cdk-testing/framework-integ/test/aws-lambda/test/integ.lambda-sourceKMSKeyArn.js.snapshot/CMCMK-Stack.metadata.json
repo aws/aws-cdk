@@ -92,17 +92,17 @@
       "type": "aws:cdk:warning",
       "data": "options.objectVersion is not defined for S3Code.fromBucketV2(). The lambda will not be updated automatically if the code in the bucket is updated. This is because CDK/Cloudformation does not track changes on the source S3 Bucket. It is recommended to either use S3Code.fromAsset() instead or set options.objectVersion. [ack: @aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified]",
       "trace": [
-        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
-        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
-        "Code.fromBucketV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-lambda/lib/code.js:180:46)",
-        "new TestStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-sourceKMSKeyArn.js:110:31)",
-        "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-sourceKMSKeyArn.js:132:17)",
-        "Module._compile (node:internal/modules/cjs/loader:1968:14)",
-        "Object..js (node:internal/modules/cjs/loader:2108:10)",
-        "Module.load (node:internal/modules/cjs/loader:1690:32)",
-        "Module._load (node:internal/modules/cjs/loader:1480:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "Annotations.addMessage (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "Code.fromBucketV2 (/workplace/anzhey/RT_Launch/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:180:46)",
+        "new TestStack (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-sourceKMSKeyArn.js:110:31)",
+        "Object.<anonymous> (/workplace/anzhey/RT_Launch/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-sourceKMSKeyArn.js:132:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
       ]
     }

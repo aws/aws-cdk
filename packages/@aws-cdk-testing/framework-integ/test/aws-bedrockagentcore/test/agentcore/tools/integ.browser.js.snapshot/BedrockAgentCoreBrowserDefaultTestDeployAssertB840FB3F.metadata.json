@@ -1,4 +1,10 @@
 {
+  "/BedrockAgentCoreBrowser/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockAgentCoreBrowserDefaultTestDeployAssertB840FB3F.template.json"
+    }
+  ],
   "/BedrockAgentCoreBrowser/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

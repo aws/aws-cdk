@@ -15,16 +15,16 @@
         }
       }
     },
-    "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f": {
+    "5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C1024MiBc8956f132a64130e39037d683558f15936d529e905/Code",
       "source": {
-        "path": "asset.7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f",
+        "path": "asset.5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-39a56ff1": {
+        "current_account-current_region-f5d75415": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip",
+          "objectKey": "5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -43,16 +43,16 @@
         }
       }
     },
-    "607f0c4784e63de329483be80d8b53f3413e8afb42a4b3ea22867876a25e1551": {
+    "cd97563b950bd51ce264bff88fc4c6edf6c3dbd2327356438d9352a7cd689d6a": {
       "displayName": "test-bucket-deployment-vpc-config Template",
       "source": {
         "path": "test-bucket-deployment-vpc-config.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-88a5eeb7": {
+        "current_account-current_region-a2be5caa": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "607f0c4784e63de329483be80d8b53f3413e8afb42a4b3ea22867876a25e1551.json",
+          "objectKey": "cd97563b950bd51ce264bff88fc4c6edf6c3dbd2327356438d9352a7cd689d6a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

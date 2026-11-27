@@ -1,4 +1,10 @@
 {
+  "/rds-serverlessV2-stack/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "rdsserverlessV2stackDefaultTestDeployAssert877504EC.template.json"
+    }
+  ],
   "/rds-serverlessV2-stack/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

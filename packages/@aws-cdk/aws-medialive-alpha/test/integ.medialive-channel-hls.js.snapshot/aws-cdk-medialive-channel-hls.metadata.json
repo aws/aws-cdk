@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-medialive-channel-hls": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-medialive-channel-hls.template.json"
+    }
+  ],
   "/aws-cdk-medialive-channel-hls/HlsBucket": [
     {
       "type": "aws:cdk:analytics:construct",

@@ -1,4 +1,10 @@
 {
+  "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awsstepfunctionstasksemrcontainersstartjobrunintegDefaultTestDeployAssertD11471F0.template.json"
+    }
+  ],
   "/aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

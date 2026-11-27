@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-medialive-encode-overrides/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialiveencodeoverridesDefaultTestDeployAssert0A4FCF77.template.json"
+    }
+  ],
   "/cdk-integ-medialive-encode-overrides/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

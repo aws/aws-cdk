@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-elasticbeanstalk-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-elasticbeanstalk-integ.template.json"
+    }
+  ],
   "/aws-cdk-elasticbeanstalk-integ/EbsHostedZoneMapping": [
     {
       "type": "aws:cdk:logicalId",

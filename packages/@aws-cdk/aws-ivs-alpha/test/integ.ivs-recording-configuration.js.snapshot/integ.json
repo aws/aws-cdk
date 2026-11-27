@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "ivs-recording-configuration-test/DefaultTest": {
       "stacks": [
@@ -18,5 +18,6 @@
       "assertionStackName": "ivsrecordingconfigurationtestDefaultTestDeployAssert4AB65A05"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

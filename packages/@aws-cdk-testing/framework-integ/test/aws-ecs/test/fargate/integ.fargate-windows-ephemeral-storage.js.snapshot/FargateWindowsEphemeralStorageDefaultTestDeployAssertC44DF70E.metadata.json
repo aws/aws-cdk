@@ -1,4 +1,10 @@
 {
+  "/FargateWindowsEphemeralStorage/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FargateWindowsEphemeralStorageDefaultTestDeployAssertC44DF70E.template.json"
+    }
+  ],
   "/FargateWindowsEphemeralStorage/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

@@ -1,4 +1,10 @@
 {
+  "/eks-cluster-removal-policy-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC.template.json"
+    }
+  ],
   "/eks-cluster-removal-policy-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

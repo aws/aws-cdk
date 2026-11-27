@@ -197,7 +197,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f7cb5878efef668855c2e9c3805636c098514bcc33d2d7851258aaf869636514.zip"
+     "S3Key": "fa70d8bd2ae91f9b4f63e5a9f03f62b419115d5b980ab17e79a0a09d6ac8e9e4.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -206,7 +206,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x"
+    "Runtime": "nodejs26.x"
    },
    "DependsOn": [
     "jshandlerbundlingpathServiceRole827F7127"
@@ -259,7 +259,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x"
+    "Runtime": "nodejs26.x"
    },
    "DependsOn": [
     "jshandlertsconfigpathServiceRoleC592AD71"
@@ -303,7 +303,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ad763f1ebfb1702b1706ea080767ec6a80344ea377b58e7638c43ff5950ee31.zip"
+     "S3Key": "c229afb47652a373c0084fc9c7bd8cb0913249140a0c7424657839f833a8b034.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -312,7 +312,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x"
+    "Runtime": "nodejs26.x"
    },
    "DependsOn": [
     "tshandlermetafilepathServiceRoleECB676AC"

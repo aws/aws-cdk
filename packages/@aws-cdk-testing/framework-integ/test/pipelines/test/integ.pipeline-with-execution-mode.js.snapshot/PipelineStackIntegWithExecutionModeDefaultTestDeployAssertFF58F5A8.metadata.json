@@ -1,4 +1,10 @@
 {
+  "/PipelineStackIntegWithExecutionMode/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PipelineStackIntegWithExecutionModeDefaultTestDeployAssertFF58F5A8.template.json"
+    }
+  ],
   "/PipelineStackIntegWithExecutionMode/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

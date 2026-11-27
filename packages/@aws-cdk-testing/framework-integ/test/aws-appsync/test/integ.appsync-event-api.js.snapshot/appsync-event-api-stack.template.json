@@ -398,7 +398,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Handler": "index.handler",
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Timeout": 900,
     "Code": {
      "S3Bucket": {
@@ -594,7 +594,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f02930a2a536676e9bf3aa876299ac1880466d9122a81e4236f2f4bda6a86c8a.zip"
+     "S3Key": "3a62dff775147e3c10117a3513deaa9d4eb9f2cacb71d3fc870f02c635ced107.zip"
     },
     "Environment": {
      "Variables": {

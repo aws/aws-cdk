@@ -121,7 +121,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d7a78a153245008bfd939d014432059dda6472aeb860364e38275597c53be2bd.zip"
+     "S3Key": "eea44d93276cde88efb541c63e3b85585f6ac6f3eed4391ca32702dd4dea3107.zip"
     }
    },
    "DependsOn": [
@@ -289,7 +289,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125.zip"
+     "S3Key": "107fad8963264825cc449bcfac9d72effef186dd868b2c29670e8eb13ddcaee0.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -298,7 +298,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs26.x",
     "Timeout": 120
    },
    "DependsOn": [

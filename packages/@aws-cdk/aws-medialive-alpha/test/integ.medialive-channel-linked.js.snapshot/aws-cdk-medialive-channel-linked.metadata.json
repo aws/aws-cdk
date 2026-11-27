@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-medialive-channel-linked": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-medialive-channel-linked.template.json"
+    }
+  ],
   "/aws-cdk-medialive-channel-linked/OutputBucket": [
     {
       "type": "aws:cdk:analytics:construct",

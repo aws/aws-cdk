@@ -9,5 +9,6 @@
       "assertionStackName": "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }

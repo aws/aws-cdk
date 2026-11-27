@@ -1,4 +1,10 @@
 {
+  "/cdk-integ-emx-flow-vpc/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegemxflowvpcDefaultTestDeployAssert8B0716FA.template.json"
+    }
+  ],
   "/cdk-integ-emx-flow-vpc/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

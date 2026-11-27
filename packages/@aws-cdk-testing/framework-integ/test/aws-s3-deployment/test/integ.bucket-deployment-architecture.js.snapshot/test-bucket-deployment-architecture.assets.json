@@ -15,16 +15,16 @@
         }
       }
     },
-    "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f": {
+    "5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
       "source": {
-        "path": "asset.7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f",
+        "path": "asset.5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-39a56ff1": {
+        "current_account-current_region-f5d75415": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip",
+          "objectKey": "5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -57,16 +57,16 @@
         }
       }
     },
-    "00960f132afdf5ea1c31d6409aa0a9f87c8f5b579e73580627c469ef4df0773b": {
+    "4e9420c6636e45eca55c6f88c4cf6f351dff66e39560a5a6ef5ed839d601fb67": {
       "displayName": "test-bucket-deployment-architecture Template",
       "source": {
         "path": "test-bucket-deployment-architecture.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-166f028b": {
+        "current_account-current_region-179fef43": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "00960f132afdf5ea1c31d6409aa0a9f87c8f5b579e73580627c469ef4df0773b.json",
+          "objectKey": "4e9420c6636e45eca55c6f88c4cf6f351dff66e39560a5a6ef5ed839d601fb67.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

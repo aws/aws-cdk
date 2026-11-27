@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "lambda-layer-node-proxy-agent-integ-test/DefaultTest": {
       "stacks": [
@@ -17,5 +17,6 @@
       "assertionStackName": "lambdalayernodeproxyagentintegtestDefaultTestDeployAssert951A1212"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
 }
