@@ -220,6 +220,98 @@ describe('security group', () => {
     expect(Object.keys(openIngressRules).length).toBe(0);
   });
 
+  describe('allowAllSelf', () => {
+    test('creates self-referencing all-traffic ingress and egress rules (default allowAllOutbound=true)', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      new SecurityGroup(stack, 'SG1', { vpc, allowAllSelf: true });
+
+      // THEN
+      const template = Template.fromStack(stack);
+
+      // Self-referencing ingress rule (all protocols) referencing the group itself
+      template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: '-1',
+        Description: 'Allow all traffic to self (allowAllSelf)',
+        GroupId: { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+        SourceSecurityGroupId: { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+      });
+
+      // Self-referencing egress rule is still emitted even with allowAllOutbound=true
+      template.hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+        IpProtocol: '-1',
+        Description: 'Allow all traffic to self (allowAllSelf)',
+        GroupId: { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+        DestinationSecurityGroupId: { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+      });
+
+      expect(Object.keys(template.findResources('AWS::EC2::SecurityGroupIngress')).length).toBe(1);
+      expect(Object.keys(template.findResources('AWS::EC2::SecurityGroupEgress')).length).toBe(1);
+
+      // The default all-outbound rule on the group is preserved
+      template.hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+    });
+
+    test('creates self-referencing all-traffic ingress and egress rules with allowAllOutbound=false', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      new SecurityGroup(stack, 'SG1', { vpc, allowAllSelf: true, allowAllOutbound: false });
+
+      // THEN
+      const template = Template.fromStack(stack);
+
+      template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: '-1',
+        Description: 'Allow all traffic to self (allowAllSelf)',
+        SourceSecurityGroupId: { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+      });
+
+      template.hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
+        IpProtocol: '-1',
+        Description: 'Allow all traffic to self (allowAllSelf)',
+        DestinationSecurityGroupId: { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+      });
+
+      expect(Object.keys(template.findResources('AWS::EC2::SecurityGroupEgress')).length).toBe(1);
+
+      // With allowAllOutbound=false the placeholder "no traffic" inline egress
+      // rule is removed once the real self egress rule is added, leaving no
+      // inline SecurityGroupEgress on the group itself.
+      template.hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: Match.absent(),
+      });
+    });
+
+    test('does not create self rules when allowAllSelf is false or omitted', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      new SecurityGroup(stack, 'SG1', { vpc, allowAllSelf: false });
+      new SecurityGroup(stack, 'SG2', { vpc });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      expect(Object.keys(template.findResources('AWS::EC2::SecurityGroupIngress')).length).toBe(0);
+      expect(Object.keys(template.findResources('AWS::EC2::SecurityGroupEgress')).length).toBe(0);
+    });
+  });
+
   describe('Inline Rule Control', () => {
     // Not inlined
     describe('When props.disableInlineRules is true', () => { testRulesAreNotInlined(undefined, true); });
