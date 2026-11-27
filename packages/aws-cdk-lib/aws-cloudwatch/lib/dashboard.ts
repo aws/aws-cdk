@@ -174,6 +174,15 @@ export class Dashboard extends Resource {
 
     this.resource = dashboard;
 
+    // CloudWatch rejects metric widgets that have neither metrics nor an alarm annotation.
+    // Validated after construction because metrics can be added later (e.g. GraphWidget.addLeftMetric()).
+    this.node.addValidation({
+      validate: () => [...this.rows]
+        .flatMap(w => w.toJson())
+        .filter(w => w.type === 'metric' && w.properties?.metrics === undefined && w.properties?.annotations?.alarms === undefined)
+        .map(w => `metric widget ${JSON.stringify(w.properties?.title ?? '(untitled)')} has no metrics, add at least one metric to it or remove it from the dashboard`),
+    });
+
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
     });

@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "DashboardWidgetMetricAddedLater/DefaultTest": {
+      "stacks": [
+        "dashboard-widget-metric-added-later"
+      ],
+      "assertionStack": "DashboardWidgetMetricAddedLater/DefaultTest/DeployAssert",
+      "assertionStackName": "DashboardWidgetMetricAddedLaterDefaultTestDeployAssert3B9D7714"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1144.0"
+}
