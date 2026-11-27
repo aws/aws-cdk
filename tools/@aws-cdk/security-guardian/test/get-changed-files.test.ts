@@ -23,7 +23,7 @@ describe('Changed Files Detection', () => {
 
   const mockGitCommands = (diffOutput: string, showOutput: string = '{}', repoRoot: string = mockRepoRoot) => {
     mockExec.exec.mockImplementation(async (command, args, options) => {
-      if (command === 'git' && args?.[0] === 'diff' && options?.listeners?.stdout) {
+      if (command === 'git' && args?.[0] === 'log' && options?.listeners?.stdout) {
         options.listeners.stdout(Buffer.from(diffOutput));
       }
       return 0;
@@ -43,7 +43,7 @@ describe('Changed Files Detection', () => {
   const verifyGitCommands = () => {
     expect(mockExec.exec).toHaveBeenCalledWith(
       'git',
-      ['diff', '--name-status', 'main...HEAD'],
+      ['log', '--first-parent', '--no-merges', '--name-status', '--pretty=format:', 'main..HEAD'],
       expect.any(Object)
     );
     expect(mockExec.getExecOutput).toHaveBeenCalledWith(
