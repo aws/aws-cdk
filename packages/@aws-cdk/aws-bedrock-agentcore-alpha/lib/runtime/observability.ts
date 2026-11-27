@@ -1,5 +1,5 @@
 import { ArnFormat, Lazy, Names, Stack, Tags } from 'aws-cdk-lib';
-import { Effect, PolicyStatement, ServicePrincipal, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, PolicyDocument, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import type * as s3 from 'aws-cdk-lib/aws-s3';
@@ -71,6 +71,25 @@ interface LoggingDestinationBindConfig {
 }
 
 /**
+ * Options for configuring runtime observability delivery.
+ * @internal
+ */
+export interface RuntimeObservabilityOptions {
+  /**
+   * Whether to create resource policies for log/trace delivery.
+   *
+   * When `false`, the `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy`
+   * are not created. This is useful when deploying many runtimes per account/Region,
+   * as each resource policy consumes an account-level quota slot (CloudWatch Logs: 10,
+   * X-Ray: lower). For same-account `/aws/vendedlogs/` delivery, the log-delivery
+   * service-linked role provides the necessary write access without an explicit policy.
+   *
+   * @default true
+   */
+  readonly manageDeliveryResourcePolicy?: boolean;
+}
+
+/**
  * Represents a logging destination for AgentCore Runtime
  *
  * Use the static factory methods to create instances:
@@ -112,9 +131,10 @@ export abstract class LoggingDestination {
    *
    * @param scope The construct scope
    * @param id The construct id
+   * @param options Observability options
    * @internal
    */
-  public abstract _bind(scope: Construct, id: string): LoggingDestinationBindConfig;
+  public abstract _bind(scope: Construct, id: string, options: RuntimeObservabilityOptions): LoggingDestinationBindConfig;
 }
 
 /**
@@ -125,36 +145,42 @@ class CloudWatchLogsDestination extends LoggingDestination {
     super();
   }
 
-  public _bind(scope: Construct, id: string): LoggingDestinationBindConfig {
+  public _bind(scope: Construct, id: string, options: RuntimeObservabilityOptions): LoggingDestinationBindConfig {
     const stack = Stack.of(scope);
 
-    // Get or create a singleton resource policy for logs delivery
-    const policyId = 'CdkLogGroupLogsDeliveryPolicy';
-    let resourcePolicy = stack.node.tryFindChild(policyId) as logs.ResourcePolicy | undefined;
+    const managePolicy = options.manageDeliveryResourcePolicy ?? true;
 
-    if (!resourcePolicy) {
-      resourcePolicy = new logs.ResourcePolicy(stack, policyId);
+    let resourcePolicy: logs.ResourcePolicy | undefined;
+
+    if (managePolicy) {
+      // Get or create a singleton resource policy for logs delivery
+      const policyId = 'CdkLogGroupLogsDeliveryPolicy';
+      resourcePolicy = stack.node.tryFindChild(policyId) as logs.ResourcePolicy | undefined;
+
+      if (!resourcePolicy) {
+        resourcePolicy = new logs.ResourcePolicy(stack, policyId);
+      }
+
+      // Grant permissions for this specific log group
+      // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-CloudWatchLogs.html
+      resourcePolicy.document.addStatements(new PolicyStatement({
+        effect: Effect.ALLOW,
+        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [`${this.logGroup.logGroupArn}:log-stream:*`],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': stack.formatArn({
+              service: 'logs',
+              resource: '*',
+            }),
+          },
+        },
+      }));
     }
-
-    // Grant permissions for this specific log group
-    // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-CloudWatchLogs.html
-    resourcePolicy.document.addStatements(new PolicyStatement({
-      effect: Effect.ALLOW,
-      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-      resources: [`${this.logGroup.logGroupArn}:log-stream:*`],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': stack.account,
-        },
-        ArnLike: {
-          'aws:SourceArn': stack.formatArn({
-            service: 'logs',
-            resource: '*',
-          }),
-        },
-      },
-    }));
 
     const deliveryDestination = new logs.CfnDeliveryDestination(scope, `${id}Dest`, {
       name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliveryDestination, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
@@ -162,7 +188,9 @@ class CloudWatchLogsDestination extends LoggingDestination {
       destinationResourceArn: this.logGroup.logGroupArn,
     });
 
-    deliveryDestination.node.addDependency(resourcePolicy);
+    if (resourcePolicy) {
+      deliveryDestination.node.addDependency(resourcePolicy);
+    }
 
     return { deliveryDestination };
   }
@@ -176,7 +204,7 @@ class S3Destination extends LoggingDestination {
     super();
   }
 
-  public _bind(scope: Construct, id: string): LoggingDestinationBindConfig {
+  public _bind(scope: Construct, id: string, _options: RuntimeObservabilityOptions): LoggingDestinationBindConfig {
     const stack = Stack.of(scope);
 
     // Add bucket policy for logs delivery
@@ -220,7 +248,7 @@ class FirehoseDestination extends LoggingDestination {
     super();
   }
 
-  public _bind(scope: Construct, id: string): LoggingDestinationBindConfig {
+  public _bind(scope: Construct, id: string, _options: RuntimeObservabilityOptions): LoggingDestinationBindConfig {
     // Firehose uses a service-linked role that requires this tag to grant access
     // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-Firehose.html
     Tags.of(this.stream).add('LogDeliveryEnabled', 'true');
@@ -263,12 +291,14 @@ class XRayResourcePolicy extends Construct {
  *
  * @param scope The construct scope
  * @param sourceArn The ARN of the source resource (runtime)
+ * @param options Observability options
  * @internal
  * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function configureTracingDelivery(
   scope: Construct,
   sourceArn: string,
+  options: RuntimeObservabilityOptions = {},
 ): logs.CfnDelivery {
   const stack = Stack.of(scope);
 
@@ -279,41 +309,43 @@ export function configureTracingDelivery(
     resourceArn: sourceArn,
   });
 
-  // Get or create X-Ray resource policy (singleton per stack)
-  const policyId = 'CdkXRayLogsDeliveryPolicy';
-  let xrayPolicy = stack.node.tryFindChild(policyId) as XRayResourcePolicy | undefined;
+  const managePolicy = options.manageDeliveryResourcePolicy ?? true;
 
-  if (!xrayPolicy) {
-    xrayPolicy = new XRayResourcePolicy(stack, policyId);
+  let xrayPolicy: XRayResourcePolicy | undefined;
+
+  if (managePolicy) {
+    // Get or create X-Ray resource policy (singleton per stack)
+    const policyId = 'CdkXRayLogsDeliveryPolicy';
+    xrayPolicy = stack.node.tryFindChild(policyId) as XRayResourcePolicy | undefined;
+
+    if (!xrayPolicy) {
+      xrayPolicy = new XRayResourcePolicy(stack, policyId);
+    }
+
+    // Grant permissions for this specific source resource
+    // The xray:PutTraceSegments action requires resources: ['*'] per AWS documentation.
+    // The conditions below restrict this broad scope to only the specific source resource
+    // (via logs:LogGeneratingResourceArns) and the current account and delivery-source ARN.
+    // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
+    xrayPolicy.document.addStatements(new PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+      actions: ['xray:PutTraceSegments'],
+      resources: ['*'],
+      conditions: {
+        'ForAllValues:ArnLike': { 'logs:LogGeneratingResourceArns': [sourceArn] },
+        'StringEquals': { 'aws:SourceAccount': stack.account },
+        'ArnLike': {
+          'aws:SourceArn': stack.formatArn({
+            service: 'logs',
+            resource: 'delivery-source',
+            resourceName: '*',
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        },
+      },
+    }));
   }
-
-  // Grant permissions for this specific source resource
-  // The xray:PutTraceSegments action requires resources: ['*'] per AWS documentation.
-  // The conditions below restrict this broad scope to only the specific source resource
-  // (via logs:LogGeneratingResourceArns) and the current account and delivery-source ARN.
-  // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
-  xrayPolicy.document.addStatements(new PolicyStatement({
-    effect: Effect.ALLOW,
-    principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-    actions: ['xray:PutTraceSegments'],
-    resources: ['*'],
-    conditions: {
-      'ForAllValues:ArnLike': {
-        'logs:LogGeneratingResourceArns': [sourceArn],
-      },
-      'StringEquals': {
-        'aws:SourceAccount': stack.account,
-      },
-      'ArnLike': {
-        'aws:SourceArn': stack.formatArn({
-          service: 'logs',
-          resource: 'delivery-source',
-          resourceName: '*',
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        }),
-      },
-    },
-  }));
 
   // Create delivery destination for X-Ray
   const deliveryDestination = new logs.CfnDeliveryDestination(scope, 'TracesDeliveryDest', {
@@ -321,7 +353,9 @@ export function configureTracingDelivery(
     deliveryDestinationType: 'XRAY',
   });
 
-  deliveryDestination.node.addDependency(xrayPolicy);
+  if (xrayPolicy) {
+    deliveryDestination.node.addDependency(xrayPolicy);
+  }
 
   // Create delivery to connect source and destination
   const delivery = new logs.CfnDelivery(scope, 'TracesDelivery', {
@@ -341,6 +375,7 @@ export function configureTracingDelivery(
  * @param scope The construct scope
  * @param sourceArn The ARN of the source resource (runtime)
  * @param loggingConfigs Array of logging configurations
+ * @param options Observability options
  * @internal
  * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
@@ -348,6 +383,7 @@ export function configureLoggingDelivery(
   scope: Construct,
   sourceArn: string,
   loggingConfigs: LoggingConfig[],
+  options: RuntimeObservabilityOptions = {},
 ): logs.CfnDelivery[] {
   const deliveries: logs.CfnDelivery[] = [];
 
@@ -374,7 +410,7 @@ export function configureLoggingDelivery(
     // Create delivery for each destination
     configs.forEach((config, index) => {
       const id = configs.length === 1 ? logTypeId : `${logTypeId}${index}`;
-      const bindConfig = config.destination._bind(scope, id);
+      const bindConfig = config.destination._bind(scope, id, options);
 
       const delivery = new logs.CfnDelivery(scope, `${id}Delivery`, {
         deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
