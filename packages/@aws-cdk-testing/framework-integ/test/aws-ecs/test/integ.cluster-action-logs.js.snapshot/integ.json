@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ClusterActionLogsInteg/DefaultTest": {
+      "stacks": [
+        "aws-ecs-cluster-action-logs-integ"
+      ],
+      "assertionStack": "ClusterActionLogsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterActionLogsIntegDefaultTestDeployAssert02A684B6"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
