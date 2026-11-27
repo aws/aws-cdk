@@ -113,11 +113,11 @@ export interface WebFunctionProps {
    * The entry file the runtime executes, relative to the root of the deployment
    * package.
    *
-   * Only supported for Node.js runtimes. When set, it is passed to the runtime via the reserved
-   * `AWS_LAMBDA_NODEJS_ENTRYPOINT` environment variable. Do not set that
+   * Only supported for Node.js and Python runtimes. When set, it is passed to the runtime via the reserved
+   * `AWS_LAMBDA_NODEJS_ENTRYPOINT` or `AWS_LAMBDA_PYTHON_ENTRYPOINT` environment variable. Do not set that
    * variable through `environment` as well.
    *
-   * @default - the runtime's default entry point, `index.js`
+   * @default - the runtime's default entry point, `index.js` for Node.js, `app.py` for Python
    */
   readonly entryPoint?: string;
 
@@ -557,24 +557,29 @@ export class WebFunction extends WebFunctionBase {
     const environment = { ...props.environment };
 
     // `entryPoint` is surfaced to the runtime through the reserved
-    // AWS_LAMBDA_NODEJS_ENTRYPOINT env var. Reject setting it both ways.
+    // AWS_LAMBDA_NODEJS_ENTRYPOINT or AWS_LAMBDA_PYTHON_ENTRYPOINT env var. Reject setting it both ways.
     if (props.entryPoint !== undefined) {
       const runtimeName = props.runtime.name;
-      if (!Token.isUnresolved(runtimeName) && !runtimeName.startsWith('nodejs')) {
+      const isNode = !Token.isUnresolved(runtimeName) && runtimeName.startsWith('nodejs');
+      const isPython = !Token.isUnresolved(runtimeName) && runtimeName.startsWith('python');
+
+      if (!Token.isUnresolved(runtimeName) && !isNode && !isPython) {
         throw new ValidationError(
-          lit`WebFunctionEntryPointRequiresNode`,
-          `entryPoint is only supported for Node.js runtimes, got '${runtimeName}'`,
+          lit`WebFunctionEntryPointRequiresNodeOrPython`,
+          `entryPoint is only supported for Node.js and Python runtimes, got '${runtimeName}'`,
           this,
         );
       }
-      if (environment.AWS_LAMBDA_NODEJS_ENTRYPOINT !== undefined) {
+
+      const entryPointEnvVar = isPython ? 'AWS_LAMBDA_PYTHON_ENTRYPOINT' : 'AWS_LAMBDA_NODEJS_ENTRYPOINT';
+      if (environment[entryPointEnvVar] !== undefined) {
         throw new ValidationError(
           lit`WebFunctionEntryPointConflict`,
-          'entryPoint cannot be used together with an AWS_LAMBDA_NODEJS_ENTRYPOINT environment variable; set only one',
+          `entryPoint cannot be used together with an ${entryPointEnvVar} environment variable; set only one`,
           this,
         );
       }
-      environment.AWS_LAMBDA_NODEJS_ENTRYPOINT = props.entryPoint;
+      environment[entryPointEnvVar] = props.entryPoint;
     }
 
     const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup');

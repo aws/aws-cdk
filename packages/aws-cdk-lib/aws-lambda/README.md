@@ -2633,8 +2633,8 @@ new CfnOutput(this, 'LogGroupName', { value: fn.logGroup.logGroupRef.logGroupNam
 ```
 
 By default the runtime executes `index.js` at the root of the deployment
-package. Use `entryPoint` to point it at a different file (surfaced to the
-runtime via the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT` environment variable):
+package for Node.js runtimes (or `app.py` for Python runtimes). Use `entryPoint` to point it at a different file (surfaced to the
+runtime via the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT` or `AWS_LAMBDA_PYTHON_ENTRYPOINT` environment variable):
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
