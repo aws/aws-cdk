@@ -1,0 +1,20 @@
+{
+  "/cdk-cloudwatch-math-alarm-insight-rule-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkcloudwatchmathalarminsightruleintegDefaultTestDeployAssertCDBACF6D.template.json"
+    }
+  ],
+  "/cdk-cloudwatch-math-alarm-insight-rule-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-cloudwatch-math-alarm-insight-rule-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

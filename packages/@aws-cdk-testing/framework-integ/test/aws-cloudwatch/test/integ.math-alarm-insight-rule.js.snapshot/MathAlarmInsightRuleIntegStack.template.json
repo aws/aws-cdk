@@ -1,0 +1,88 @@
+{
+ "Resources": {
+  "InsightRule": {
+   "Type": "AWS::CloudWatch::InsightRule",
+   "Properties": {
+    "RuleBody": "{\"Schema\":{\"Name\":\"CloudWatchLogRule\",\"Version\":1},\"LogGroupNames\":[\"/aws/lambda/*\"],\"LogFormat\":\"JSON\",\"Contribution\":{\"Keys\":[\"$.requestId\"]},\"AggregateOn\":\"Count\"}",
+    "RuleName": "cdk-integ-math-alarm-insight-rule",
+    "RuleState": "ENABLED"
+   }
+  },
+  "Alarm7103F465": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Metrics": [
+     {
+      "Expression": {
+       "Fn::Join": [
+        "",
+        [
+         "INSIGHT_RULE_METRIC(\"",
+         {
+          "Fn::GetAtt": [
+           "InsightRule",
+           "RuleName"
+          ]
+         },
+         "\", \"MaxContributorValue\") / m1"
+        ]
+       ]
+      },
+      "Id": "expr_1",
+      "Period": 60,
+      "ReturnData": true
+     },
+     {
+      "Id": "m1",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Invocations",
+        "Namespace": "AWS/Lambda"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Threshold": 1
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
