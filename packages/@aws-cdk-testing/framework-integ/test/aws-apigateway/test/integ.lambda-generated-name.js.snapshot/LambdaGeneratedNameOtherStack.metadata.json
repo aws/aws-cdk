@@ -1,0 +1,28 @@
+{
+  "/LambdaGeneratedNameOtherStack/FunctionArn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/LambdaGeneratedNameOtherStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/LambdaGeneratedNameOtherStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/LambdaGeneratedNameOtherStack/FunctionArn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionArnF0BDC120"
+    }
+  ]
+}
