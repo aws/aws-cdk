@@ -80,6 +80,10 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps = {}) {
     super(scope, id, props);
 
+    if (props.taskDefinition && props.stopTimeout) {
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionStopTimeout`, 'stopTimeout cannot be specified with taskDefinition; configure the timeout on the container instead', this);
+    }
+
     if (props.taskDefinition && props.image) {
       throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify only one of taskDefinition or image', this);
     } else if (props.taskDefinition) {
@@ -98,6 +102,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       this.taskDefinition.addContainer(containerName, {
         image: props.image,
         command: props.command,
+        stopTimeout: props.stopTimeout,
         environment: this.environment,
         secrets: this.secrets,
         logging: this.logDriver,

@@ -1048,3 +1048,31 @@ test('test Fargate queue worker service construct - with healthCheckGracePeriod'
     HealthCheckGracePeriodSeconds: 120,
   });
 });
+
+describe('container stop timeout', () => {
+  test.each([undefined, 120])('renders the configured timeout %s', (seconds) => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 512,
+      stopTimeout: seconds === undefined ? undefined : cdk.Duration.seconds(seconds),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: Match.arrayWith([Match.objectLike({
+        StopTimeout: seconds ?? Match.absent(),
+      })]),
+    });
+  });
+});
+
+test('fails when stopTimeout is supplied with a task definition', () => {
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'Task');
+  taskDefinition.addContainer('Container', { image: ecs.ContainerImage.fromRegistry('test') });
+  expect(() => new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    taskDefinition,
+    stopTimeout: cdk.Duration.seconds(120),
+  })).toThrow('stopTimeout cannot be specified with taskDefinition');
+});
