@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "EvaluationWindowIntegTest/DefaultTest": {
+      "stacks": [
+        "EvaluationWindowTestStack"
+      ],
+      "assertionStack": "EvaluationWindowIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluationWindowIntegTestDefaultTestDeployAssert91936758"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

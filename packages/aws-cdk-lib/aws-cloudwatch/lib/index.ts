@@ -4,6 +4,7 @@ export * from './alarm-action';
 export * from './alarm-base';
 export * from './alarm-mute-rule';
 export * from './alarm-rule';
+export * from './evaluation-window';
 export * from './composite-alarm';
 export * from './dashboard';
 export * from './graph';

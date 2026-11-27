@@ -714,6 +714,8 @@ export class Metric implements IMetric {
       evaluationPeriods: props.evaluationPeriods,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       treatMissingData: props.treatMissingData,
+      warmUpConfiguration: props.warmUpConfiguration,
+      evaluationWindow: props.evaluationWindow,
       actionsEnabled: props.actionsEnabled,
     });
   }
@@ -974,6 +976,8 @@ export class MathExpression implements IMetric {
       evaluationPeriods: props.evaluationPeriods,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       treatMissingData: props.treatMissingData,
+      warmUpConfiguration: props.warmUpConfiguration,
+      evaluationWindow: props.evaluationWindow,
       actionsEnabled: props.actionsEnabled,
     });
   }

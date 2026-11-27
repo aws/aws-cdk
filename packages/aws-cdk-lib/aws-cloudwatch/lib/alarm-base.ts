@@ -1,11 +1,45 @@
 import type { IAlarmAction } from './alarm-action';
 import type { AlarmMuteRuleOptions } from './alarm-mute-rule';
 import { AlarmMuteRule } from './alarm-mute-rule';
-import type { IResource } from '../../core';
+import type { Duration, IResource } from '../../core';
 import { Resource } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import type { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+
+/**
+ * The warm-up configuration for an alarm.
+ *
+ * A warm-up period delays alarm evaluation after the alarm is created. During the warm-up period the
+ * alarm stays in `INSUFFICIENT_DATA` and does not perform alarm actions. Warm-up applies once, when the
+ * alarm is created: updating an alarm that is still warming up changes or ends its warm-up, while adding
+ * or changing a warm-up configuration on an alarm whose warm-up has already ended does not start a new one.
+ *
+ * Warm-up is available for metric alarms, including metric math, Metrics Insights queries and anomaly
+ * detection. It is not available for `PromQLAlarm` or `CompositeAlarm`.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-warm-up.html
+ */
+export interface AlarmWarmUpConfiguration {
+  /**
+   * The length of the warm-up period that starts when the alarm is created.
+   *
+   * Must be a whole number of minutes between 1 minute and 2 days (2880 minutes).
+   * CloudFormation stores the value in minutes, so `Duration.seconds(90)` is rejected at synthesis time.
+   */
+  readonly warmUpPeriod: Duration;
+
+  /**
+   * Whether the alarm must wait for the full warm-up period before it starts evaluating.
+   *
+   * When false, the alarm ends warm-up early and starts evaluating as soon as it has enough metric data
+   * to fill its evaluation window (`period` x `evaluationPeriods`). When true, the alarm waits for the
+   * whole warm-up period even if data arrives sooner.
+   *
+   * @default false
+   */
+  readonly onlyStartEvaluatingAfterWarmUpPeriodEnds?: boolean;
+}
 
 /**
  * Interface for Alarm Rule.

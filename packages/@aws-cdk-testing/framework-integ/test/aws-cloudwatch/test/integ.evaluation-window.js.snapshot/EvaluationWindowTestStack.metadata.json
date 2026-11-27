@@ -1,0 +1,155 @@
+{
+  "/EvaluationWindowTestStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluationWindowTestStack.template.json"
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockMathAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockInsightsAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockAnomalyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*",
+        "comparisonOperator": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/EvaluationWindowTestStack/SlidingWindowAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/EvaluationWindowTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/EvaluationWindowTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WallClockAlarm48C46CFE"
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockMathAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WallClockMathAlarmFA5B5750"
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockInsightsAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WallClockInsightsAlarmC4FA09A2"
+    }
+  ],
+  "/EvaluationWindowTestStack/WallClockAnomalyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WallClockAnomalyAlarmABAE2808"
+    }
+  ],
+  "/EvaluationWindowTestStack/SlidingWindowAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SlidingWindowAlarm358A75E2"
+    }
+  ],
+  "/EvaluationWindowTestStack/Exports/Output{\"Ref\":\"WallClockAlarm48C46CFE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWallClockAlarm48C46CFEC7345EC6"
+    }
+  ],
+  "/EvaluationWindowTestStack/Exports/Output{\"Ref\":\"WallClockMathAlarmFA5B5750\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWallClockMathAlarmFA5B575019F3A6B6"
+    }
+  ],
+  "/EvaluationWindowTestStack/Exports/Output{\"Ref\":\"WallClockInsightsAlarmC4FA09A2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWallClockInsightsAlarmC4FA09A2C1C80516"
+    }
+  ],
+  "/EvaluationWindowTestStack/Exports/Output{\"Ref\":\"WallClockAnomalyAlarmABAE2808\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWallClockAnomalyAlarmABAE28080F527D79"
+    }
+  ],
+  "/EvaluationWindowTestStack/Exports/Output{\"Ref\":\"SlidingWindowAlarm358A75E2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefSlidingWindowAlarm358A75E2E2E121BD"
+    }
+  ]
+}
