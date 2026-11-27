@@ -1,11 +1,13 @@
 import * as path from 'path';
 import type { AssetCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
-import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume } from 'aws-cdk-lib/core';
+import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume, ILocalBundling } from 'aws-cdk-lib/core';
 import { AssetHashType, AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit, posixShellEscape, recordPerformanceEntry } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { LocalBundling } from './local-bundling';
 import { Packaging, DependenciesFile } from './packaging';
+import { resolvePlatformTags } from './platform';
 import type { BundlingOptions, ICommandHooks } from './types';
 
 /**
@@ -53,6 +55,34 @@ export interface BundlingProps extends BundlingOptions {
   bundlingFileAccess?: BundlingFileAccess;
 }
 
+const LOCAL_BUNDLING_SUPPORT: Readonly<Record<keyof BundlingProps, boolean>> = {
+  entry: true,
+  runtime: true,
+  architecture: true,
+  skip: true,
+  outputPathSuffix: true,
+  assetExcludes: true,
+  poetryIncludeHashes: true,
+  poetryWithoutUrls: true,
+  assetHashType: true,
+  assetHash: true,
+  commandHooks: true,
+  environment: true,
+  localBundling: true,
+  image: false,
+  buildArgs: false,
+  bundlingFileAccess: false,
+  entrypoint: false,
+  command: false,
+  volumes: false,
+  volumesFrom: false,
+  workingDirectory: false,
+  user: false,
+  securityOpt: false,
+  network: false,
+  platform: false,
+};
+
 /**
  * Produce bundled Lambda asset code
  */
@@ -66,6 +96,10 @@ export class Bundling implements CdkBundlingOptions {
     }
 
     if (options.skip) {
+      if (options.localBundling) {
+        validateLocalBundlingOptions(options);
+        resolvePlatformTags(options.runtime, options.architecture ?? Architecture.X86_64, options.localBundling);
+      }
       // Skipped assets are staged without bundling options, so asset staging can't count them
       recordPerformanceEntry('bundle:PythonFunction:skipped', { telemetry: true });
     }
@@ -90,6 +124,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly bundlingFileAccess?: BundlingFileAccess;
+  public readonly local?: ILocalBundling;
 
   constructor(props: BundlingProps) {
     const {
@@ -104,21 +139,30 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes = [],
     } = props;
 
-    const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
+    if (props.localBundling) {
+      validateLocalBundlingOptions(props);
+    }
 
-    const bundlingCommands = this.createBundlingCommand({
-      entry,
+    const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
+    const packaging = Packaging.fromEntry(entry, poetryIncludeHashes, poetryWithoutUrls);
+    const excludes = effectiveExcludes(assetExcludes, packaging);
+
+    const bundlingCommands = createBundlingCommand({
       inputDir: AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: outputPath,
-      poetryIncludeHashes,
-      poetryWithoutUrls,
+      packaging,
+      excludes,
       commandHooks,
-      assetExcludes,
     });
 
     if (image) {
       // Use the user's image
       this.image = image;
+    } else if (props.localBundling) {
+      // Local bundling skips Docker entirely. Reference the runtime's base
+      // image lazily via fromRegistry so we still expose a valid `image`
+      // without shelling out to `docker build` at synth time.
+      this.image = DockerImage.fromRegistry(runtime.bundlingImage.image);
     } else {
       // Build our own image to do the build in, but only if and when the asset actually needs bundling.
       this.image = DockerImage.fromBuildV2(path.join(__dirname, 'docker'), {
@@ -141,44 +185,72 @@ export class Bundling implements CdkBundlingOptions {
     this.securityOpt = props.securityOpt;
     this.network = props.network;
     this.bundlingFileAccess = props.bundlingFileAccess;
-  }
 
-  private createBundlingCommand(options: BundlingCommandOptions): string[] {
-    const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
-    let bundlingCommands: string[] = [];
-    bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
-
-    const excludes = [...(options.assetExcludes ?? [])];
-    if (packaging.dependenciesFile == DependenciesFile.UV && !excludes.includes('.python-version')) {
-      excludes.push('.python-version');
+    if (props.localBundling) {
+      this.local = new LocalBundling({
+        entry,
+        runtime,
+        architecture,
+        packaging,
+        excludes,
+        outputPathSuffix: path.posix.relative(AssetStaging.BUNDLING_OUTPUT_DIR, outputPath),
+        platformTags: props.localBundling.platformTags,
+        additionalPlatformTags: props.localBundling.additionalPlatformTags,
+        commandHooks,
+        environment: props.environment,
+      });
     }
-
-    const exclusionStr = excludes.map(item => `--exclude=${posixShellEscape(item)}`).join(' ');
-    bundlingCommands.push([
-      'rsync', '-rLv', exclusionStr ?? '', posixShellEscape(`${options.inputDir}/`), posixShellEscape(options.outputDir),
-    ].filter(item => item).join(' '));
-    bundlingCommands.push(`cd ${posixShellEscape(options.outputDir)}`);
-    bundlingCommands.push(packaging.exportCommand ?? '');
-
-    if (packaging.dependenciesFile == DependenciesFile.UV) {
-      bundlingCommands.push(`uv pip install -r ${DependenciesFile.PIP} --target ${posixShellEscape(options.outputDir)}`);
-    } else if (packaging.dependenciesFile) {
-      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${posixShellEscape(options.outputDir)}`);
-    }
-
-    bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
-    return bundlingCommands;
   }
 }
 
+function validateLocalBundlingOptions(props: BundlingProps): void {
+  const incompatible = Object.entries(props)
+    .filter(([key, value]) => value !== undefined && LOCAL_BUNDLING_SUPPORT[key as keyof BundlingProps] !== true)
+    .map(([key]) => key);
+  if (incompatible.length > 0) {
+    throw new UnscopedValidationError(
+      lit`PythonLocalBundlingDockerOptions`,
+      `localBundling cannot be combined with Docker options: ${incompatible.join(', ')}.`,
+    );
+  }
+}
+
+function createBundlingCommand(options: BundlingCommandOptions): string[] {
+  const { packaging, excludes, inputDir, outputDir } = options;
+  const bundlingCommands: string[] = [];
+  bundlingCommands.push(...options.commandHooks?.beforeBundling(inputDir, outputDir) ?? []);
+
+  const exclusionStr = excludes.map(item => `--exclude=${posixShellEscape(item)}`).join(' ');
+  bundlingCommands.push([
+    'rsync', '-rLv', exclusionStr, posixShellEscape(`${inputDir}/`), posixShellEscape(outputDir),
+  ].filter(item => item).join(' '));
+  bundlingCommands.push(`cd ${posixShellEscape(outputDir)}`);
+  bundlingCommands.push(packaging.exportCommand ?? '');
+
+  if (packaging.dependenciesFile == DependenciesFile.UV) {
+    bundlingCommands.push(`uv pip install -r ${DependenciesFile.PIP} --target ${posixShellEscape(outputDir)}`);
+  } else if (packaging.dependenciesFile) {
+    bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${posixShellEscape(outputDir)}`);
+  }
+
+  bundlingCommands.push(...options.commandHooks?.afterBundling(inputDir, outputDir) ?? []);
+  return bundlingCommands;
+}
+
 interface BundlingCommandOptions {
-  readonly entry: string;
   readonly inputDir: string;
   readonly outputDir: string;
-  readonly assetExcludes?: string[];
-  readonly poetryIncludeHashes?: boolean;
-  readonly poetryWithoutUrls?: boolean;
+  readonly packaging: Packaging;
+  readonly excludes: string[];
   readonly commandHooks?: ICommandHooks;
+}
+
+function effectiveExcludes(assetExcludes: string[], packaging: Packaging): string[] {
+  const excludes = [...assetExcludes];
+  if (packaging.dependenciesFile === DependenciesFile.UV && !excludes.includes('.python-version')) {
+    excludes.push('.python-version');
+  }
+  return excludes;
 }
 
 /**

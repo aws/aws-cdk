@@ -1,0 +1,960 @@
+{
+  "/integ-lambda-python-function-local": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-lambda-python-function-local.template.json"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-manylinux2014": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalNativeLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "compatibleRuntimes": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "compatibleRuntimes": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/ImportNativeLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "layers": [
+          "*"
+        ],
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-lambda-python-function-local/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py310x86649BDEE0EA"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py310arm64DD15CBF0"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py311x8664CADB2489"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py311arm64766910EA"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x86644EE211AC"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312arm640CEA647F"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313x8664343319B1"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313arm6482EC1A2E"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314x8664E73D7D42"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314arm6449F0304A"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-manylinux2014/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-manylinux2014/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localtagsoverridemanylinux20141C2D5DA9"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664uvBE88161F"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664poetry1A94B7FF"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664pipenv5F6C85F2"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalNativeLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalNativeLayer9EECE556"
+    }
+  ],
+  "/integ-lambda-python-function-local/ImportNativeLayer/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/ImportNativeLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportNativeLayer262A0B9A"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2py310x86649BDEE0EA\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2py310x86649BDEE0EA6C8BF953"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2py310arm64DD15CBF0\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2py310arm64DD15CBF053EC672F"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2py311x8664CADB2489\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2py311x8664CADB2489330B162C"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2py311arm64766910EA\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2py311arm64766910EAEBC0976D"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312x86644EE211AC\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312x86644EE211ACEA33C72B"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312arm640CEA647F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312arm640CEA647F86A1EB07"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py313x8664343319B1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py313x8664343319B1214536B5"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py313arm6482EC1A2E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py313arm6482EC1A2ECB139D2F"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py314x8664E73D7D42\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py314x8664E73D7D424FB95F18"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py314arm6449F0304A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py314arm6449F0304AE6215FDA"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localtagsoverridemanylinux20141C2D5DA9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocaltagsoverridemanylinux20141C2D5DA9FA235D6A"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312x8664uvBE88161F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312x8664uvBE88161F0863966E"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312x8664poetry1A94B7FF\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312x8664poetry1A94B7FF815B236D"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312x8664pipenv5F6C85F2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312x8664pipenv5F6C85F293164E0B"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"ImportNativeLayer262A0B9A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputRefImportNativeLayer262A0B9AEF5B22D2"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py310x8664ServiceRole63855A48"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py310arm64ServiceRole68ACB130"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py311x8664ServiceRole4D79ED5F"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py311arm64ServiceRoleFB807A72"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664ServiceRoleA529E372"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312arm64ServiceRole83524C39"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313x8664ServiceRole55457719"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313arm64ServiceRole8AF5C3FC"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314x8664ServiceRole64C3B7E4"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314arm64ServiceRole723D64FF"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-manylinux2014/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localtagsoverridemanylinux2014ServiceRoleBBAA1341"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-manylinux2014/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664uvServiceRoleCBD98E4B"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664poetryServiceRoleD8DE465E"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664pipenvServiceRole035202E1"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalNativeLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/ImportNativeLayer/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportNativeLayerServiceRole15357820"
+    }
+  ]
+}

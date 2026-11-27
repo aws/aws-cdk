@@ -1,9 +1,12 @@
 
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
-import { AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
+import { App, AssetHashType, AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
 import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
+import { PythonLayerVersion } from '../lib/layer';
 
 jest.spyOn(Code, 'fromAsset');
 // Stub `DockerImage.fromBuild` for the tests that build a custom bundling image with it, and
@@ -50,7 +53,7 @@ test('Bundling a function without dependencies', () => {
     }),
   }));
 
-  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(path.join(__dirname, '..', 'lib', 'docker'), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-python/),
     }),
@@ -468,7 +471,7 @@ test('Bundling a function with custom bundling image', () => {
   }));
 
   expect(DockerImage.fromBuild).toHaveBeenCalledTimes(1);
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(entry));
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(entry);
 });
 
 test('Bundling with custom build args', () => {
@@ -480,7 +483,7 @@ test('Bundling with custom build args', () => {
     buildArgs: { PIP_INDEX_URL: testPypi },
   });
 
-  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(path.join(__dirname, '..', 'lib', 'docker'), expect.objectContaining({
     buildArgs: expect.objectContaining({
       PIP_INDEX_URL: testPypi,
     }),
@@ -708,6 +711,137 @@ test('Bundling a function with uv dependencies', () => {
   expect(files).toContain('uv.lock');
   // Contains hidden files.
   expect(files).toContain('.ignorefile');
+});
+
+describe('local bundling wiring', () => {
+  test('rejects Docker options when local bundling is skipped', () => {
+    expect(() => Bundling.bundle({
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_11,
+      skip: true,
+      localBundling: {},
+      image: DockerImage.fromRegistry('custom-image'),
+    })).toThrow('localBundling cannot be combined with Docker options: image.');
+    expect(Code.fromAsset).not.toHaveBeenCalled();
+  });
+
+  test('rejects incompatible platform tags when local bundling is skipped', () => {
+    expect(() => Bundling.bundle({
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_11,
+      skip: true,
+      localBundling: { additionalPlatformTags: ['manylinux2014_aarch64'] },
+    })).toThrow(/Platform tag 'manylinux2014_aarch64' does not match Lambda architecture/);
+    expect(Code.fromAsset).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['buildArgs', { PIP_INDEX_URL: 'https://example.test/simple' }],
+    ['bundlingFileAccess', BundlingFileAccess.VOLUME_COPY],
+    ['command', ['bash']],
+    ['entrypoint', ['/bin/sh']],
+    ['image', DockerImage.fromRegistry('custom-image')],
+    ['network', 'host'],
+    ['platform', 'linux/amd64'],
+    ['securityOpt', 'no-new-privileges'],
+    ['user', '1000'],
+    ['volumes', [{ hostPath: '/host', containerPath: '/container' }]],
+    ['volumesFrom', ['container']],
+    ['workingDirectory', '/work'],
+    ['futureDockerOption', true],
+  ])('rejects the unsupported %s option in local mode', (option, value) => {
+    expect(() => Bundling.bundle({
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_11,
+      localBundling: {},
+      [option]: value,
+    })).toThrow('localBundling cannot be combined with Docker options: ' + option + '.');
+    expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['assetHash', 'custom-hash'],
+    ['assetHashType', AssetHashType.SOURCE],
+    ['poetryIncludeHashes', true],
+    ['poetryWithoutUrls', true],
+    ['outputPathSuffix', 'python'],
+    ['skip', false],
+    ['environment', { PIP_INDEX_URL: 'https://example.test/simple' }],
+  ])('accepts the supported %s option in local mode', (option, value) => {
+    const bundling = new Bundling({
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_11,
+      localBundling: {},
+      [option]: value,
+    });
+
+    expect(bundling.local).toBeDefined();
+    expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
+  });
+
+  test('stages a locally bundled PythonLayerVersion under python', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-local-python-layer-'));
+    const stack = new Stack(new App({ outdir }));
+    const bundlingRequired = jest.spyOn(stack, 'bundlingRequired', 'get').mockReturnValue(true);
+    try {
+      new PythonLayerVersion(stack, 'Layer', {
+        entry,
+        compatibleRuntimes: [Runtime.PYTHON_3_11],
+        bundling: { localBundling: {} },
+      });
+
+      const asset = fs.readdirSync(outdir).find(file => file.startsWith('asset.'));
+      expect(asset).toBeDefined();
+      const assetDir = path.join(outdir, asset!);
+      expect(fs.readdirSync(assetDir)).toEqual(['python']);
+      expect(fs.readdirSync(path.join(assetDir, 'python'))).toContain('index.py');
+      const install = (spawnSync as jest.Mock).mock.calls.find(([, args]) => args.includes('install'));
+      expect(install).toBeDefined();
+      const [, args, options] = install!;
+      const target = args[args.indexOf('--target') + 1];
+      expect(path.basename(target)).toBe('python');
+      expect(options).toEqual(expect.objectContaining({ cwd: target }));
+      expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
+    } finally {
+      bundlingRequired.mockRestore();
+      fs.rmSync(outdir, { recursive: true, force: true });
+    }
+  });
+
+  test('produces the same source hash from different checkout paths', () => {
+    const original = path.join(__dirname, 'lambda-handler');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-local-python-hash-'));
+    try {
+      const copy = path.join(tmp, 'checkout');
+      fs.cpSync(original, copy, { recursive: true });
+      const stack = new Stack(new App({ outdir: path.join(tmp, 'out') }));
+      const stage = (id: string, entry: string, platformTags?: string[]) => new AssetStaging(stack, id, {
+        sourcePath: entry,
+        bundling: new Bundling({ entry, runtime: Runtime.PYTHON_3_11, localBundling: { platformTags } }),
+      }).assetHash;
+      const originalHash = stage('Original', original);
+      expect(stage('Copy', copy)).toBe(originalHash);
+      expect(stage('OtherTags', copy, ['manylinux_2_17_x86_64'])).not.toBe(originalHash);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('defaults to Docker bundling', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+      bundling: expect.objectContaining({
+        local: undefined,
+      }),
+    }));
+  });
 });
 
 test('uv automatic assetExcludes does not mutate caller array', () => {

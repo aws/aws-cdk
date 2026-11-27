@@ -1,0 +1,978 @@
+{
+ "Resources": {
+  "localal2py310x8664ServiceRole63855A48": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2py310x86649BDEE0EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "648e3a81ded209de1a2dcdb85b81d3d21f68b4c82c63f9a9d7e06275f3c131ad.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2py310x8664ServiceRole63855A48",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10"
+   },
+   "DependsOn": [
+    "localal2py310x8664ServiceRole63855A48"
+   ]
+  },
+  "localal2py310arm64ServiceRole68ACB130": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2py310arm64DD15CBF0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "030586591d83d0705a2a1c102631c83bad4d4c09215126418d471093de736df9.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2py310arm64ServiceRole68ACB130",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10"
+   },
+   "DependsOn": [
+    "localal2py310arm64ServiceRole68ACB130"
+   ]
+  },
+  "localal2py311x8664ServiceRole4D79ED5F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2py311x8664CADB2489": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "7801ab9f790dafa1690390473d3cc21db6ce05a5408d005532afa4ee73da8a7e.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2py311x8664ServiceRole4D79ED5F",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11"
+   },
+   "DependsOn": [
+    "localal2py311x8664ServiceRole4D79ED5F"
+   ]
+  },
+  "localal2py311arm64ServiceRoleFB807A72": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2py311arm64766910EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "be44c89cc1b2437eb3daad64f203e852e6df05114702de1a9c0eb69e3b1f0e03.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2py311arm64ServiceRoleFB807A72",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11"
+   },
+   "DependsOn": [
+    "localal2py311arm64ServiceRoleFB807A72"
+   ]
+  },
+  "localal2023py312x8664ServiceRoleA529E372": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312x86644EE211AC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1e09d6d9b553b02d20194756d0f114d10e5502a0e0b45eb6acc8be7a7369505a.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312x8664ServiceRoleA529E372",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312x8664ServiceRoleA529E372"
+   ]
+  },
+  "localal2023py312arm64ServiceRole83524C39": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312arm640CEA647F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e96e57085821b6e28374efee32a3d1c3bdb4a7b3d7df1e9927fa0964ca7ac703.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "EXPECTED_WHEEL_TAG": "manylinux_2_28_aarch64"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312arm64ServiceRole83524C39",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312arm64ServiceRole83524C39"
+   ]
+  },
+  "localal2023py313x8664ServiceRole55457719": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py313x8664343319B1": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "363fb96ca1531c30f3260dde2dfc0c12757b8ddd3d1014226864926e22c8f256.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py313x8664ServiceRole55457719",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13"
+   },
+   "DependsOn": [
+    "localal2023py313x8664ServiceRole55457719"
+   ]
+  },
+  "localal2023py313arm64ServiceRole8AF5C3FC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py313arm6482EC1A2E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "93b139ceebb9e40225c4a475deec5a5998b1e10c7f34ba18afab9a864d760b3a.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py313arm64ServiceRole8AF5C3FC",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13"
+   },
+   "DependsOn": [
+    "localal2023py313arm64ServiceRole8AF5C3FC"
+   ]
+  },
+  "localal2023py314x8664ServiceRole64C3B7E4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py314x8664E73D7D42": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3ed8cd653a2afc42a362b0ba5abb9a7111f00f4db78ee04d6eb518538dbae4ea.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py314x8664ServiceRole64C3B7E4",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.14"
+   },
+   "DependsOn": [
+    "localal2023py314x8664ServiceRole64C3B7E4"
+   ]
+  },
+  "localal2023py314arm64ServiceRole723D64FF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py314arm6449F0304A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "f34dc11816a0516ad864a7b20e4be1850f47d5c3388aecac46a9760a710315f2.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py314arm64ServiceRole723D64FF",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.14"
+   },
+   "DependsOn": [
+    "localal2023py314arm64ServiceRole723D64FF"
+   ]
+  },
+  "localtagsoverridemanylinux2014ServiceRoleBBAA1341": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localtagsoverridemanylinux20141C2D5DA9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ed2228567fe327d25902bd03f5cd7b054ae227c463730fd1fa639c3ad5d73757.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "EXPECTED_WHEEL_TAG": "manylinux2014_aarch64"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localtagsoverridemanylinux2014ServiceRoleBBAA1341",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localtagsoverridemanylinux2014ServiceRoleBBAA1341"
+   ]
+  },
+  "localal2023py312x8664uvServiceRoleCBD98E4B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312x8664uvBE88161F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "110d4fc24c20fa88d54cc0cb96917bb31d157ba1884be38df08374a8f0c3e3a1.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312x8664uvServiceRoleCBD98E4B",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312x8664uvServiceRoleCBD98E4B"
+   ]
+  },
+  "localal2023py312x8664poetryServiceRoleD8DE465E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312x8664poetry1A94B7FF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "29212313cfde30b0ea1384d58ececa0b6138d8a1d27e51f1c3807390d4bf6e80.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312x8664poetryServiceRoleD8DE465E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312x8664poetryServiceRoleD8DE465E"
+   ]
+  },
+  "localal2023py312x8664pipenvServiceRole035202E1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312x8664pipenv5F6C85F2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ead2571582084eb77dfef7bea837bf4c2e8e802e3bf9729c49bcae1fe0f04bdd.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312x8664pipenvServiceRole035202E1",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312x8664pipenvServiceRole035202E1"
+   ]
+  },
+  "LocalNativeLayer9EECE556": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "CompatibleRuntimes": [
+     "python3.12"
+    ],
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "485ae08c6f4b19f630dc3c327eea1cc0bb1b9fd172df3042f58c4860898187ff.zip"
+    }
+   }
+  },
+  "ImportNativeLayerServiceRole15357820": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ImportNativeLayer262A0B9A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "import ujson\n\ndef handler(event, context):\n    assert ujson.__file__.startswith(\"/opt/python/\"), ujson.__file__\n    return ujson.loads(\"200\")"
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "LocalNativeLayer9EECE556"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "ImportNativeLayerServiceRole15357820",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "ImportNativeLayerServiceRole15357820"
+   ]
+  }
+ },
+ "Outputs": {
+  "PublishOutputReflocalal2py310x86649BDEE0EA6C8BF953": {
+   "Value": {
+    "Ref": "localal2py310x86649BDEE0EA"
+   }
+  },
+  "PublishOutputReflocalal2py310arm64DD15CBF053EC672F": {
+   "Value": {
+    "Ref": "localal2py310arm64DD15CBF0"
+   }
+  },
+  "PublishOutputReflocalal2py311x8664CADB2489330B162C": {
+   "Value": {
+    "Ref": "localal2py311x8664CADB2489"
+   }
+  },
+  "PublishOutputReflocalal2py311arm64766910EAEBC0976D": {
+   "Value": {
+    "Ref": "localal2py311arm64766910EA"
+   }
+  },
+  "PublishOutputReflocalal2023py312x86644EE211ACEA33C72B": {
+   "Value": {
+    "Ref": "localal2023py312x86644EE211AC"
+   }
+  },
+  "PublishOutputReflocalal2023py312arm640CEA647F86A1EB07": {
+   "Value": {
+    "Ref": "localal2023py312arm640CEA647F"
+   }
+  },
+  "PublishOutputReflocalal2023py313x8664343319B1214536B5": {
+   "Value": {
+    "Ref": "localal2023py313x8664343319B1"
+   }
+  },
+  "PublishOutputReflocalal2023py313arm6482EC1A2ECB139D2F": {
+   "Value": {
+    "Ref": "localal2023py313arm6482EC1A2E"
+   }
+  },
+  "PublishOutputReflocalal2023py314x8664E73D7D424FB95F18": {
+   "Value": {
+    "Ref": "localal2023py314x8664E73D7D42"
+   }
+  },
+  "PublishOutputReflocalal2023py314arm6449F0304AE6215FDA": {
+   "Value": {
+    "Ref": "localal2023py314arm6449F0304A"
+   }
+  },
+  "PublishOutputReflocaltagsoverridemanylinux20141C2D5DA9FA235D6A": {
+   "Value": {
+    "Ref": "localtagsoverridemanylinux20141C2D5DA9"
+   }
+  },
+  "PublishOutputReflocalal2023py312x8664uvBE88161F0863966E": {
+   "Value": {
+    "Ref": "localal2023py312x8664uvBE88161F"
+   }
+  },
+  "PublishOutputReflocalal2023py312x8664poetry1A94B7FF815B236D": {
+   "Value": {
+    "Ref": "localal2023py312x8664poetry1A94B7FF"
+   }
+  },
+  "PublishOutputReflocalal2023py312x8664pipenv5F6C85F293164E0B": {
+   "Value": {
+    "Ref": "localal2023py312x8664pipenv5F6C85F2"
+   }
+  },
+  "PublishOutputRefImportNativeLayer262A0B9AEF5B22D2": {
+   "Value": {
+    "Ref": "ImportNativeLayer262A0B9A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
