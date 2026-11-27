@@ -1,0 +1,20 @@
+{
+  "/apigateway-access-log-json-additional-fields/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "apigatewayaccesslogjsonadditionalfieldsDefaultTestDeployAssert164427DD.template.json"
+    }
+  ],
+  "/apigateway-access-log-json-additional-fields/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/apigateway-access-log-json-additional-fields/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

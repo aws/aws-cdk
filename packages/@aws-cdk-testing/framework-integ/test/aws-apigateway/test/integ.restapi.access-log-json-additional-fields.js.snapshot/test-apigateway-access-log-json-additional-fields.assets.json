@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "5eaa607efb7fd4cabd73cc2568f34e719e812f5393814f062abdf01c4e21967c": {
+      "displayName": "test-apigateway-access-log-json-additional-fields Template",
+      "source": {
+        "path": "test-apigateway-access-log-json-additional-fields.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ef9f8703": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5eaa607efb7fd4cabd73cc2568f34e719e812f5393814f062abdf01c4e21967c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
