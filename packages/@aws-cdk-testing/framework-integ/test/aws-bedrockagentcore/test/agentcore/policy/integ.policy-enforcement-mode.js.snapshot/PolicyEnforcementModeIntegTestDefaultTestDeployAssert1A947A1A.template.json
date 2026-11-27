@@ -1,0 +1,236 @@
+{
+ "Resources": {
+  "AwsApiCallbedrockagentcorecontrolgetPolicy4d83110d54830754df4257b811b9def5": {
+   "Type": "Custom::DeployAssert@SdkCallbedrock-agentcore-controlgetPoli",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "bedrock-agentcore-control",
+    "api": "getPolicy",
+    "expected": "{\"$ObjectLike\":{\"enforcementMode\":\"LOG_ONLY\",\"status\":\"ACTIVE\"}}",
+    "parameters": {
+     "policyEngineId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "PolicyEnforcementModeIntegTestStack:ExportsOutputFnGetAttTestPolicyEngineEDA3E3DCPolicyEngineId42B95A24"
+        },
+        "\""
+       ]
+      ]
+     },
+     "policyId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "PolicyEnforcementModeIntegTestStack:ExportsOutputFnGetAttTestPolicyEngineLogOnlyPolicyB8E578ABPolicyId125123D4"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1793245691306"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "bedrock-agentcore-control:GetPolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "bedrock-agentcore-control:GetPolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "bedrock-agentcore:GetPolicy"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "bedrock-agentcore:GetPolicy"
+         ],
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "8dac47066bb3b4421cfab3c8ab60e46de6c74437661bffcfd61c04c661f8454e.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallbedrockagentcorecontrolgetPolicy0186787836117c4c7b31f621bab3751e": {
+   "Type": "Custom::DeployAssert@SdkCallbedrock-agentcore-controlgetPoli",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "bedrock-agentcore-control",
+    "api": "getPolicy",
+    "expected": "{\"$ObjectLike\":{\"enforcementMode\":\"LOG_ONLY\",\"status\":\"ACTIVE\",\"definition\":{\"policy\":{\"statement\":{\"$StringLike\":\"forbid\"}}}}}",
+    "parameters": {
+     "policyEngineId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "PolicyEnforcementModeIntegTestStack:ExportsOutputFnGetAttTestPolicyEngineEDA3E3DCPolicyEngineId42B95A24"
+        },
+        "\""
+       ]
+      ]
+     },
+     "policyId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "PolicyEnforcementModeIntegTestStack:ExportsOutputFnGetAttTestPolicyEnginePolicyMemberPolicy2EE94578PolicyId5C22BC2A"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1793245691309"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallbedrockagentcorecontrolgetPolicy4d83110d54830754df4257b811b9def5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallbedrockagentcorecontrolgetPolicy4d83110d54830754df4257b811b9def5",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallbedrockagentcorecontrolgetPolicy0186787836117c4c7b31f621bab3751e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallbedrockagentcorecontrolgetPolicy0186787836117c4c7b31f621bab3751e",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

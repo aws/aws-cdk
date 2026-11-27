@@ -83,6 +83,11 @@ describe('PolicyStatement', () => {
       expect(PolicyStatement.fromCedar('  permit(principal, action, resource);  ').toCedar())
         .toEqual('permit(principal, action, resource);');
     });
+
+    test('fromPolicy() returns the trimmed statement as given', () => {
+      expect(PolicyStatement.fromPolicy('  permit(principal, action, resource);  ').toCedar())
+        .toEqual('permit(principal, action, resource);');
+    });
   });
 
   describe('Principal specifications', () => {

@@ -18,6 +18,7 @@ import * as cdk from '../../../../core';
 import { Gateway } from '../../../lib/gateway/gateway';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
 import { PolicyStatement } from '../../../lib/policy/policy-statement';
+import { PolicyEnforcementMode } from '../../../lib/policy/policy-types';
 
 describe('PolicyEngine default tests', () => {
   let template: Template;
@@ -667,6 +668,26 @@ describe('PolicyEngine addPolicy tests', () => {
       PolicyEngineId: Match.objectLike({
         'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('enginewithpolicy.*'), 'PolicyEngineId']),
       }),
+    });
+  });
+});
+
+describe('PolicyEngine addPolicy enforcement mode', () => {
+  test('passes enforcementMode through to the Policy', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    const policyEngine = new PolicyEngine(stack, 'Engine', { policyEngineName: 'test_engine' });
+
+    const policy = policyEngine.addPolicy('Policy', {
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
+      policyName: 'log_only_policy',
+      enforcementMode: PolicyEnforcementMode.LOG_ONLY,
+    });
+
+    expect(policy.enforcementMode).toBe(PolicyEnforcementMode.LOG_ONLY);
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'log_only_policy',
+      EnforcementMode: 'LOG_ONLY',
     });
   });
 });

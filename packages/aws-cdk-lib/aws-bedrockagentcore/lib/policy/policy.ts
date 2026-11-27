@@ -4,6 +4,7 @@ import type { IPolicy, PolicyAttributes } from './policy-base';
 import { PolicyBase } from './policy-base';
 import type { IPolicyEngine } from './policy-engine-base';
 import type { PolicyStatement } from './policy-statement';
+import type { PolicyEnforcementMode } from './policy-types';
 import { PolicyValidationMode } from './policy-types';
 import { throwIfInvalidPolicyName, throwIfInvalidDescription, throwIfInvalidPolicyDefinition } from './validation-helpers';
 import { CfnPolicy } from '../../../aws-bedrockagentcore';
@@ -46,6 +47,10 @@ export interface PolicyProps {
    * module does not escape, quote, or validate it, so it is treated as trusted input
    * and you own its correctness and safety. Do not assemble it from values that come
    * from outside your application, such as a request body or a database record.
+   *
+   * For statements that the `cedar` member of the policy definition does not accept,
+   * such as statements with a `when guardrails { ... }` block, use
+   * `PolicyStatement.fromPolicy('...')`, which is treated the same way.
    */
   readonly statement: PolicyStatement;
 
@@ -63,6 +68,15 @@ export interface PolicyProps {
    * @default PolicyValidationMode.FAIL_ON_ANY_FINDINGS
    */
   readonly validationMode?: PolicyValidationMode;
+
+  /**
+   * Enforcement mode for the policy.
+   * Use `LOG_ONLY` to evaluate a policy against real traffic without enforcing its
+   * decision, then switch it to `ACTIVE`.
+   *
+   * @default - No enforcement mode is set, and the service uses `ACTIVE`
+   */
+  readonly enforcementMode?: PolicyEnforcementMode;
 }
 
 /**
@@ -155,6 +169,11 @@ export class Policy extends PolicyBase {
   public readonly validationMode?: PolicyValidationMode;
 
   /**
+   * The enforcement mode for the policy.
+   */
+  public readonly enforcementMode?: PolicyEnforcementMode;
+
+  /**
    * The principal to grant permissions to.
    */
   public readonly grantPrincipal: iam.IPrincipal;
@@ -188,6 +207,7 @@ export class Policy extends PolicyBase {
 
     this.description = props.description;
     this.validationMode = props.validationMode ?? PolicyValidationMode.FAIL_ON_ANY_FINDINGS;
+    this.enforcementMode = props.enforcementMode;
 
     // Scope the service principal used as this resource's grantPrincipal with
     // aws:SourceAccount and aws:SourceArn so that any resource-based grant made to
@@ -228,11 +248,12 @@ export class Policy extends PolicyBase {
     const cfnProps: CfnPolicyProps = {
       name: this.policyName,
       policyEngineId: this.policyEngine.policyEngineId,
-      definition: {
-        cedar: { statement: this.definition },
-      },
+      definition: props.statement._definitionMember === 'policy'
+        ? { policy: { statement: this.definition } }
+        : { cedar: { statement: this.definition } },
       description: this.description,
       validationMode: this.validationMode?.value,
+      enforcementMode: this.enforcementMode?.value,
     };
 
     this.__resource = new CfnPolicy(this, 'Resource', cfnProps);

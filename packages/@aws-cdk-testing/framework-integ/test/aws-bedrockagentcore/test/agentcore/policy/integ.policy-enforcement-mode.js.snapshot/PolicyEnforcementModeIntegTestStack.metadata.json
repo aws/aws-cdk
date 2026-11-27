@@ -1,0 +1,82 @@
+{
+  "/PolicyEnforcementModeIntegTestStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PolicyEnforcementModeIntegTestStack.template.json"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/TestPolicyEngine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/TestPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestPolicyEngineEDA3E3DC"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/TestPolicyEngine/LogOnlyPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/TestPolicyEngine/PolicyMemberPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/Exports/Output{\"Fn::GetAtt\":[\"TestPolicyEngineEDA3E3DC\",\"PolicyEngineId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTestPolicyEngineEDA3E3DCPolicyEngineId42B95A24"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/Exports/Output{\"Fn::GetAtt\":[\"TestPolicyEngineLogOnlyPolicyB8E578AB\",\"PolicyId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTestPolicyEngineLogOnlyPolicyB8E578ABPolicyId125123D4"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/Exports/Output{\"Fn::GetAtt\":[\"TestPolicyEnginePolicyMemberPolicy2EE94578\",\"PolicyId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTestPolicyEnginePolicyMemberPolicy2EE94578PolicyId5C22BC2A"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/TestPolicyEngine/LogOnlyPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestPolicyEngineLogOnlyPolicyB8E578AB"
+    }
+  ],
+  "/PolicyEnforcementModeIntegTestStack/TestPolicyEngine/PolicyMemberPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestPolicyEnginePolicyMemberPolicy2EE94578"
+    }
+  ]
+}
