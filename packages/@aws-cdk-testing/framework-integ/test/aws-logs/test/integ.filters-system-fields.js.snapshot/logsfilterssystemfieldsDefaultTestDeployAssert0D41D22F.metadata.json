@@ -1,0 +1,20 @@
+{
+  "/logs-filters-system-fields/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "logsfilterssystemfieldsDefaultTestDeployAssert0D41D22F.template.json"
+    }
+  ],
+  "/logs-filters-system-fields/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/logs-filters-system-fields/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
