@@ -15,6 +15,16 @@ import * as servicecatalog from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
 describe('ProductStack', () => {
+  test('Template.fromStack returns the template of the product stack', () => {
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack');
+    new sns.Topic(productStack, 'Topic');
+
+    Template.fromStack(productStack).resourceCountIs('AWS::SNS::Topic', 1);
+    Template.fromStack(mainStack).resourceCountIs('AWS::SNS::Topic', 0);
+  });
+
   test('Asset bucket undefined in product stack without assets', () => {
     // GIVEN
     const app = new cdk.App({

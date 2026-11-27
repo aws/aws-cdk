@@ -59,14 +59,6 @@ class LambdaStackSet extends StackSet {
 }
 
 /**
- * A StackSet is not a cloud assembly artifact, so read its template file from the assembly
- */
-function stackSetTemplateOf(stackSet: StackSet): Template {
-  const assembly = Stage.of(stackSet)!.synth();
-  return Template.fromJSON(JSON.parse(fs.readFileSync(path.join(assembly.directory, stackSet.templateFile), 'utf-8')));
-}
-
-/**
  * The hashes of the template assets of a StackSet in the asset manifest of its host stack
  */
 function templateAssetHashes(app: App, hostStack: Stack, stackSet: StackSet): string[] {
@@ -949,6 +941,30 @@ test('GovCloud partition - self managed stackset with specific environment', () 
   });
 });
 
+describe('Template.fromStack with a StackSet', () => {
+  test('returns the template of the StackSet, not of the stack that contains it', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Host');
+    const stackSet = new StackSet(stack, 'StackSet');
+    new s3.Bucket(stackSet, 'Bucket');
+
+    Template.fromStack(stackSet).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(stackSet).resourceCountIs('AWS::CloudFormation::StackSet', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::StackSet', 1);
+  });
+
+  test('returns the template of a StackSet in a nested stack', () => {
+    const app = new App();
+    const nested = new NestedStack(new Stack(app, 'Host'), 'Nested');
+    const stackSet = new StackSet(nested, 'StackSet');
+    new s3.Bucket(stackSet, 'Bucket');
+
+    Template.fromStack(stackSet).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(nested).resourceCountIs('AWS::CloudFormation::StackSet', 1);
+  });
+});
+
 describe('StackSet self managed admin role', () => {
   test('is created next to the StackSet, in the stack that contains it', () => {
     const app = new App();
@@ -1570,7 +1586,7 @@ describe('StackSet template asset', () => {
     const stackSet = new StackSet(new Stack(app, 'Admin'), 'StackSet');
     new iam.Role(stackSet, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
-    stackSetTemplateOf(stackSet).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stackSet).resourceCountIs('AWS::IAM::Role', 1);
   });
 });
 
@@ -1581,7 +1597,7 @@ describe('StackSet environment', () => {
     const stackSet = new StackSet(new Stack(stage, 'Host'), 'StackSet');
     new iam.Role(stackSet, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
-    stackSetTemplateOf(stackSet).hasResourceProperties('AWS::IAM::Role', {
+    Template.fromStack(stackSet).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [{
           Principal: {
@@ -1610,7 +1626,7 @@ describe('StackSet description and tags', () => {
     const stackSet = new StackSet(stack, 'StackSet', { description: 'Security baseline' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', { Description: 'Security baseline' });
-    expect(stackSetTemplateOf(stackSet).toJSON().Description).toBeUndefined();
+    expect(Template.fromStack(stackSet).toJSON().Description).toBeUndefined();
   });
 
   test.each([0, 1025])('fails with an error code when the description has %d characters', (length) => {
@@ -1651,7 +1667,7 @@ describe('StackSet description and tags', () => {
     const stackSet = new StackSet(stack, 'StackSet');
     stackSet.templateOptions.description = 'Security baseline template';
 
-    expect(stackSetTemplateOf(stackSet).toJSON().Description).toEqual('Security baseline template');
+    expect(Template.fromStack(stackSet).toJSON().Description).toEqual('Security baseline template');
   });
 
   test('tags of the StackSet are tags of the StackSet resource and of its resources', () => {
@@ -1664,7 +1680,7 @@ describe('StackSet description and tags', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
       Tags: [{ Key: 'team', Value: 'security' }],
     });
-    stackSetTemplateOf(stackSet).hasResourceProperties('AWS::S3::Bucket', {
+    Template.fromStack(stackSet).hasResourceProperties('AWS::S3::Bucket', {
       Tags: [{ Key: 'team', Value: 'security' }],
     });
   });
@@ -1688,7 +1704,7 @@ describe('StackSet references to other stacks', () => {
     const stackSet = new StackSet(stack, 'StackSet', { parameters: { Environment: 'prod' } });
     new CfnOutput(stackSet, 'AuditRoleArn', { value: auditRole.roleArn });
 
-    const template = stackSetTemplateOf(stackSet).toJSON();
+    const template = Template.fromStack(stackSet).toJSON();
     const [parameterName] = Object.keys(template.Parameters);
     expect(template.Parameters[parameterName]).toEqual({ Type: 'String' });
     expect(template.Outputs.AuditRoleArn.Value).toEqual({ Ref: parameterName });
@@ -1733,7 +1749,7 @@ describe('StackSet references to other stacks', () => {
     const auditRole = new iam.Role(stack, 'AuditRole', { assumedBy: new iam.AccountRootPrincipal() });
     const stackSet = new StackSet(stack, 'StackSet');
     new CfnOutput(stackSet, 'AuditRoleArn', { value: auditRole.roleArn });
-    const [parameterName] = Object.keys(stackSetTemplateOf(stackSet).toJSON().Parameters);
+    const [parameterName] = Object.keys(Template.fromStack(stackSet).toJSON().Parameters);
 
     const conflictingApp = new App();
     const conflictingStack = new Stack(conflictingApp, 'Admin');
@@ -1766,7 +1782,7 @@ describe('StackSet references to resources of a stack with an environment', () =
     const stackSet = new StackSet(stack, 'StackSet');
     new CfnOutput(stackSet, 'AuditRoleArn', { value: auditRole.roleArn });
 
-    const template = stackSetTemplateOf(stackSet).toJSON();
+    const template = Template.fromStack(stackSet).toJSON();
     const [parameterName] = Object.keys(template.Parameters);
     expect(template.Outputs.AuditRoleArn.Value).toEqual({ Ref: parameterName });
     const { logicalId, role } = auditRoleResource(stack);
@@ -1781,7 +1797,7 @@ describe('StackSet references to resources of a stack with an environment', () =
     const stackSet = new StackSet(stack, 'StackSet');
     new CfnOutput(stackSet, 'AuditRoleName', { value: auditRole.roleName });
 
-    const template = stackSetTemplateOf(stackSet).toJSON();
+    const template = Template.fromStack(stackSet).toJSON();
     const [parameterName] = Object.keys(template.Parameters);
     expect(template.Outputs.AuditRoleName.Value).toEqual({ Ref: parameterName });
     const { logicalId, role } = auditRoleResource(stack);
@@ -1799,7 +1815,7 @@ describe('StackSet references to resources of a stack with an environment', () =
     const nested = new core.NestedStack(stackSet, 'Nested');
     new CfnOutput(nested, 'AuditRoleArn', { value: auditRole.roleArn });
 
-    const [stackSetParameter] = Object.keys(stackSetTemplateOf(stackSet).toJSON().Parameters);
+    const [stackSetParameter] = Object.keys(Template.fromStack(stackSet).toJSON().Parameters);
     const { logicalId, role } = auditRoleResource(stack);
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
       Parameters: [{ ParameterKey: stackSetParameter, ParameterValue: { 'Fn::GetAtt': [logicalId, 'Arn'] } }],
@@ -1881,7 +1897,7 @@ describe('nested stacks in a StackSet', () => {
     const { stack, stackSet, nested } = stackSetWithNestedStack();
     new iam.Role(nested, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
-    const nestedStackResource = Object.values(stackSetTemplateOf(stackSet).findResources('AWS::CloudFormation::Stack'))[0];
+    const nestedStackResource = Object.values(Template.fromStack(stackSet).findResources('AWS::CloudFormation::Stack'))[0];
     expect(nestedStackResource.Properties.TemplateURL).toEqual({
       'Fn::Join': ['', [
         'https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/',
@@ -1908,7 +1924,7 @@ describe('nested stacks in a StackSet', () => {
     const auditRole = new iam.Role(stack, 'AuditRole', { assumedBy: new iam.AccountRootPrincipal() });
     new CfnOutput(nested, 'AuditRoleArn', { value: auditRole.roleArn });
 
-    const stackSetTemplate = stackSetTemplateOf(stackSet).toJSON();
+    const stackSetTemplate = Template.fromStack(stackSet).toJSON();
     const [stackSetParameter] = Object.keys(stackSetTemplate.Parameters);
     const nestedStackResource: any = Object.values(stackSetTemplate.Resources).find((r: any) => r.Type === 'AWS::CloudFormation::Stack');
     expect(Object.values(nestedStackResource.Properties.Parameters)).toEqual([{ Ref: stackSetParameter }]);

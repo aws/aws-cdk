@@ -1344,6 +1344,11 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Returns `true` if this stack is a top-level stack (i.e., not a nested stack).
    *
+   * A stack that returns `false` is deployed through another stack and has no stack
+   * artifact of its own: its template is written to `templateFile` in the cloud assembly
+   * (`Template.fromStack()` reads it from there), and its metadata is reported on the
+   * artifact of the nearest top-level stack that contains it.
+   *
    * For better or worse, `Stack` is being subclassed by other constructs to mean "template producer".
    * For example, `NestedStack` is a subclass of `Stack` but is not a top-level stack, and so
    * is `CloudFormationProduct`.

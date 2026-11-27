@@ -10,8 +10,10 @@ import {
   LegacyStackSynthesizer,
   NestedStack,
   Stack,
+  StackSynthesizer,
   Stage,
 } from '../../core';
+import type { DockerImageAssetLocation, FileAssetLocation, ISynthesisSession } from '../../core';
 import { Capture, Match, Template } from '../lib';
 
 describe('Template', () => {
@@ -76,6 +78,27 @@ describe('Template', () => {
         },
       });
       const template = Template.fromStack(nested);
+
+      expect(template.toJSON()).toEqual({
+        Resources: {
+          Foo: {
+            Type: 'Foo::Bar',
+            Properties: { Baz: 'Qux' },
+          },
+        },
+      });
+    });
+
+    test('a stack that is not a top-level stack and has no stack artifact', () => {
+      const app = new App();
+      const stack = new TemplateOnlyStack(new Stack(app, 'Parent'), 'TemplateOnly');
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: {
+          Baz: 'Qux',
+        },
+      });
+      const template = Template.fromStack(stack);
 
       expect(template.toJSON()).toEqual({
         Resources: {
@@ -1562,5 +1585,35 @@ function expectToThrow(fn: () => void, msgs: (RegExp | string)[]): void {
         `Received error: ${message}`,
       ].join('\n'));
     }
+  }
+}
+
+/**
+ * Writes the template to the assembly, without a stack artifact
+ */
+class TemplateOnlySynthesizer extends StackSynthesizer {
+  public addFileAsset(): FileAssetLocation {
+    throw new Error('file assets are not supported');
+  }
+
+  public addDockerImageAsset(): DockerImageAssetLocation {
+    throw new Error('docker image assets are not supported');
+  }
+
+  public synthesize(session: ISynthesisSession): void {
+    this.synthesizeTemplate(session);
+  }
+}
+
+/**
+ * Mirrors NestedStack, StackSet and ProductStack: deployed through its parent, with no stack artifact of its own
+ */
+class TemplateOnlyStack extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id, { synthesizer: new TemplateOnlySynthesizer() });
+  }
+
+  public get _isTopLevelStack(): boolean {
+    return false;
   }
 }
