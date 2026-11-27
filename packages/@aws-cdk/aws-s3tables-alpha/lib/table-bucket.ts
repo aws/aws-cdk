@@ -1,10 +1,11 @@
 import { EOL } from 'os';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
-import { Lazy, Names, Resource, UnscopedValidationError, Token } from 'aws-cdk-lib/core';
-import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Annotations, Lazy, Names, Resource, Stack, UnscopedValidationError, Token } from 'aws-cdk-lib/core';
+import { ConstructReflection, memoizedGetter, lit, PropertyReflection } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -183,6 +184,82 @@ export enum StorageClass {
    * while maintaining performance for frequently accessed data.
    */
   INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
+}
+
+/**
+ * The date used in the partitioned key of log objects.
+ */
+export enum PartitionDateSource {
+  /**
+   * The time that the requests in the log were made.
+   */
+  EVENT_TIME = 'EventTime',
+
+  /**
+   * The time that the log was delivered.
+   */
+  DELIVERY_TIME = 'DeliveryTime',
+}
+
+/**
+ * The key format of the log objects.
+ */
+export abstract class TargetObjectKeyFormat {
+  /**
+   * Partitions log object keys by date, in the format
+   * `[TargetPrefix][SourceAccountId]/[SourceRegion]/[SourceTableBucket]/[YYYY]/[MM]/[DD]/[YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]`.
+   *
+   * @param dateSource the date to use for the log object key partitions. Default: PartitionDateSource.EVENT_TIME
+   */
+  public static partitionedPrefix(dateSource?: PartitionDateSource): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
+      public _render(): s3tables.CfnTableBucket.TargetObjectKeyFormatProperty {
+        return {
+          partitionedPrefix: {
+            partitionDateSource: dateSource ?? PartitionDateSource.EVENT_TIME,
+          },
+        };
+      }
+    }();
+  }
+
+  /**
+   * Renders the key format for the CloudFormation resource.
+   *
+   * @internal
+   */
+  public abstract _render(): s3tables.CfnTableBucket.TargetObjectKeyFormatProperty;
+}
+
+/**
+ * Server access logging configuration for a table bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-server-logs.html
+ */
+export interface LoggingConfiguration {
+  /**
+   * The general purpose bucket that logs are delivered to.
+   *
+   * The bucket must be in the same Region and account as the table bucket, and must not use
+   * SSE-KMS or DSSE-KMS default encryption, S3 Object Lock or Requester Pays.
+   *
+   * If the bucket's policy can be modified in this CDK app, a bucket policy statement is added
+   * that allows the `logging.s3.amazonaws.com` service principal to deliver logs to it.
+   * Otherwise, for example for an imported bucket, you must grant this permission yourself.
+   */
+  readonly targetBucket: s3.IBucketRef;
+
+  /**
+   * The prefix for the keys of the log objects delivered to the target bucket.
+   */
+  readonly targetPrefix: string;
+
+  /**
+   * The key format of the log objects.
+   *
+   * @default TargetObjectKeyFormat.partitionedPrefix(PartitionDateSource.EVENT_TIME)
+   */
+  readonly targetObjectKeyFormat?: TargetObjectKeyFormat;
 }
 
 /**
@@ -413,6 +490,17 @@ export interface TableBucketProps {
    * @default - STANDARD storage class
    */
   readonly storageClass?: StorageClass;
+
+  /**
+   * Server access logging configuration for the table bucket.
+   *
+   * When set, S3 Tables delivers access logs for requests made to the table bucket
+   * to the target general purpose bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-server-logs.html
+   * @default - Server access logging is disabled
+   */
+  readonly loggingConfiguration?: LoggingConfiguration;
 }
 
 /**
@@ -583,6 +671,45 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
   }
 
   /**
+   * Throws an exception if the given logging configuration is not valid.
+   * @param loggingConfiguration logging configuration for the table bucket
+   */
+  public static validateLoggingConfiguration(loggingConfiguration?: LoggingConfiguration) {
+    if (!loggingConfiguration) {
+      return;
+    }
+    const { targetBucket, targetPrefix } = loggingConfiguration;
+
+    const cfnBucket = ConstructReflection.of(targetBucket).findCfnResource({
+      cfnResourceType: 'AWS::S3::Bucket',
+      matches: (cfn) => targetBucket.bucketRef == (cfn as s3.CfnBucket).bucketRef,
+    });
+    if (cfnBucket) {
+      const sseAlgorithm = PropertyReflection.of(cfnBucket,
+        'bucketEncryption.serverSideEncryptionConfiguration.0.serverSideEncryptionByDefault.sseAlgorithm').get();
+      if (sseAlgorithm === 'aws:kms' || sseAlgorithm === 'aws:kms:dsse') {
+        throw new UnscopedValidationError(lit`InvalidLoggingTargetBucketEncryption`,
+          'The logging target bucket must not use SSE-KMS or DSSE-KMS default encryption.');
+      }
+      if (PropertyReflection.of(cfnBucket, 'objectLockEnabled').get() === true) {
+        throw new UnscopedValidationError(lit`InvalidLoggingTargetBucketObjectLock`,
+          'The logging target bucket must not have S3 Object Lock enabled.');
+      }
+    }
+
+    const bucketName = targetBucket.bucketRef.bucketName;
+    if (!Token.isUnresolved(bucketName)
+      && ['-s3alias', '--x-s3', '--xa-s3', '--table-s3'].some((suffix) => bucketName.endsWith(suffix))) {
+      throw new UnscopedValidationError(lit`InvalidLoggingTargetBucketName`,
+        `The logging target bucket must be a general purpose bucket, got ${bucketName}`);
+    }
+    if (!Token.isUnresolved(targetPrefix) && Buffer.byteLength(targetPrefix, 'utf8') > 1024) {
+      throw new UnscopedValidationError(lit`InvalidLoggingTargetPrefix`,
+        `The logging target prefix must be at most 1024 bytes in UTF-8, got ${Buffer.byteLength(targetPrefix, 'utf8')}.`);
+    }
+  }
+
+  /**
    * Throws an exception if the given unreferencedFileRemovalProperty is not valid.
    * @param unreferencedFileRemoval configuration for the table bucket
    */
@@ -665,6 +792,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
 
     TableBucket.validateTableBucketName(props.tableBucketName);
     TableBucket.validateUnreferencedFileRemoval(props.unreferencedFileRemoval);
+    TableBucket.validateLoggingConfiguration(props.loggingConfiguration);
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
 
@@ -678,10 +806,49 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
       encryptionConfiguration: bucketEncryption,
       metricsConfiguration: props.requestMetricsStatus ? { status: props.requestMetricsStatus } : undefined,
       storageClassConfiguration: props.storageClass ? { storageClass: props.storageClass } : undefined,
+      loggingConfiguration: props.loggingConfiguration ? {
+        targetBucket: props.loggingConfiguration.targetBucket.bucketRef.bucketName,
+        targetPrefix: props.loggingConfiguration.targetPrefix,
+        targetObjectKeyFormat: (props.loggingConfiguration.targetObjectKeyFormat
+          ?? TargetObjectKeyFormat.partitionedPrefix())._render(),
+      } : undefined,
     });
+
+    if (props.loggingConfiguration) {
+      this.allowLogDelivery(props.loggingConfiguration);
+    }
 
     this.cdkTagManager = this.resource.cdkTagManager;
     this.resource.applyRemovalPolicy(props.removalPolicy);
+  }
+
+  private allowLogDelivery(loggingConfiguration: LoggingConfiguration) {
+    const target = loggingConfiguration.targetBucket;
+    for (const [what, ours, theirs] of [['Region', this.env.region, target.env.region], ['account', this.env.account, target.env.account]]) {
+      if (!Token.isUnresolved(ours) && !Token.isUnresolved(theirs) && ours !== theirs) {
+        throw new UnscopedValidationError(lit`LoggingTargetBucketMismatch`,
+          `The logging target bucket must be in the same ${what} as the table bucket (${ours}), got ${theirs}.`);
+      }
+    }
+
+    // The conditions can be applied only when both buckets are in the same stack, to avoid
+    // cyclic cross-stack references.
+    const conditions = Stack.of(this) === Stack.of(target) ? {
+      ArnLike: { 'aws:SourceArn': this.tableBucketArn },
+      StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
+    } : undefined;
+    const statement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.ServicePrincipal('logging.s3.amazonaws.com')],
+      actions: ['s3:PutObject'],
+      resources: [`${target.bucketRef.bucketArn}/${loggingConfiguration.targetPrefix}*`],
+      conditions,
+    });
+    const added = iam.ResourceWithPolicies.of(target)?.addToResourcePolicy(statement).statementAdded ?? false;
+    if (!added) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-s3tables-alpha:loggingPolicyNotAdded',
+        `Unable to add log delivery permissions to the logging target bucket: ${target.node.path}`);
+    }
   }
 
   /**
