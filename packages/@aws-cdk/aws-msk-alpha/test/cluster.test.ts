@@ -2,6 +2,7 @@ import * as core from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -1125,6 +1126,249 @@ describe('MSK Cluster', () => {
           brokerType: msk.BrokerType.EXPRESS,
         });
       }).toThrow('Express brokers are only supported with Apache Kafka 3.6, 3.8, 3.9, 4.2, got 2.6.1');
+    });
+  });
+
+  describe('multi-VPC private connectivity', () => {
+    test('is not configured by default', () => {
+      new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V3_5_1,
+        vpc,
+      });
+
+      const props = Template.fromStack(stack).findResources('AWS::MSK::Cluster');
+      const cluster = props[Object.keys(props)[0]];
+      expect(cluster.Properties.BrokerNodeGroupInfo.ConnectivityInfo).toBeUndefined();
+      Template.fromStack(stack).resourceCountIs('AWS::MSK::ClusterPolicy', 0);
+    });
+
+    test('renders VpcConnectivity with SASL/IAM', () => {
+      new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V3_5_1,
+        vpc,
+        clientAuthentication: msk.ClientAuthentication.sasl({ iam: true }),
+        vpcConnectivity: msk.VpcConnectivity.sasl({ iam: true }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: {
+          ConnectivityInfo: {
+            VpcConnectivity: {
+              ClientAuthentication: {
+                Sasl: {
+                  Iam: { Enabled: true },
+                  Scram: { Enabled: false },
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('renders VpcConnectivity with SASL/SCRAM', () => {
+      new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V3_5_1,
+        vpc,
+        clientAuthentication: msk.ClientAuthentication.sasl({ scram: true }),
+        vpcConnectivity: msk.VpcConnectivity.sasl({ scram: true }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: {
+          ConnectivityInfo: {
+            VpcConnectivity: {
+              ClientAuthentication: {
+                Sasl: {
+                  Iam: { Enabled: false },
+                  Scram: { Enabled: true },
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('renders VpcConnectivity with TLS', () => {
+      new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V3_5_1,
+        vpc,
+        clientAuthentication: msk.ClientAuthentication.tls({
+          certificateAuthorities: [
+            acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+              stack,
+              'CertificateAuthority',
+              'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+            ),
+          ],
+        }),
+        vpcConnectivity: msk.VpcConnectivity.tls(),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: {
+          ConnectivityInfo: {
+            VpcConnectivity: {
+              ClientAuthentication: {
+                Tls: { Enabled: true },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('renders VpcConnectivity with SASL/IAM + TLS', () => {
+      new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V3_5_1,
+        vpc,
+        clientAuthentication: msk.ClientAuthentication.saslTls({
+          iam: true,
+          certificateAuthorities: [
+            acmpca.CertificateAuthority.fromCertificateAuthorityArn(
+              stack,
+              'CertificateAuthority',
+              'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+            ),
+          ],
+        }),
+        vpcConnectivity: msk.VpcConnectivity.saslTls({ iam: true }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: {
+          ConnectivityInfo: {
+            VpcConnectivity: {
+              ClientAuthentication: {
+                Sasl: {
+                  Iam: { Enabled: true },
+                  Scram: { Enabled: false },
+                },
+                Tls: { Enabled: true },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    test('fails when vpcConnectivity is set without clientAuthentication', () => {
+      expect(
+        () =>
+          new msk.Cluster(stack, 'Cluster', {
+            clusterName: 'cluster',
+            kafkaVersion: msk.KafkaVersion.V3_5_1,
+            vpc,
+            vpcConnectivity: msk.VpcConnectivity.sasl({ iam: true }),
+          }),
+      ).toThrow(/the cluster must have `clientAuthentication` enabled/);
+    });
+
+    test('fails when vpcConnectivity SASL/IAM is not enabled on the cluster', () => {
+      expect(
+        () =>
+          new msk.Cluster(stack, 'Cluster', {
+            clusterName: 'cluster',
+            kafkaVersion: msk.KafkaVersion.V3_5_1,
+            vpc,
+            clientAuthentication: msk.ClientAuthentication.sasl({ scram: true }),
+            vpcConnectivity: msk.VpcConnectivity.sasl({ iam: true }),
+          }),
+      ).toThrow(/SASL\/IAM authentication must also be enabled on the cluster/);
+    });
+
+    test('fails when vpcConnectivity SASL/SCRAM is not enabled on the cluster', () => {
+      expect(
+        () =>
+          new msk.Cluster(stack, 'Cluster', {
+            clusterName: 'cluster',
+            kafkaVersion: msk.KafkaVersion.V3_5_1,
+            vpc,
+            clientAuthentication: msk.ClientAuthentication.sasl({ iam: true }),
+            vpcConnectivity: msk.VpcConnectivity.sasl({ scram: true }),
+          }),
+      ).toThrow(/SASL\/SCRAM authentication must also be enabled on the cluster/);
+    });
+
+    test('fails when vpcConnectivity TLS is not enabled on the cluster', () => {
+      expect(
+        () =>
+          new msk.Cluster(stack, 'Cluster', {
+            clusterName: 'cluster',
+            kafkaVersion: msk.KafkaVersion.V3_5_1,
+            vpc,
+            clientAuthentication: msk.ClientAuthentication.sasl({ iam: true }),
+            vpcConnectivity: msk.VpcConnectivity.tls(),
+          }),
+      ).toThrow(/TLS authentication must also be enabled on the cluster/);
+    });
+
+    describe('addClusterPolicy', () => {
+      test('creates an AWS::MSK::ClusterPolicy for cross-account access', () => {
+        const cluster = new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V3_5_1,
+          vpc,
+          clientAuthentication: msk.ClientAuthentication.sasl({ iam: true }),
+          vpcConnectivity: msk.VpcConnectivity.sasl({ iam: true }),
+        });
+
+        cluster.addClusterPolicy(new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['kafka:CreateVpcConnection', 'kafka:GetBootstrapBrokers'],
+              principals: [new iam.AccountPrincipal('123456789012')],
+              resources: ['*'],
+            }),
+          ],
+        }));
+
+        const template = Template.fromStack(stack);
+        template.resourceCountIs('AWS::MSK::ClusterPolicy', 1);
+        template.hasResourceProperties('AWS::MSK::ClusterPolicy', {
+          Policy: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Action: ['kafka:CreateVpcConnection', 'kafka:GetBootstrapBrokers'],
+                Effect: 'Allow',
+              },
+            ],
+          },
+        });
+      });
+
+      test('returns the created ClusterPolicy resource', () => {
+        const cluster = new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V3_5_1,
+          vpc,
+          clientAuthentication: msk.ClientAuthentication.sasl({ iam: true }),
+        });
+
+        const policy = cluster.addClusterPolicy(new iam.PolicyDocument());
+        expect(policy).toBeDefined();
+      });
+
+      test('throws if called more than once', () => {
+        const cluster = new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V3_5_1,
+          vpc,
+          clientAuthentication: msk.ClientAuthentication.sasl({ iam: true }),
+        });
+
+        cluster.addClusterPolicy(new iam.PolicyDocument());
+        expect(() => cluster.addClusterPolicy(new iam.PolicyDocument())).toThrow(
+          /A cluster can only have a single cluster policy/,
+        );
+      });
     });
   });
 });
