@@ -1,10 +1,9 @@
 import { Construct } from 'constructs';
 import type { SubscriptionProps } from './subscription';
-import * as iam from '../../aws-iam';
 import type * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import { Names, ValidationError } from '../../core';
-import { regionFromArn } from './private/util';
+import { regionFromArn, snsServicePrincipal } from './private/util';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -32,7 +31,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
 
     this.fn.addPermission(`AllowInvoke:${Names.nodeUniqueId(topic.node)}`, {
       sourceArn: topic.topicArn,
-      principal: new iam.ServicePrincipal('sns.amazonaws.com'),
+      principal: snsServicePrincipal(topic, this.fn),
     });
 
     // if the topic and function are created in different stacks
