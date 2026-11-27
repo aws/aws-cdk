@@ -374,6 +374,11 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable storage encryption.
    *
+   * Changing this on a deployed cluster replaces it. A `DatabaseCluster` is
+   * replaced with a new, empty cluster; a `DatabaseClusterFromSnapshot` is
+   * restored from its snapshot again. If you set `clusterIdentifier`, the
+   * update fails instead.
+   *
    * @default - true if storageEncryptionKey is provided, false otherwise
    */
   readonly storageEncrypted?: boolean;
@@ -381,6 +386,11 @@ interface DatabaseClusterBaseProps {
   /**
    * The KMS key for storage encryption.
    * If specified, `storageEncrypted` will be set to `true`.
+   *
+   * Changing this on a deployed cluster replaces it. A `DatabaseCluster` is
+   * replaced with a new, empty cluster; a `DatabaseClusterFromSnapshot` is
+   * restored from its snapshot again. If you set `clusterIdentifier`, the
+   * update fails instead.
    *
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */

@@ -752,6 +752,47 @@ As a result, the configuration doesn't fully reflect the requested modifications
 
 For details, see [Using the schedule modifications setting](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ModifyInstance.ApplyImmediately.html).
 
+## Changing storage encryption
+
+Amazon RDS can't encrypt an existing database in place; encryption is chosen when the database is created.
+In CloudFormation, `StorageEncrypted` and `KmsKeyId` on `AWS::RDS::DBInstance` and `AWS::RDS::DBCluster` both require
+[replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-rds-dbinstance.html).
+So if you change `storageEncrypted` or `storageEncryptionKey` on a `DatabaseInstance` or `DatabaseCluster` that is already deployed,
+CloudFormation creates a new, empty database. The original is then deleted, snapshotted or retained according to the
+[`removalPolicy`](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-updatereplacepolicy.html).
+The default is `RemovalPolicy.SNAPSHOT`, which keeps a snapshot of the original data.
+With `RemovalPolicy.RETAIN` the original database keeps running, outside of the stack.
+
+If you set `instanceIdentifier` (or `clusterIdentifier`), CloudFormation can't replace the database, so the update fails instead.
+To go ahead, you must also change the identifier.
+For a `DatabaseCluster`, its instances are replaced too, so also change any `instanceIdentifier` you set on a `ClusterInstance`, or `instanceIdentifierBase`.
+
+CDK doesn't know what is deployed when it synthesizes, so it can't warn you about this.
+Run `cdk diff` before you deploy: a change like this shows the database as being replaced.
+
+To add encryption to an existing RDS instance without losing its data, restore it from an encrypted snapshot:
+
+1. Take a snapshot of the instance.
+2. Copy the snapshot and specify a KMS key, which encrypts the copy
+   (see [Copying a DB snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CopySnapshot.html)).
+3. Create the instance from the encrypted copy. `DatabaseInstanceFromSnapshot` doesn't take `storageEncrypted` or `storageEncryptionKey`; the new instance inherits encryption and the KMS key from the snapshot:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseInstanceFromSnapshot(this, 'EncryptedInstance', {
+  snapshotIdentifier: 'my-encrypted-snapshot-copy',
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+  vpc,
+});
+```
+
+The steps differ for Aurora, because you can't encrypt an Aurora DB cluster snapshot by copying it.
+Instead, restore the unencrypted cluster snapshot with `DatabaseClusterFromSnapshot` and set `storageEncryptionKey`.
+
+Once the new database is serving traffic, move your application to it and remove the old one.
+For details, see [Encrypting Amazon RDS resources](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html)
+and [Encrypting Amazon Aurora resources](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Overview.Encryption.html).
+
 ## Setting Public Accessibility
 
 You can set public accessibility for the `DatabaseInstance` or the `ClusterInstance` using the `publiclyAccessible` property.
