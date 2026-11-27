@@ -1,0 +1,76 @@
+{
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "process.<anonymous> (/workplace/ibabalau/aws-cdk-pr38612/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:181:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "codebuildserviceroleoverridetestDefaultTestDeployAssertC177E1D3.template.json"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline57ac6eaf015feec14cf48d22e7e8225e/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline57ac6eaf015feec14cf48d22e7e8225e/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodePipelinegetPipeline57ac6eaf015feec14cf48d22e7e8225e"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline57ac6eaf015feec14cf48d22e7e8225e/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodePipelinegetPipeline57ac6eaf015feec14cf48d22e7e8225e"
+    }
+  ]
+}

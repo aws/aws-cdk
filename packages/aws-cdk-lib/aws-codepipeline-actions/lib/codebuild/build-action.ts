@@ -110,6 +110,42 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default false
    */
   readonly combineBatchBuildArtifacts?: boolean;
+
+  /**
+   * A service role to use for this CodeBuild action, overriding the CodeBuild
+   * project's default service role for builds triggered by this pipeline action.
+   *
+   * Maps to the CodePipeline `ServiceRoleArnOverride` action configuration property.
+   * The role must be in the same account as the CodeBuild project, and its trust
+   * policy must allow `codebuild.amazonaws.com` to assume it.
+   *
+   * CDK grants `iam:PassRole` on this role, limited to CodeBuild, to the role the
+   * action runs as: the action's `role` if you set one, the role CDK creates for the
+   * action (in the project's account for a cross-account action), or the pipeline role
+   * when `usePipelineRoleForActions` is set. The identity that deploys the pipeline (for
+   * CDK, the CloudFormation execution role) must also have `iam:PassRole` on this role.
+   *
+   * CDK grants this role access to the pipeline artifact bucket the action uses, and
+   * its KMS key: read, or read/write if the action has outputs. For a cross-region
+   * action that is the replication bucket in the action's region. A role imported with
+   * `mutable: false` gets no statement in its own policy: CDK then grants it through the
+   * bucket's resource policy only if the role is in another account or was imported with
+   * `addGrantsToResources: true`, so otherwise grant it the bucket yourself. CDK grants
+   * nothing else to this role, and this action stops granting the project's role access to the
+   * artifact bucket, source connections, CodeCommit repositories and environment
+   * variable secrets. Grant this role everything else the build needs.
+   *
+   * CodeBuild encrypts build outputs with the project's encryption key. If the project
+   * has no `encryptionKey` of its own and the artifact bucket uses a customer-managed KMS
+   * key in the project's account and region, CDK still sets that key on the project and
+   * grants the project's role encrypt/decrypt on it. If the project has its own
+   * `encryptionKey`, grant this role access to that key too.
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeBuild.html
+   *
+   * @default - no override; the CodeBuild project's default service role is used
+   */
+  readonly serviceRoleOverride?: iam.IRoleRef & iam.IGrantable;
 }
 
 /**
@@ -176,12 +212,16 @@ export class CodeBuildAction extends Action {
 
     // allow the Project access to the Pipeline's artifact Bucket
     // but only if the project is not imported
-    // (ie., has a role) - otherwise, the IAM library throws an error
-    if (this.props.project.role) {
+    // (ie., has a role) - otherwise, the IAM library throws an error.
+    // With serviceRoleOverride the builds run as the override role, so that role gets the
+    // bucket instead: only CDK knows which bucket the action uses (the replication bucket
+    // for a cross-region action) and whether it needs write access.
+    const bucketGrantee = this.props.serviceRoleOverride ?? (this.props.project.role ? this.props.project : undefined);
+    if (bucketGrantee) {
       if ((this.actionProperties.outputs || []).length > 0) {
-        options.bucket.grantReadWrite(this.props.project);
+        options.bucket.grantReadWrite(bucketGrantee);
       } else {
-        options.bucket.grantRead(this.props.project);
+        options.bucket.grantRead(bucketGrantee);
       }
     }
 
@@ -191,12 +231,17 @@ export class CodeBuildAction extends Action {
       });
     }
 
+    // When the builds run as an override role, the project's role does not need the
+    // source connection, CodeCommit and environment variable secret grants below for
+    // this action; the user grants them to the override role instead.
+    const grantProjectRole = !this.props.serviceRoleOverride;
+
     for (const inputArtifact of this.actionProperties.inputs || []) {
       // if any of the inputs come from the CodeStarConnectionsSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role to use the connection
       const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
-      if (connectionArn) {
+      if (grantProjectRole && connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codestar-connections:UseConnection'],
           resources: [connectionArn],
@@ -207,7 +252,7 @@ export class CodeBuildAction extends Action {
       // with codeBuildCloneOutput=true,
       // grant the Project's Role git pull access to the repository
       const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
-      if (codecommitRepositoryArn) {
+      if (grantProjectRole && codecommitRepositoryArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codecommit:GitPull'],
           resources: [codecommitRepositoryArn],
@@ -219,7 +264,7 @@ export class CodeBuildAction extends Action {
       ProjectName: this.props.project.projectName,
       EnvironmentVariables: this.props.environmentVariables &&
         cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
-          this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
+          this.props.checkSecretsInPlainTextEnvVariables ?? true, grantProjectRole ? this.props.project : undefined)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       configuration.PrimarySource = this.props.input._artifactNameBox;
@@ -231,6 +276,26 @@ export class CodeBuildAction extends Action {
       if (this.props.combineBatchBuildArtifacts) {
         configuration.CombineArtifacts = 'true';
       }
+    }
+    if (this.props.serviceRoleOverride) {
+      const roleAccount = this.props.serviceRoleOverride.env.account;
+      const projectAccount = this.props.project.env.account;
+      if (cdk.Token.compareStrings(roleAccount, projectAccount) === cdk.TokenComparison.DIFFERENT) {
+        throw new cdk.ValidationError(
+          lit`ServiceRoleOverrideAccountMismatch`,
+          `serviceRoleOverride must be in the same account as the CodeBuild project (${JSON.stringify(projectAccount)}), got a role in account ${JSON.stringify(roleAccount)}`,
+          scope,
+        );
+      }
+      configuration.ServiceRoleArnOverride = this.props.serviceRoleOverride.roleRef.roleArn;
+      // CodePipeline starts the build as the action's role, so that role passes the override. IAM only
+      // allows passing a role within its own account, which for cross-account actions is the action role's.
+      iam.Grant.addToPrincipal({
+        grantee: options.role,
+        actions: ['iam:PassRole'],
+        resourceArns: [this.props.serviceRoleOverride.roleRef.roleArn],
+        conditions: { StringEquals: { 'iam:PassedToService': 'codebuild.amazonaws.com' } },
+      });
     }
     return {
       configuration,
