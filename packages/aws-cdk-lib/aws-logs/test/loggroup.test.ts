@@ -723,6 +723,54 @@ describe('log group', () => {
     });
   });
 
+  describe('log group consumed from another account', () => {
+    function setup() {
+      const app = new App();
+      const producer = new Stack(app, 'Producer', { env: { account: '111111111111', region: 'us-east-1' } });
+      const consumer = new Stack(app, 'Consumer', { env: { account: '222222222222', region: 'us-east-1' } });
+      const logGroup = new LogGroup(producer, 'LogGroup', { logGroupName: 'shared-log-group' });
+      const role = new iam.Role(consumer, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+      return { consumer, logGroup, role };
+    }
+
+    const plainArn = {
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:111111111111:log-group:shared-log-group']],
+    };
+    const streamArn = {
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:111111111111:log-group:shared-log-group:*']],
+    };
+
+    test('grantRead uses both the log group ARN and the log stream ARN', () => {
+      // GIVEN
+      const { consumer, logGroup, role } = setup();
+
+      // WHEN
+      logGroup.grantRead(role);
+
+      // THEN
+      Template.fromStack(consumer).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{ Action: READ_ACTIONS, Effect: 'Allow', Resource: [plainArn, streamArn] }],
+        },
+      });
+    });
+
+    test('grantWrite only uses the log stream ARN', () => {
+      // GIVEN
+      const { consumer, logGroup, role } = setup();
+
+      // WHEN
+      logGroup.grantWrite(role);
+
+      // THEN
+      Template.fromStack(consumer).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{ Action: ['logs:CreateLogStream', 'logs:PutLogEvents'], Effect: 'Allow', Resource: streamArn }],
+        },
+      });
+    });
+  });
+
   test('grantRead on log group imported by name uses both ARN forms', () => {
     // GIVEN
     const stack = new Stack();
