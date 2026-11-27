@@ -1,0 +1,86 @@
+{
+  "/aws-cdk-log-group-resource-policy-arn-integ": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-resource-policy-arn-principal.ts:21:15)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-arn-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-arn-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-arn-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:576:29)",
+        "new LogGroup (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupIntegStack (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-resource-policy-arn-principal.ts:10:22)",
+        "<anonymous> (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-resource-policy-arn-principal.ts:21:15)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-group-resource-policy-arn-integ/LogGroup/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupPolicyResourcePolicy6FA18555"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ResourcePolicy (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/policy.js:108:24)",
+        "new ResourcePolicy (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:251:27)",
+        "new LogGroupIntegStack (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-resource-policy-arn-principal.ts:11:14)",
+        "<anonymous> (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-resource-policy-arn-principal.ts:21:15)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}
