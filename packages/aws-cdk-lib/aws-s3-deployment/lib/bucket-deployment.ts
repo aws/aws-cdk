@@ -96,14 +96,41 @@ export interface BucketDeploymentProps {
   readonly prune?: boolean;
 
   /**
-   * If this is set to "false", the destination files will be deleted when the
-   * resource is deleted or the destination is updated.
+   * If this is set to "false", the destination objects will be deleted when this deployment
+   * is removed or when its `destinationBucket` or `destinationKeyPrefix` changes.
+   *
+   * However, removing this deployment does not delete the objects while the bucket has a tag
+   * starting with this deployment's `aws-cdk:cr-owned:<prefix>`. Each `BucketDeployment` (even
+   * with `retainOnDelete: true`) adds its own tag when `destinationBucket` is created with
+   * `new s3.Bucket()` in your CDK app, directly or by another construct, so the objects are not
+   * deleted when:
+   *
+   * - the destination bucket is deleted at the same time as this deployment (for example on
+   *   stack deletion)
+   * - the bucket is defined in a different stack, and the deployment's stack removes this
+   *   deployment before the bucket's stack is updated to reflect the removal
+   * - another `BucketDeployment` still deploys to the same bucket with a prefix that starts
+   *   with this deployment's prefix (for example, `assets`, `assets/images/` or `assets-v2/`
+   *   when that prefix is `assets`), or with any prefix if this deployment has none
+   *
+   * Note that when `destinationBucket` or `destinationKeyPrefix` changes, objects will be
+   * deleted regardless of tags.
+   *
+   * Imported buckets (for example `s3.Bucket.fromBucketName()`, even if another CDK app created
+   * the bucket) and buckets converted with `s3.Bucket.fromCfnBucket()` are not tagged by this
+   * deployment, so their objects are deleted when this deployment is removed or replaced,
+   * unless the bucket already has such a tag. Replacement occurs when you rename this
+   * deployment or change certain props, such as `memoryLimit`, `ephemeralStorageSize` or `vpc`.
+   *
+   * If the destination bucket is dedicated to this deployment (no `destinationKeyPrefix`), we
+   * recommend keeping this property `true` and configuring `autoDeleteObjects` on the bucket
+   * instead, which empties the bucket when it is deleted.
    *
    * NOTICE: Configuring this to "false" might have operational implications. Please
-   * visit to the package documentation referred below to make sure you fully understand those implications.
+   * see the package documentation linked below to make sure you fully understand those implications.
    *
    * @see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment#retain-on-delete
-   * @default true - when resource is deleted/updated, files are retained
+   * @default true - when resource is deleted/updated, objects are retained
    */
   readonly retainOnDelete?: boolean;
 
@@ -573,7 +600,9 @@ export class BucketDeployment extends Construct {
      * 1. If the LogicalResourceId of the CustomResource changes (e.g. the crUniqueId changes)
      * CloudFormation will first issue a 'Create' to create the new CustomResource and will
      * update the Tag on the bucket. CloudFormation will then issue a 'Delete' on the old CustomResource
-     * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket
+     * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket.
+     * This does not apply to imported buckets (e.g. `Bucket.fromBucketName`) or L1 buckets
+     * (`Bucket.fromCfnBucket`) because `Tags.of(this.destinationBucket)` doesn't tag them.
      *
      * 2. If the BucketDeployment resource is deleted _and_ it is the only CR for that bucket+keyPrefix
      * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the
