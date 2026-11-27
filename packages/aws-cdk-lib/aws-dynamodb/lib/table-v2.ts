@@ -907,7 +907,7 @@ export class TableV2 extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.resourcePolicy,
+      policyDependable: this.resource,
     };
   }
 
@@ -929,7 +929,7 @@ export class TableV2 extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.streamResourcePolicy,
+      policyDependable: this.resource,
     };
   }
 
@@ -1572,7 +1572,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.resourcePolicy,
+      policyDependable: this.resource,
     };
   }
 
@@ -1589,7 +1589,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.streamResourcePolicy,
+      policyDependable: this.resource,
     };
   }
 

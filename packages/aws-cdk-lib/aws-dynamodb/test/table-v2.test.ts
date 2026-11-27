@@ -3,7 +3,7 @@ import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags, Token } from '../../core';
+import { App, CfnDeletionPolicy, CfnResource, Fn, Lazy, RemovalPolicy, Stack, Tags, Token } from '../../core';
 import type {
   GlobalSecondaryIndexPropsV2,
   LocalSecondaryIndexProps,
@@ -4848,5 +4848,102 @@ test('no stream resource policy by default', () => {
         ReplicaStreamSpecification: Match.absent(),
       },
     ],
+  });
+});
+
+describe('grant as a dependency', () => {
+  function logicalIdOf(stack: Stack, construct: any): string {
+    return stack.getLogicalId(construct.node.defaultChild);
+  }
+
+  test('a grant on the table policy makes the dependent depend on the table', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    const dependent = new CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+    // WHEN
+    table.grantReadData(new iam.AccountRootPrincipal()).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(stack, table)],
+    });
+  });
+
+  test('addToResourcePolicy returns the CfnGlobalTable as policyDependable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const result = table.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:GetItem'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    }));
+
+    // THEN
+    expect(result.statementAdded).toBe(true);
+    expect(result.policyDependable).toBe(table.node.defaultChild);
+  });
+
+  test('addToStreamResourcePolicy returns the CfnGlobalTable as policyDependable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+    });
+
+    // WHEN
+    const result = table.addToStreamResourcePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:GetRecords'],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+      resources: ['*'],
+    }));
+
+    // THEN
+    expect(result.statementAdded).toBe(true);
+    expect(result.policyDependable).toBe(table.node.defaultChild);
+  });
+
+  test('TableV2MultiAccountReplica addToResourcePolicy and addToStreamResourcePolicy return the CfnGlobalTable as policyDependable', () => {
+    // GIVEN
+    const app = new App();
+    const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+    const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+    const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    const replica = new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: sourceTable,
+      globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
+    });
+
+    // WHEN
+    const resultTable = replica.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:GetItem'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    }));
+
+    const resultStream = replica.addToStreamResourcePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:GetRecords'],
+      principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+      resources: ['*'],
+    }));
+
+    // THEN
+    expect(resultTable.statementAdded).toBe(true);
+    expect(resultTable.policyDependable).toBe(replica.node.defaultChild);
+    expect(resultStream.statementAdded).toBe(true);
+    expect(resultStream.policyDependable).toBe(replica.node.defaultChild);
   });
 });
