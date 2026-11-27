@@ -15,7 +15,7 @@ import { Fn } from '../../../core';
 export class CachedFnSub {
   private cache = new Map<string, string>();
 
-  public fnSub(x: string) {
+  public fnSub(x: string): string {
     const existing = this.cache.get(x);
     if (existing) {
       return existing;

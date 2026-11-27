@@ -1,4 +1,4 @@
-export function addAll<A>(into: Set<A>, from: Iterable<A>) {
+export function addAll<A>(into: Set<A>, from: Iterable<A>): void {
   for (const x of from) {
     into.add(x);
   }
