@@ -310,6 +310,30 @@ describe('fargate task definition', () => {
       expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
     });
 
+    test('records taskDefinitionArnIncludesRevision when provided', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+
+      // WHEN
+      const withRevision = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'WithRevision', {
+        taskDefinitionArn: 'TD_ARN',
+        taskDefinitionArnIncludesRevision: true,
+      });
+      const withoutRevision = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'WithoutRevision', {
+        taskDefinitionArn: 'TD_ARN',
+        taskDefinitionArnIncludesRevision: false,
+      });
+      const unset = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'Unset', {
+        taskDefinitionArn: 'TD_ARN',
+      });
+
+      // THEN
+      expect(withRevision.taskDefinitionArnIncludesRevision).toEqual(true);
+      expect(withoutRevision.taskDefinitionArnIncludesRevision).toEqual(false);
+      expect(unset.taskDefinitionArnIncludesRevision).toBeUndefined();
+    });
+
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined', () => {
       // GIVEN
       const stack = new cdk.Stack();

@@ -48,6 +48,14 @@ export interface ImportedTaskDefinitionProps {
    * @default - undefined
    */
   readonly executionRole?: IRole;
+
+  /**
+   * Whether the imported task definition ARN includes a specific revision.
+   *
+   * @default - the presence of a revision is inferred from the ARN string when it is a concrete
+   * (fully-resolved) value, and assumed to be included otherwise
+   */
+  readonly taskDefinitionArnIncludesRevision?: boolean;
 }
 
 /**
@@ -82,6 +90,11 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
    */
   readonly _taskRole?: IRole;
 
+  /**
+   * Whether the imported task definition ARN includes a specific revision.
+   */
+  readonly taskDefinitionArnIncludesRevision?: boolean;
+
   constructor(scope: Construct, id: string, props: ImportedTaskDefinitionProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -92,6 +105,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
     this.executionRole = props.executionRole;
     this._taskRole = props.taskRole;
     this._networkMode = props.networkMode;
+    this.taskDefinitionArnIncludesRevision = props.taskDefinitionArnIncludesRevision;
   }
 
   public get networkMode(): NetworkMode {
