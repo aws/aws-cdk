@@ -52,3 +52,5 @@ const stack = new PipelineStack(app, 'PipelineStackSinglePublisher');
 new IntegTest(app, 'PipelineStackSinglePublisher-integ', {
   testCases: [stack],
 });
+
+app.synth();

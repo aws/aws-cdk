@@ -150,3 +150,5 @@ new integ.IntegTest(app, 'PolicyIntegTest', {
   testCases: [stack],
   regions: ['us-east-1'],
 });
+
+app.synth();

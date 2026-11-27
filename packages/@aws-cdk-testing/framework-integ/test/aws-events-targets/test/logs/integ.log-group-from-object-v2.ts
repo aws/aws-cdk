@@ -40,3 +40,5 @@ new integ.IntegTest(app, 'CloudWatchEventBridgeLogsTest', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

@@ -21,3 +21,5 @@ new Archive(stack, 'Archive', {
 new IntegTest(app, 'archive-customer-managed-key-test', {
   testCases: [stack],
 });
+
+app.synth();

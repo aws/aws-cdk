@@ -80,3 +80,5 @@ const testCase = new integ.IntegTest(app, 'DistributedMapParallel', {
 });
 
 setupAssertions(parallelStack, testCase.assertions);
+
+app.synth();

@@ -62,3 +62,5 @@ new integ.IntegTest(app, 'cdk-integ-distribution-lambda-cross-region', {
     },
   },
 });
+
+app.synth();

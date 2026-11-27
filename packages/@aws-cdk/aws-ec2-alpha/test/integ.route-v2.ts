@@ -122,3 +122,5 @@ for (const stackName in stacks) {
   });
   i++;
 }
+
+app.synth();

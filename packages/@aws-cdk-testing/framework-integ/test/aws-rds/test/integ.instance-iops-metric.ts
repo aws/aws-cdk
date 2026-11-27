@@ -35,3 +35,5 @@ instance.metricWriteIOPS({
 new IntegTest(app, 'rds-instance-iops-metric-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

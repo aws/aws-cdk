@@ -30,3 +30,5 @@ new CfnOutput(stack, 'Domain', {
 new CfnOutput(stack, 'CloudFrontEndpoint', {
   value: domain.cloudFrontEndpoint,
 });
+
+app.synth();

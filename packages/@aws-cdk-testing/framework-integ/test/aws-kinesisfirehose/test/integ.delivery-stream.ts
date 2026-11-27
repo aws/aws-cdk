@@ -48,3 +48,5 @@ new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or Encryption Key'
 new integ.IntegTest(app, 'integ-tests', {
   testCases: [stack],
 });
+
+app.synth();

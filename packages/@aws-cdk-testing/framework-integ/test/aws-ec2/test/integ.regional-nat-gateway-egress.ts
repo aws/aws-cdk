@@ -91,3 +91,5 @@ test.assertions.invokeFunction({ functionName: stack.manualModeFunctionName })
 test.assertions.invokeFunction({ functionName: stack.automaticModeFunctionName })
   .expect(ExpectedResult.objectLike({ Payload: Match.stringLikeRegexp('^"\\d+\\.\\d+\\.\\d+\\.\\d+"$') }))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(30), interval: cdk.Duration.minutes(1) });
+
+app.synth();

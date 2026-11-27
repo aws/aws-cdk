@@ -104,3 +104,5 @@ privateDefaultAssertion.expect(ExpectedResult.objectLike({
     }),
   ],
 }));
+
+app.synth();

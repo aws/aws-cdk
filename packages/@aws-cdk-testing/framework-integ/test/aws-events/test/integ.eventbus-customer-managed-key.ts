@@ -15,3 +15,5 @@ new EventBus(stack, 'Bus', { kmsKey });
 new IntegTest(app, 'eventbue-customer-managed-key-test', {
   testCases: [stack],
 });
+
+app.synth();

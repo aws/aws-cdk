@@ -13,3 +13,5 @@ const userpool = new UserPool(stack, 'myuserpool', {
 new CfnOutput(stack, 'user-pool-id', {
   value: userpool.userPoolId,
 });
+
+app.synth();

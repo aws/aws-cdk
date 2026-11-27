@@ -51,3 +51,5 @@ MissingRemovalPolicies.of(filteredTest).snapshot({
 new integ.IntegTest(app, 'RemovalPoliciesTest', {
   testCases: [stack],
 });
+
+app.synth();

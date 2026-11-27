@@ -45,3 +45,4 @@ new integ.IntegTest(app, 'integ-instance-kerberos', {
   testCases: [stack],
 });
 
+app.synth();

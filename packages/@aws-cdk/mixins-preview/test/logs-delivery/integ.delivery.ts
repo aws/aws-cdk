@@ -70,3 +70,5 @@ new FirehoseLogsDelivery(deliveryStream).bind(stack, logType, eventBus.attrArn);
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -39,3 +39,5 @@ integTest.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   .expect(integ.ExpectedResult.objectLike({
     status: 'SUCCEEDED',
   }));
+
+app.synth();

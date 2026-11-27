@@ -41,3 +41,5 @@ new redshift.Cluster(stack, 'Cluster', {
 new integ.IntegTest(app, 'MultiAzRedshiftTest', {
   testCases: [stack],
 });
+
+app.synth();

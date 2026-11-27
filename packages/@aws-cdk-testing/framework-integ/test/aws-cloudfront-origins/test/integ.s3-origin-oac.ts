@@ -54,3 +54,5 @@ integ.assertions.awsApiCall('CloudFront', 'getOriginAccessControlConfig', {
     OriginAccessControlOriginType: 's3',
   },
 }));
+
+app.synth();

@@ -22,3 +22,5 @@ new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
 new integ.IntegTest(app, 'ContainerRecipeTest-Asset', {
   testCases: [stack],
 });
+
+app.synth();

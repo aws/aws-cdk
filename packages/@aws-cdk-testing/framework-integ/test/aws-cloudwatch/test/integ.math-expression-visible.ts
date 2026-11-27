@@ -45,3 +45,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-math-expression-visible', {
   testCases: [new MathExpressionVisibleIntegrationTest(app, 'MathExpressionVisibleIntegrationTest')],
 });
+
+app.synth();

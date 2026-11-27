@@ -23,3 +23,5 @@ const stack = new TargetGroupCrossZoneStack(app, 'alb-target-group-cross-zone-st
 new IntegTest(app, 'alb-target-group-cross-zone-test-stack', {
   testCases: [stack],
 });
+
+app.synth();

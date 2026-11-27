@@ -97,3 +97,5 @@ listNamespaceCall.expect(integ.ExpectedResult.objectLike({
     }),
   ]),
 }));
+
+app.synth();

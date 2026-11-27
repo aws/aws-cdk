@@ -89,3 +89,5 @@ tableTags.expect(ExpectedResult.objectLike({
     Project: 'S3Tables',
   }),
 }));
+
+app.synth();

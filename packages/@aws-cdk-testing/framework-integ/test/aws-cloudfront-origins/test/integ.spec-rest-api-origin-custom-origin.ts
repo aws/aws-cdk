@@ -67,3 +67,5 @@ new cloudfront.Distribution(stack, 'Distribution', {
 new IntegTest(app, 'rest-api-origin-custom-origin-path', {
   testCases: [stack],
 });
+
+app.synth();

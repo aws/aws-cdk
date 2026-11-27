@@ -71,3 +71,5 @@ customPolicy.node.addDependency(prerequisites.deliveryChannel);
 new integ.IntegTest(app, 'ConfigRuleEvaluationModeTest', {
   testCases: [stack],
 });
+
+app.synth();

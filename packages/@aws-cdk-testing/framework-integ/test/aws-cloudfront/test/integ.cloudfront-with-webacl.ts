@@ -33,3 +33,5 @@ distribution.attachWebAclId(webAcl.attrArn);
 new IntegTest(app, 'integ-cloudfront-with-webacl', {
   testCases: [stack],
 });
+
+app.synth();

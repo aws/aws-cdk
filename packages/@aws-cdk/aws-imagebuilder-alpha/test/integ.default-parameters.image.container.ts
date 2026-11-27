@@ -34,3 +34,5 @@ new cdk.CfnOutput(stack, 'ImageId', { value: image.imageId });
 new integ.IntegTest(app, 'ImageTest-Container-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

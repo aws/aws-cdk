@@ -25,3 +25,5 @@ new ecs.FargateService(stack, 'FargateService', {
 new IntegTest(stack, 'AvailabilityZoneRebalancing', {
   testCases: [stack],
 });
+
+app.synth();

@@ -14,3 +14,5 @@ new UserPool(stack, 'Pool', {
 new integ.IntegTest(app, 'password-history-size-test', {
   testCases: [stack],
 });
+
+app.synth();

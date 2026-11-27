@@ -26,3 +26,5 @@ const testCase = new TransformerIntegStack(app, 'aws-cdk-transformer-integ');
 new IntegTest(app, 'transformer-create', {
   testCases: [testCase],
 });
+
+app.synth();

@@ -40,3 +40,5 @@ new Bucket(stack, 'blockOnly1', {
 new IntegTest(app, 'testBlockingBucketAccess', {
   testCases: [stack],
 });
+
+app.synth();

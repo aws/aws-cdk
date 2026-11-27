@@ -161,3 +161,5 @@ rt2assertion.expect(ExpectedResult.objectLike({
     Routes: Match.arrayWith(expectedRoutes),
   })],
 }));
+
+app.synth();

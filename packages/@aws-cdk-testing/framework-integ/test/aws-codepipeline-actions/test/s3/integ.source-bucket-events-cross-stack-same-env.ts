@@ -51,3 +51,5 @@ new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
 new integ.IntegTest(app, 'CodePipelineS3SourceTest', {
   testCases: [pipelineStack],
 });
+
+app.synth();

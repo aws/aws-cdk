@@ -76,3 +76,5 @@ new IntegTest(app, 'integ-rds-instance-from-lookup', {
     ],
   },
 });
+
+app.synth();

@@ -24,3 +24,5 @@ new IntegTest(app, 'integ-test', {
   enableLookups: true,
   regions: ['us-east-1'],
 });
+
+app.synth();

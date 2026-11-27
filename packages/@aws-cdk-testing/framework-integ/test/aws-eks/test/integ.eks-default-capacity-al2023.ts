@@ -60,3 +60,5 @@ integTest.assertions
       },
     }),
   );
+
+app.synth();

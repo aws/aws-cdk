@@ -187,3 +187,5 @@ filterLogEventsCall.assertAtPath(
   totalTimeout: cdk.Duration.minutes(10),
   interval: cdk.Duration.seconds(30),
 });
+
+app.synth();

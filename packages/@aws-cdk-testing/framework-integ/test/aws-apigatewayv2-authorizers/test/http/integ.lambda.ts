@@ -79,3 +79,5 @@ new CfnOutput(stack, 'AuthorizerId', {
 new CfnOutput(stack, 'AuthorizationType', {
   value: authorizer.authorizationType,
 });
+
+app.synth();

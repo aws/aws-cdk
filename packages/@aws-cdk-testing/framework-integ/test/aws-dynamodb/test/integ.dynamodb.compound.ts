@@ -30,3 +30,5 @@ table.addGlobalSecondaryIndex({
 new IntegTest(app, 'aws-cdk-dynamodb-compound-key-gsi', {
   testCases: [stack],
 });
+
+app.synth();

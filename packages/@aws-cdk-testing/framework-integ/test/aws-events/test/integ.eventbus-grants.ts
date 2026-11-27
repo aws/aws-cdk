@@ -178,3 +178,5 @@ publisherInvokeWithoutFlag.expect(ExpectedResult.objectLike({
     body: 'Success',
   }),
 }));
+
+app.synth();

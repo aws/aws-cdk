@@ -30,3 +30,5 @@ new IntegTest(app, 'user-pool-link-custom-placeholder-integ-test', {
     },
   },
 });
+
+app.synth();

@@ -40,3 +40,4 @@ function helloCode(_event: any, _context: any, callback: any) {
   });
 }
 
+app.synth();

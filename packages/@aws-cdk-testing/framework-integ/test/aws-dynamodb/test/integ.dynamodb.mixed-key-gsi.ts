@@ -30,3 +30,5 @@ table.addGlobalSecondaryIndex({
   projectionType: ProjectionType.INCLUDE,
   nonKeyAttributes: ['blah'],
 });
+
+app.synth();

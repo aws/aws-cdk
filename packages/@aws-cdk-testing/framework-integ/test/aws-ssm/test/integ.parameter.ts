@@ -31,3 +31,5 @@ new cdk.CfnOutput(stack, 'ParamArn', {
 new IntegTest(app, 'cdk-integ-ssm-parameter', {
   testCases: [stack],
 });
+
+app.synth();

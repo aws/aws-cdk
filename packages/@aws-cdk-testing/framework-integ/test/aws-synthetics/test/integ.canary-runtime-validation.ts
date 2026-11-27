@@ -42,3 +42,5 @@ const testStack = new TestStack(app, 'SyntheticsCanaryRuntimeValidationStack');
 new IntegTest(app, 'SyntheticsCanaryRuntimeValidation', {
   testCases: [testStack],
 });
+
+app.synth();

@@ -31,3 +31,5 @@ const testCase = new NatGatewayStack(app, 'aws-cdk-vpc-nat-gateway-provider');
 new IntegTest(app, 'integ-test', {
   testCases: [testCase],
 });
+
+app.synth();

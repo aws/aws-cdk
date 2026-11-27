@@ -28,3 +28,5 @@ new IntegTest(app, 'amazon-linux-codebuild', {
   ],
   stackUpdateWorkflow: true,
 });
+
+app.synth();

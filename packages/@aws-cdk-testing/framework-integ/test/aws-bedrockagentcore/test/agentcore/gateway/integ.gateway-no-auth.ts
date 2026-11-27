@@ -59,3 +59,5 @@ gateway.addLambdaTarget('LambdaTarget', {
 new integ.IntegTest(app, 'GatewayNoAuthIntegTest', {
   testCases: [stack],
 });
+
+app.synth();

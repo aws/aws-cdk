@@ -40,3 +40,5 @@ new IntegTest(app, 'aws-cdk-global-table-integ-v2', {
   regions: ['eu-west-1'],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

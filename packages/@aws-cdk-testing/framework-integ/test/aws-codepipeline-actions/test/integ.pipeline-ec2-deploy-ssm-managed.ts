@@ -138,3 +138,5 @@ instances.NoLB.forEach((instance) => waitPipelieneSuccess.next(
     .httpApiCall(`http://${instance.instancePublicDnsName}/NoLB/index.html`)
     .expect(ExpectedResult.objectLike({ status: 200 })),
 ));
+
+app.synth();

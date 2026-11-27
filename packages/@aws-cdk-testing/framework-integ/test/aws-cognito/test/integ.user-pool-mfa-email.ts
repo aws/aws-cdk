@@ -40,3 +40,5 @@ new IntegTest(app, 'integ-user-email-mfa-test', {
   enableLookups: true,
   stackUpdateWorkflow: false,
 });
+
+app.synth();

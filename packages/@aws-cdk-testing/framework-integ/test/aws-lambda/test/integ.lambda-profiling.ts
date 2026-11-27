@@ -37,3 +37,5 @@ class StackUnderTest extends Stack {
 new IntegTest(app, 'LambdaTest', {
   testCases: [new StackUnderTest(app, 'Stack1', {})],
 });
+
+app.synth();

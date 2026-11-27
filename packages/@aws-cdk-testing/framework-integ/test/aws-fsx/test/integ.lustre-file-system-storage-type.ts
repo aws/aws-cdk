@@ -71,3 +71,5 @@ hddFileSystem.connections.allowDefaultPortFrom(hddFsxInstance);
 new integ.IntegTest(app, 'FsxLustreStorageTypeTest', {
   testCases: [stack],
 });
+
+app.synth();

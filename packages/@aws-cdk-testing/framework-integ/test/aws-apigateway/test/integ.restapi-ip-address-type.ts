@@ -60,3 +60,5 @@ privateDualstackApi.grantInvokeFromVpcEndpointsOnly([vpcEndpoint]);
 new IntegTest(app, 'restapi-ip-address-type-test-integ', {
   testCases: [stack],
 });
+
+app.synth();

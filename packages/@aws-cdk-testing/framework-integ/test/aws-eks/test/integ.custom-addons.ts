@@ -46,3 +46,5 @@ new IntegTest(app, 'aws-cdk-eks-custom-addons', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
+
+app.synth();

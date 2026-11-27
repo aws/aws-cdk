@@ -22,3 +22,5 @@ const fn = new NodejsFunction(stack, 'Function', {
 const integ = new IntegTest(app, 'RepeatedEsbuildArgsTest', { testCases: [stack] });
 integ.assertions.invokeFunction({ functionName: fn.functionName })
   .expect(ExpectedResult.objectLike({ StatusCode: 200, Payload: '18' }));
+
+app.synth();

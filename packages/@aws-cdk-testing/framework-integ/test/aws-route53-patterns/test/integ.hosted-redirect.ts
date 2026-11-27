@@ -50,3 +50,4 @@ new IntegTest(app, 'integ-test', {
   diffAssets: true,
 });
 
+app.synth();

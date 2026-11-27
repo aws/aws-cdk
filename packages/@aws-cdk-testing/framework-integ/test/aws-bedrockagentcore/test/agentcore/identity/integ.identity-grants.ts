@@ -315,3 +315,4 @@ assertLambdaPasses(readFn);
 assertLambdaPasses(adminFn);
 assertLambdaPasses(fullAccessFn);
 
+app.synth();

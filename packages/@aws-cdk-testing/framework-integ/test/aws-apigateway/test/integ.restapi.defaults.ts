@@ -14,3 +14,5 @@ api.root.addMethod('GET');
 new IntegTest(app, 'apigateway-restapi-defaults', {
   testCases: [stack],
 });
+
+app.synth();

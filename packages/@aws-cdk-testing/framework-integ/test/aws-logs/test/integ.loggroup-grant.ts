@@ -27,3 +27,5 @@ LogGroup.fromLogGroupArn(stack, 'ImportedByArn', `arn:${stack.partition}:logs:${
 new IntegTest(app, 'loggroup-grant', {
   testCases: [stack],
 });
+
+app.synth();

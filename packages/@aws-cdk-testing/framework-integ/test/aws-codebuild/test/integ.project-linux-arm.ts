@@ -66,3 +66,5 @@ const codebuildArm = new AmazonLinuxArmTestStack(app, 'codebuild-project-arm');
 new IntegTest(app, 'integ-test-codebuild-project-arm', {
   testCases: [codebuildArm],
 });
+
+app.synth();

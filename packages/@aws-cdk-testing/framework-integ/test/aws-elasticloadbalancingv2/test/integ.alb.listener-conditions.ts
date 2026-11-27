@@ -203,3 +203,5 @@ expectRuleCondition(stack.pathPatternRegexRule, {
     RegexValues: ['/docs/.*\\.pdf', '/images/.*\\.(jpg|png|gif)'],
   },
 });
+
+app.synth();

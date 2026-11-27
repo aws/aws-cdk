@@ -66,3 +66,5 @@ new IntegTest(app, 'GlobalAcceleratorInteg', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

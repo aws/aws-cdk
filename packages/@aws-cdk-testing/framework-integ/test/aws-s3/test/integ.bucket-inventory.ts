@@ -38,3 +38,5 @@ myBucket.addInventory({
 new IntegTest(app, 'cdk-integ-bucket-inventory', {
   testCases: [stack],
 });
+
+app.synth();

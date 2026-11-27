@@ -31,3 +31,5 @@ const testStack = new TestStack(app, 'SyntheticsCanaryProvisionedResourceCleanup
 new IntegTest(app, 'SyntheticsCanaryProvisionedResourceCleanup', {
   testCases: [testStack],
 });
+
+app.synth();

@@ -74,3 +74,5 @@ new IntegTest(app, 'amplify-app-custom-domain-integ', {
   enableLookups: true,
   stackUpdateWorkflow: false,
 });
+
+app.synth();

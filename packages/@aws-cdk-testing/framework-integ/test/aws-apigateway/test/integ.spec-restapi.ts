@@ -99,3 +99,5 @@ const testCase = new Test(app, 'test-apigateway-spec-restapi');
 new IntegTest(app, 'apigateway-spec-restapi', {
   testCases: [testCase],
 });
+
+app.synth();

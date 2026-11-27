@@ -91,3 +91,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-dashboard-with-graph-widget-with-annotations', {
   testCases: [new DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest(app, 'DashboardWithGraphWidgetWithLabelsVisibleIntegrationTest')],
 });
+
+app.synth();

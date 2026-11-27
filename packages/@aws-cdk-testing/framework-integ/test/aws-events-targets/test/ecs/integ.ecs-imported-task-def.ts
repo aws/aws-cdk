@@ -44,3 +44,5 @@ eventRule.node.addDependency(taskDefinition);
 new IntegTest(app, 'IntegTest-EcsImportedTaskDefinition', {
   testCases: [stack],
 });
+
+app.synth();

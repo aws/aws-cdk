@@ -27,3 +27,5 @@ new lambda.CapacityProvider(stack, 'CpWithNone', {
 new integ.IntegTest(app, 'CapacityProviderPropagateTagsTest', {
   testCases: [stack],
 });
+
+app.synth();

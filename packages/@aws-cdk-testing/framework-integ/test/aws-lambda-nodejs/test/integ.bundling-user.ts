@@ -35,3 +35,5 @@ new lambda.NodejsFunction(stack, 'ts-decorator-handler-root-user', {
 new IntegTest(app, 'BundlingUserTest', {
   testCases: [stack],
 });
+
+app.synth();

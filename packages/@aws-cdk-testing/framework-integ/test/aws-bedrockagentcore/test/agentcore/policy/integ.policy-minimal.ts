@@ -46,3 +46,5 @@ new integ.IntegTest(app, 'PolicyMinimalIntegTest', {
   testCases: [stack],
   regions: ['us-east-1'],
 });
+
+app.synth();

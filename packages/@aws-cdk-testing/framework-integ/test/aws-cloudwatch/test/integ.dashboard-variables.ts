@@ -63,3 +63,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-dashboard-with-variables', {
   testCases: [new DashboardVariablesIntegrationTest(app, 'DashboardVariablesIntegrationTest')],
 });
+
+app.synth();

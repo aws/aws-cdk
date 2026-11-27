@@ -31,3 +31,5 @@ new apigwv2.HttpStage(stack, 'HttpStageWithProperties', {
 new IntegTest(app, 'aws-cdk-aws-apigatewayv2-http-stage-test', {
   testCases: [stack],
 });
+
+app.synth();

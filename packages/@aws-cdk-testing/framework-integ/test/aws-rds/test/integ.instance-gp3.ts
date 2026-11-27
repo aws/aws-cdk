@@ -28,3 +28,4 @@ new integ.IntegTest(app, 'InstanceGp3Test', {
   testCases: [new TestStack(app, 'cdk-integ-rds-instance-gp3')],
 });
 
+app.synth();

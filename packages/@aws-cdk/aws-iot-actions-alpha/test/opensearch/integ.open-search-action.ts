@@ -43,3 +43,5 @@ new IntegTest(app, 'iot-opensearch-action-integ-test', {
     },
   },
 });
+
+app.synth();

@@ -78,3 +78,5 @@ new IntegTest(app, 'AwsCustomResourceTest', {
     },
   },
 });
+
+app.synth();

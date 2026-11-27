@@ -9,6 +9,13 @@ const NO_MD5 = {
   "message": "Use the md5hash() function from the core library if you want md5",
 };
 
+// An integration test is a complete CDK app: it synthesizes explicitly instead of relying on
+// the App synthesizing itself when the Node process exits
+const REQUIRE_SYNTH_IN_INTEG_TEST = {
+  "selector": "Program:not(:has(CallExpression[callee.property.name='synth']))",
+  "message": "Integration tests must call app.synth() explicitly. Add `app.synth();` as the last statement, after the IntegTest and its assertions, with one call for each App the test creates.",
+};
+
 export function makeRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
@@ -240,6 +247,24 @@ export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
     "no-restricted-syntax": [
       "error",
       NO_MD5,
+    ],
+  };
+  return ret;
+}
+
+/**
+ * Return the `no-restricted-syntax` rule for integration tests: the restrictions of `baseRules` plus the synth one.
+ *
+ * The base restrictions are repeated because a later `no-restricted-syntax` entry replaces the earlier list.
+ */
+export function makeIntegTestRules(/** @type { import("@eslint/core").RulesConfig } */ baseRules) {
+  const [severity, ...restrictions] = /** @type{any[]} */ (baseRules['no-restricted-syntax']);
+  /** @type { import("@eslint/core").RulesConfig } */
+  const ret = {
+    "no-restricted-syntax": [
+      severity,
+      ...restrictions,
+      REQUIRE_SYNTH_IN_INTEG_TEST,
     ],
   };
   return ret;

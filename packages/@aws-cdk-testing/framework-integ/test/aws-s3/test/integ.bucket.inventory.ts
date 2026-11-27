@@ -26,3 +26,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-bucket-inventory', {
   testCases: [new TestStack(app, 'aws-cdk-bucket-inventory')],
 });
+
+app.synth();

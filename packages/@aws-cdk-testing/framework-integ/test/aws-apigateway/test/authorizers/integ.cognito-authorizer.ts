@@ -46,3 +46,5 @@ restApi.root.addMethod('ANY', new MockIntegration({
 new IntegTest(app, 'cognito-authorizer', {
   testCases: [stack],
 });
+
+app.synth();

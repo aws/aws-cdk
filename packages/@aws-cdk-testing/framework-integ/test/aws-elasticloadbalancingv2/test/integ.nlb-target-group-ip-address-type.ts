@@ -38,3 +38,5 @@ const stack = new TestStack(app, 'NlbTargetGroupIpAddressTypeTestStack');
 new IntegTest(app, 'NlbTargetGroupIpAddressTypeTestInteg', {
   testCases: [stack],
 });
+
+app.synth();

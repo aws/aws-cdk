@@ -55,3 +55,5 @@ eventBus.with(CfnEventBusLogsMixin.INFO_LOGS.toS3(bucket, { encryptionKey: key }
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],
 });
+
+app.synth();

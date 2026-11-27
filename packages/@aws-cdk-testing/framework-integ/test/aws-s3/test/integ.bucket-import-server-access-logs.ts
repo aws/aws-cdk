@@ -35,3 +35,5 @@ new integ.IntegTest(app, 'ServerAccessLogsImportTest', {
   testCases: [sourceBucketStack],
   diffAssets: true,
 });
+
+app.synth();

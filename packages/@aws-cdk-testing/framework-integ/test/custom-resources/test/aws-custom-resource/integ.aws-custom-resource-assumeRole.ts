@@ -47,3 +47,5 @@ new custom_resources.AwsCustomResource(stack, 'TestCase', {
 new integ.IntegTest(app, 'AwsCustomResourceAssumeRoleTest', {
   testCases: [stack],
 });
+
+app.synth();

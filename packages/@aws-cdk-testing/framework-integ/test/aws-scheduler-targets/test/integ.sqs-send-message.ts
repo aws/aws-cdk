@@ -43,3 +43,5 @@ message.assertAtPath(
   totalTimeout: cdk.Duration.minutes(3),
   interval: cdk.Duration.seconds(10),
 });
+
+app.synth();

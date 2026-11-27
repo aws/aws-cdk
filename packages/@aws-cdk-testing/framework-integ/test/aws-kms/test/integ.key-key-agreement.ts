@@ -17,3 +17,5 @@ new IntegTest(app, 'KeyAgreementIntegTest', {
     stack,
   ],
 });
+
+app.synth();

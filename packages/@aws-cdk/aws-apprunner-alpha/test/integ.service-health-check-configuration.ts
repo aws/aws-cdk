@@ -27,3 +27,5 @@ new IntegTest(app, 'cdk-integ-dashboard-and-widget-with-start-and-end', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
+
+app.synth();

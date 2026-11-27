@@ -17,3 +17,5 @@ new codecommit.Repository(stack, 'MyCodecommitRepository', {
 new integ.IntegTest(app, 'RepositoryEncryptionTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -66,3 +66,5 @@ if (objects instanceof AwsApiCall && objects.waiterProvider) {
     Resource: ['*'],
   });
 }
+
+app.synth();

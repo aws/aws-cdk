@@ -51,3 +51,5 @@ integ.assertions.awsApiCall('CloudFront', 'getCloudFrontOriginAccessIdentity', {
     },
   },
 }));
+
+app.synth();

@@ -36,3 +36,5 @@ second.delivery.node.addDependency(first.delivery);
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],
 });
+
+app.synth();

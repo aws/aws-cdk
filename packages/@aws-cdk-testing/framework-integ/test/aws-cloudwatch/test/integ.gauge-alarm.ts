@@ -31,3 +31,5 @@ dashboard.addWidgets(
 new integ.IntegTest(app, 'GaugeAlarmIntegrationTest', {
   testCases: [stack],
 });
+
+app.synth();

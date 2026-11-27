@@ -33,3 +33,5 @@ new CfnOutput(stack, 'ApiEndpoint', { value: stage.url });
 new IntegTest(app, 'apigatewayv2-mock-integration-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

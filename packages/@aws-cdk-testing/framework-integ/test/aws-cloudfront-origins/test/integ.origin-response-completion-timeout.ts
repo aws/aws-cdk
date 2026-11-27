@@ -48,3 +48,5 @@ new cloudfront.Distribution(stack, 'Distribution', {
 new IntegTest(app, 'CloudFrontResponseCompletionTimeoutTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -58,3 +58,5 @@ const disabledStack = new VpcEgressOnlyIGWFeatureFlagDisabledStack(app, 'VpcMigr
 new IntegTest(app, 'VpcEgressFeatureFlagTest', {
   testCases: [enabledStack, disabledStack],
 });
+
+app.synth();

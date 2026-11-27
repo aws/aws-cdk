@@ -101,3 +101,5 @@ identityPoolRolesAssertion.expect(ExpectedResult.objectLike({
     unauthenticated: idPool.unauthenticatedRole.roleArn,
   },
 }));
+
+app.synth();

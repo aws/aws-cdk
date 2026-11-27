@@ -22,3 +22,5 @@ bucket.grantDelete(deleter);
 new IntegTest(app, 'cdk-integ-s3-grant-delete-kms', {
   testCases: [stack],
 });
+
+app.synth();

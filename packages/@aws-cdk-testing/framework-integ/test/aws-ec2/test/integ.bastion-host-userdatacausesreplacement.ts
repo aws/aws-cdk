@@ -36,3 +36,5 @@ const testCase = new TestStack(app, 'integ-bastionhost-userdatacausesreplacement
 new IntegTest(app, 'bastionhost-userdatacausesreplacement-test', {
   testCases: [testCase],
 });
+
+app.synth();

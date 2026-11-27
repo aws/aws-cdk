@@ -22,3 +22,5 @@ new CfnOutput(stack, 'user-pool-id', {
 });
 
 new IntegTest(app, 'IntegTest', { testCases: [stack] });
+
+app.synth();

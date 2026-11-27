@@ -79,3 +79,5 @@ new imagebuilder.Component(stack, 'InlineComponent', {
 new integ.IntegTest(app, 'ComponentTest', {
   testCases: [stack],
 });
+
+app.synth();

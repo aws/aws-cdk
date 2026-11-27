@@ -63,3 +63,5 @@ restapi.root.resourceForPath('auth').addMethod('ANY', new MockIntegration({
   ],
   authorizer: secondAuthorizer,
 });
+
+app.synth();

@@ -173,3 +173,5 @@ new integ.IntegTest(app, 'BedrockVectorKnowledgeBase', {
   testCases: [stack],
   regions: ['us-east-1'],
 });
+
+app.synth();

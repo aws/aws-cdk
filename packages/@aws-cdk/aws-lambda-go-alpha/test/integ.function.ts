@@ -46,3 +46,5 @@ response.expect(integ.ExpectedResult.objectLike({
   ExecutedVersion: '$LATEST',
   Payload: '256',
 }));
+
+app.synth();

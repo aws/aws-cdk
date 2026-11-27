@@ -42,3 +42,5 @@ new HostedConfiguration(stack, 'MySecondConfig', {
 new IntegTest(app, 'appconfig-multi-config-env', {
   testCases: [stack],
 });
+
+app.synth();

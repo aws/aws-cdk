@@ -91,3 +91,5 @@ const importedStack = new ImportedStack(app, 'imported-stack', {
 new IntegTest(app, 'GraphqlGrantImportedApiInteg', {
   testCases: [importedStack],
 });
+
+app.synth();

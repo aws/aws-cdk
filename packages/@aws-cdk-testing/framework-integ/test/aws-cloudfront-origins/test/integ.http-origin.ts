@@ -25,3 +25,5 @@ new cloudfront.Distribution(stack, 'Distribution', {
 new IntegTest(app, 'http-origin-test-integ', {
   testCases: [stack],
 });
+
+app.synth();

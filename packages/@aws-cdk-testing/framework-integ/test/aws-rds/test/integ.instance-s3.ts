@@ -25,3 +25,5 @@ new DatabaseInstance(stack, 'Database', {
 new IntegTest(app, 'integ.instance-s3', {
   testCases: [stack],
 });
+
+app.synth();

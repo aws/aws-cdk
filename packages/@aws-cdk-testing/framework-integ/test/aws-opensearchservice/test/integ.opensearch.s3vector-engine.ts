@@ -54,3 +54,5 @@ describeDomain.expect(
       },
     },
   }));
+
+app.synth();

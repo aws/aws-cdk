@@ -87,3 +87,5 @@ integTest.assertions.invokeFunction({
   WaitTimeSeconds: 20,
 })
   .assertAtPath('Messages.0.Body.detail.message', ExpectedResult.stringLikeRegexp('hello1')));
+
+app.synth();

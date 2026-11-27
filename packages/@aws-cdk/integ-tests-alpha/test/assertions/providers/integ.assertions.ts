@@ -102,3 +102,5 @@ metricAssertion.provider.addToRolePolicy({
 });
 
 firstAssertion.next(secondAssertion).next(thirdAssertion).next(forthAssertion).next(metricAssertion);
+
+app.synth();

@@ -37,3 +37,5 @@ const stack = new WeightRandomAlgorithmStack(app, 'alb-weight-rando-algorithm-te
 new IntegTest(app, 'alb-weight-rando-algorithm-test-integ', {
   testCases: [stack],
 });
+
+app.synth();

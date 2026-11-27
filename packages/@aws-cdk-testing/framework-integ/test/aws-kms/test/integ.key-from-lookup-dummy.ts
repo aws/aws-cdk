@@ -19,3 +19,5 @@ new integ.IntegTest(app, 'key-from-lookup-dummy-integ', {
   enableLookups: true,
   testCases: [stack],
 });
+
+app.synth();

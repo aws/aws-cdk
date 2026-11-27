@@ -35,3 +35,5 @@ const testCase = new TestStack(app, 'InstanceIpv6AddressCountTestStack');
 new IntegTest(app, 'IntegTest', {
   testCases: [testCase],
 });
+
+app.synth();

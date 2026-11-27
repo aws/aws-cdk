@@ -129,3 +129,5 @@ firstAssertion.waiterProvider?.addToRolePolicy({
   Action: ['kms:*'],
   Resource: ['*'],
 });
+
+app.synth();

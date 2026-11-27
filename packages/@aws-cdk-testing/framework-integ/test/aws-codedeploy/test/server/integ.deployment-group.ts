@@ -47,3 +47,5 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
 new IntegTest(app, 'integ-deployment-group', {
   testCases: [stack],
 });
+
+app.synth();

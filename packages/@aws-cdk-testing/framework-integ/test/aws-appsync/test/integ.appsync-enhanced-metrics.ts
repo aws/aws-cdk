@@ -36,3 +36,5 @@ noneDS.createResolver('QuerygetServiceVersion', {
 new IntegTest(app, 'api', {
   testCases: [stack],
 });
+
+app.synth();

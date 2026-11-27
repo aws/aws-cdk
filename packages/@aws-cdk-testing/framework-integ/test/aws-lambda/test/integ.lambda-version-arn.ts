@@ -55,3 +55,4 @@ describe.expect(integ.ExpectedResult.objectLike({
   ],
 }));
 
+app.synth();

@@ -33,3 +33,5 @@ const stack = new TestStack(app, 'custom-resource-test-service-timeout');
 new IntegTest(app, 'custom-resource-test-service-timeout-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

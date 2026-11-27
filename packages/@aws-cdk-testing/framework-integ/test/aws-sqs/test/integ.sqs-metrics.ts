@@ -29,3 +29,5 @@ test.assertions
       EvaluationPeriods: 3,
     }],
   }));
+
+app.synth();

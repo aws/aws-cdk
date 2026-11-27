@@ -74,3 +74,5 @@ const readerResult = integ.assertions.awsApiCall('StepFunctions', 'describeExecu
 });
 
 readerDefinition.next(writerExecution).next(writerResult).next(readerExecution).next(readerResult);
+
+app.synth();

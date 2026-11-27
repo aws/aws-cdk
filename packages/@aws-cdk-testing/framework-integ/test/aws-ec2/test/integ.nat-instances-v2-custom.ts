@@ -87,3 +87,5 @@ getObjectCallProvider.addToRolePolicy({
   Action: ['s3:GetObject', 's3:ListBucket'],
   Resource: ['*'],
 });
+
+app.synth();

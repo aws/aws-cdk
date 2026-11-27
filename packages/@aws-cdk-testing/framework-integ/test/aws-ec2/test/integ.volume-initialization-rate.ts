@@ -32,3 +32,5 @@ new ec2.Volume(stack, 'Volume', {
 new integ.IntegTest(app, 'volume-initialization-rate-integ', {
   testCases: [stack],
 });
+
+app.synth();

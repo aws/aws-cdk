@@ -39,3 +39,4 @@ peeringAssertion.expect(ExpectedResult.objectLike({
   ]),
 }));
 
+app.synth();

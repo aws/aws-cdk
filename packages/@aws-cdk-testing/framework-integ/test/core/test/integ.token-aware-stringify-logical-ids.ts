@@ -39,3 +39,5 @@ new cr.AwsCustomResource(stack, 'GetEndpointIp', {
 new integ.IntegTest(app, 'TokenAwareStringifyLogicalIds', {
   testCases: [stack],
 });
+
+app.synth();

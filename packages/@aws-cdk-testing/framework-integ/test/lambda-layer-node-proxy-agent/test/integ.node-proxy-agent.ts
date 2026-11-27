@@ -48,3 +48,5 @@ new integ.IntegTest(app, 'lambda-layer-node-proxy-agent-integ-test', {
     },
   },
 });
+
+app.synth();

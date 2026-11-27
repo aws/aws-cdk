@@ -59,3 +59,5 @@ call.expect(ExpectedResult.objectLike({
   },
   body: { message: 'Hello from Lambda' },
 }));
+
+app.synth();

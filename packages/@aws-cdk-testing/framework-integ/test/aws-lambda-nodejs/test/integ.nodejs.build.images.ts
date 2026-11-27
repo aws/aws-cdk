@@ -55,3 +55,5 @@ stack.lambdaFunctions.forEach(func=> {
     ExecutedVersion: '$LATEST',
   }));
 });
+
+app.synth();

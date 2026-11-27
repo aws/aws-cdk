@@ -91,3 +91,4 @@ cacheDescription.expect(ExpectedResult.objectLike({
   },
 );
 
+app.synth();

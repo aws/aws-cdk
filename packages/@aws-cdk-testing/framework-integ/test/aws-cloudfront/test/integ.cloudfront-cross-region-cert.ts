@@ -62,3 +62,5 @@ new IntegTest(app, 'integ-cloudfront-cross-region-acm', {
   diffAssets: true,
   enableLookups: true,
 });
+
+app.synth();

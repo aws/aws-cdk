@@ -117,3 +117,5 @@ getItemCall.expect(ExpectedResult.objectLike({
     },
   },
 }));
+
+app.synth();

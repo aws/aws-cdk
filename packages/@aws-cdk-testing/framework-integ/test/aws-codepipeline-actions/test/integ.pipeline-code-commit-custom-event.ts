@@ -118,3 +118,5 @@ integ.assertions.awsApiCall('CodeCommit', 'CreateCommit', {
 integ.assertions.awsApiCall('CodePipeline', 'ListPipelineExecutions', {
   pipelineName: pipeline.pipelineName,
 }).waitForAssertions().assertAtPath('pipelineExecutionSummaries.0.status', ExpectedResult.stringLikeRegexp('InProgress'));
+
+app.synth();

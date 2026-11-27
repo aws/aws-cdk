@@ -146,3 +146,5 @@ testEcsExecForJob(
   stack.fargateJobDefinition,
   stack.fargateComputeEnvironment,
 );
+
+app.synth();

@@ -31,3 +31,5 @@ const testStack = new TestStack(app, 'SyntheticsCanaryRetryStack');
 new IntegTest(app, 'SyntheticsCanaryRetry', {
   testCases: [testStack],
 });
+
+app.synth();

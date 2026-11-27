@@ -34,3 +34,5 @@ const testStack = new TestStack(app, 'SyntheticsCanaryBrowserTypeStack');
 new IntegTest(app, 'SyntheticsCanaryBrowserType', {
   testCases: [testStack],
 });
+
+app.synth();

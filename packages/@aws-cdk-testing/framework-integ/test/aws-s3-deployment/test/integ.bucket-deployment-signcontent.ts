@@ -64,3 +64,5 @@ new integ.IntegTest(app, 'integ-test-bucket-deployment-signcontent', {
   testCases: [testCase],
   diffAssets: true,
 });
+
+app.synth();

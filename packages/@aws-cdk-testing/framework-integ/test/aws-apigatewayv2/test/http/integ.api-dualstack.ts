@@ -15,3 +15,4 @@ new IntegTest(app, 'DualStackHttpApiInteg', {
   testCases: [stack],
 });
 
+app.synth();

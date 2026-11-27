@@ -49,3 +49,4 @@ new integ.IntegTest(app, 'PipelineStackIntegWithExecutionMode', {
   testCases: [stack],
 });
 
+app.synth();

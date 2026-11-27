@@ -135,3 +135,5 @@ apiCall.expect(integ.ExpectedResult.objectLike({
   Action: ['bedrock-agentcore:GetGatewayTarget'],
   Resource: ['*'],
 });
+
+app.synth();

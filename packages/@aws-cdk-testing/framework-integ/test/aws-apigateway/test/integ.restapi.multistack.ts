@@ -52,3 +52,5 @@ const testCase = new SecondStack(app, 'SecondStack', { lambda: first.firstLambda
 new IntegTest(app, 'restapi-multistack', {
   testCases: [testCase],
 });
+
+app.synth();

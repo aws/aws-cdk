@@ -70,3 +70,5 @@ new IntegTest(app, 'integtest-model', {
     },
   },
 });
+
+app.synth();

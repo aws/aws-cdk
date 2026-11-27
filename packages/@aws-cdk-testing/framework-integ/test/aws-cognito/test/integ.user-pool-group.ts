@@ -33,3 +33,5 @@ const stack = new TestStack(app, 'user-pool-group-stack');
 new IntegTest(app, 'integ-user-pool-group', {
   testCases: [stack],
 });
+
+app.synth();

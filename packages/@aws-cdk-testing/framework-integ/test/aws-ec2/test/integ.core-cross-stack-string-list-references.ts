@@ -74,3 +74,5 @@ new IntegTest(app, 'cross-region-references', {
   testCases: [producer, consumer],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

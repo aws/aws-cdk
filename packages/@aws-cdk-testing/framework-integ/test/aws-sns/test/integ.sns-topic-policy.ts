@@ -49,3 +49,5 @@ new IntegTest(app, 'SNSTopicPolicyInteg', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

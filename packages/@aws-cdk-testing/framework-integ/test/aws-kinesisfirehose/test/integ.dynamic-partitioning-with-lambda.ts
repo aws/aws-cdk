@@ -96,3 +96,5 @@ integTest.assertions.awsApiCall('firehose', 'putRecord', {
     });
   }
 });
+
+app.synth();

@@ -135,3 +135,5 @@ new IntegTest(app, 'cdk-integ-composite-alarm', {
     new CompositeAlarmTokenThresholdIntegrationTest(app, 'CompositeAlarmTokenThresholdIntegrationTest'),
   ],
 });
+
+app.synth();

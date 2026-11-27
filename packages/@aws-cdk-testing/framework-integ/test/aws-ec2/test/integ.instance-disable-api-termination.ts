@@ -37,3 +37,5 @@ const disableProtection = testCase.assertions.awsApiCall('EC2', 'modifyInstanceA
   DisableApiTermination: { Value: false },
 });
 disableProtection.node.addDependency(describe);
+
+app.synth();

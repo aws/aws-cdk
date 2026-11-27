@@ -28,3 +28,5 @@ table.grantReadWriteData(new iam.ServicePrincipal('glue.amazonaws.com'));
 new IntegTest(app, 'grant-service-principal-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

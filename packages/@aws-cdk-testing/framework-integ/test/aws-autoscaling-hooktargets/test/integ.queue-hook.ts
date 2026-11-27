@@ -78,3 +78,5 @@ setDesired.next(
     completeAction,
   ),
 );
+
+app.synth();

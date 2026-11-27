@@ -55,3 +55,5 @@ const testCase = new TestStack(app, 'integ-ec2-instance');
 new IntegTest(app, 'instance-test', {
   testCases: [testCase],
 });
+
+app.synth();

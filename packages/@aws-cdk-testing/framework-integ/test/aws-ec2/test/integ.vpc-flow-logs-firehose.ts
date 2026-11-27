@@ -39,3 +39,5 @@ const stack = new TestStack(app, 'FlowLogsTestStack');
 new IntegTest(app, 'FlowLogs', {
   testCases: [stack],
 });
+
+app.synth();

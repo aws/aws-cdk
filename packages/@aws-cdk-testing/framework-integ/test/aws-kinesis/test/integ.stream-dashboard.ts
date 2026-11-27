@@ -55,3 +55,5 @@ dashboard.addWidgets(
   percentGraphWidget('Put records throttled records - average (Percent)',
     stream.metricPutRecordsThrottledRecords(), stream.metricPutRecordsTotalRecords()),
 );
+
+app.synth();

@@ -18,3 +18,5 @@ new IntegTest(app, 'cloudwatch-logs-disabled', {
     new Test(app, 'default-api'),
   ],
 });
+
+app.synth();

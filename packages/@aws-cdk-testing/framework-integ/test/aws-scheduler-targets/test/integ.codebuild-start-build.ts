@@ -88,3 +88,5 @@ getParameter.expect(ExpectedResult.objectLike({
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(2),
 });
+
+app.synth();

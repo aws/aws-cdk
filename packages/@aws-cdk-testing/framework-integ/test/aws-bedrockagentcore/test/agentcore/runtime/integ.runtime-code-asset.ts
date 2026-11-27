@@ -28,3 +28,5 @@ new agentcore.Runtime(stack, 'TestRuntimeCodeAsset', {
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeCodeAssetTest', {
   testCases: [stack],
 });
+
+app.synth();

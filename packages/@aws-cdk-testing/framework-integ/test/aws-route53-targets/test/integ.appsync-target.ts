@@ -58,3 +58,5 @@ new IntegTest(app, 'appsync-domain-name', {
   stackUpdateWorkflow: false,
   testCases: [testCase],
 });
+
+app.synth();

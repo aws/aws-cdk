@@ -27,3 +27,5 @@ const testCase = new TestStack(app, 'aws-cdk-cloudwatch-singlevaluewidget-sparkl
 new IntegTest(app, 'singlevaluewidget-with-sparkline', {
   testCases: [testCase],
 });
+
+app.synth();

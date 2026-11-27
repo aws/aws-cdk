@@ -109,3 +109,5 @@ const testCase = new integ.IntegTest(app, 'WebFunctionAllFieldsTest', {
 testCase.assertions
   .httpApiCall(`https://${webFunction.endpoint.domainName}/`)
   .expect(integ.ExpectedResult.objectLike({ status: 403 }));
+
+app.synth();

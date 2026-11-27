@@ -24,3 +24,5 @@ new Bucket(stack, 'MyBucket', {
 new IntegTest(app, 'cdk-integ-lifecycle', {
   testCases: [stack],
 });
+
+app.synth();

@@ -36,3 +36,5 @@ const stack = new EksClusterStack(app, 'EksClusterWithAddonStack');
 new integ.IntegTest(app, 'EksClusterwithAddon', {
   testCases: [stack],
 });
+
+app.synth();

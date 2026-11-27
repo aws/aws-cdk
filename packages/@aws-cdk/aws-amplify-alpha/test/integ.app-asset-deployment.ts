@@ -33,3 +33,5 @@ const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 new IntegTest(app, 'cdk-amplify-app-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

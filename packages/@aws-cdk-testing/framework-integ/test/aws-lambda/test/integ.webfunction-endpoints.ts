@@ -101,3 +101,5 @@ for (const endpoint of [multiRegion, perRegion]) {
     .httpApiCall(`https://${endpoint.domainName}/`)
     .expect(integ.ExpectedResult.objectLike({ status: 403 }));
 }
+
+app.synth();

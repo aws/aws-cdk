@@ -41,3 +41,5 @@ new IntegTest(app, 'EcrRepoLookupTest', {
     postDeploy: [`aws ecr delete-repository --repository-name ${repositoryName} --force`],
   },
 });
+
+app.synth();

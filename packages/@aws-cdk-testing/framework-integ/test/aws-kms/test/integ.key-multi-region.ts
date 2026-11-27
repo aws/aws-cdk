@@ -17,3 +17,5 @@ const stack = new KmsKeyMultiRegionStack(app);
 new IntegTest(app, 'kms-key-multi-region', {
   testCases: [stack],
 });
+
+app.synth();

@@ -35,3 +35,5 @@ new ecs.Ec2Service(stack, 'FrontendService', {
 new IntegTest(stack, 'AvailabilityZoneRebalancing', {
   testCases: [stack],
 });
+
+app.synth();

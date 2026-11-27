@@ -73,3 +73,5 @@ function helloCode(_event: any, _context: any, callback: any) {
     body: 'hello, world!',
   });
 }
+
+app.synth();

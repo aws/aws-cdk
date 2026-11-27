@@ -39,3 +39,5 @@ const testCase = new TestStack(app, 'integ-ec2-instance-ebs-optimized');
 new IntegTest(app, 'instance-ebs-optimized-test', {
   testCases: [testCase],
 });
+
+app.synth();

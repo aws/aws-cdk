@@ -47,3 +47,5 @@ const testCase = new TestStack(app, 'integ-ec2-instance-nitro-enclaves-hibernati
 new IntegTest(app, 'instance-nitro-enclaves-hibernation', {
   testCases: [testCase],
 });
+
+app.synth();

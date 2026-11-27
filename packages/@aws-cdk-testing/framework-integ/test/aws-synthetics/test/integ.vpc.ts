@@ -31,3 +31,5 @@ new IntegTest(app, 'integ-vpc', {
     },
   },
 });
+
+app.synth();

@@ -35,3 +35,5 @@ new s3.Bucket(stack, 'S3SourceBucket-2', {
 new IntegTest(app, 's3-rtc-replication-metrics-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

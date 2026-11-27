@@ -302,7 +302,7 @@ if (FeatureFlags.of(this).isEnabled(cxapi.MY_NEW_FLAG)) { ... }
 
 - Stable modules: `integ.*.ts` under `packages/@aws-cdk-testing/framework-integ/test/{module}/test/`
 - Alpha modules: `integ.*.ts` colocated in `packages/@aws-cdk/aws-{service}-alpha/test/`
-- Use `IntegTest` construct — do NOT include `app.synth()`:
+- Use `IntegTest` construct and call `synth()` on every App last, after the `IntegTest` and its assertions — an integ test is a complete CDK app and must not rely on synthesis at process exit; lint rejects an `integ.*.ts` file without the call:
   ```ts
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
@@ -311,6 +311,8 @@ if (FeatureFlags.of(this).isEnabled(cxapi.MY_NEW_FLAG)) { ... }
   // Assertions — optional but preferred (required for custom resources)
   test.assertions.awsApiCall('S3', 'getBucketVersioning', { Bucket: bucket.bucketName })
     .expect(integ.ExpectedResult.objectLike({ Status: 'Enabled' }));
+
+  app.synth();
   ```
 - Assertions are preferred on all new integ tests; REQUIRED for custom resources
 - Avoid `ec2.Peer.anyIpv4()`/`anyIpv6()` and set ALB listener `open: false` unless testing open access

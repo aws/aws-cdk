@@ -31,3 +31,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-synthetics-canary-run-config', {
   testCases: [new TestStack(app, 'cdk-synthetics-canary-run-config')],
 });
+
+app.synth();

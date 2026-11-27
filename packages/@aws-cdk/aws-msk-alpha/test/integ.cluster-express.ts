@@ -43,3 +43,5 @@ new IntegTest(app, 'MskExpressCluster', {
   testCases: [stack],
   enableLookups: true,
 });
+
+app.synth();

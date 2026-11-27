@@ -23,3 +23,5 @@ const app = new cdk.App();
 new IntegTest(app, 'cdk-integ-s3-urls', {
   testCases: [new TestStack(app, 'aws-cdk-s3-urls')],
 });
+
+app.synth();

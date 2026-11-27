@@ -49,3 +49,8 @@ test.assertions.awsApiCall('CloudFormation', 'deleteStack', {
     TemplateBody: templateString,
   }),
 );
+
+// Template.fromStack() above already synthesized the app, so the PREVENT_ALL_DELETION override and
+// the assertions added after it are not in the output: this call returns that earlier assembly,
+// and a plain synth() would throw ConstructTreeModifiedAfterSynth
+app.synth({ errorOnDuplicateSynth: false });

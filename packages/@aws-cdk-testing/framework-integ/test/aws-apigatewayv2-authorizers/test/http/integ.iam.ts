@@ -67,3 +67,5 @@ new cdk.CfnOutput(stack, 'TESTREGION', {
  * * Using cURL 7.75.0 or later via the official docker image: docker run --rm curlimages/curl -s -o/dev/null -w"%{http_code}" <url>
  * * Args to enable sigv4 with authorized credentials: --user "$TESTACCESSKEYID:$TESTSECRETACCESSKEY" --aws-sigv4 "aws:amz:$TESTREGION:execute-api"
  */
+
+app.synth();

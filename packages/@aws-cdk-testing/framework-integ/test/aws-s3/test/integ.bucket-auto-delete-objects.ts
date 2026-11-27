@@ -69,3 +69,5 @@ new IntegTest(app, 'cdk-integ-s3-bucket-auto-delete-objects', {
   testCases: [new TestStack(app, 'cdk-s3-bucket-auto-delete-objects')],
   diffAssets: true,
 });
+
+app.synth();

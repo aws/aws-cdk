@@ -40,3 +40,5 @@ response.expect(ExpectedResult.objectLike({
   ExecutedVersion: '$LATEST',
   Payload: 'null',
 }));
+
+app.synth();

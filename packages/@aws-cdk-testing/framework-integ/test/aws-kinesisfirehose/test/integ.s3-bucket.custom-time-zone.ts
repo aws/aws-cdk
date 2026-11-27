@@ -50,3 +50,5 @@ if (s3ApiCall instanceof AwsApiCall && s3ApiCall.waiterProvider) {
     Resource: ['*'],
   });
 }
+
+app.synth();

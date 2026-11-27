@@ -31,3 +31,5 @@ const app = new App();
 new integ.IntegTest(app, 'ConfigurationSetOverridingSuppressionListSettingsInteg', {
   testCases: [new TestStack(app, 'cdk-ses-configuration-set-overriding-suppression-list-integ')],
 });
+
+app.synth();

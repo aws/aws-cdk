@@ -29,3 +29,5 @@ integTest.assertions.awsApiCall('ECS', 'describeClusters', {
     'clusters.0.configuration.managedStorageConfiguration.kmsKeyId',
     ExpectedResult.stringLikeRegexp(key.keyId),
   );
+
+app.synth();

@@ -65,3 +65,5 @@ putObject.next(integ.assertions.awsApiCall('SQS', 'receiveMessage', {
   totalTimeout: cdk.Duration.minutes(5),
   interval: cdk.Duration.seconds(15),
 });
+
+app.synth();

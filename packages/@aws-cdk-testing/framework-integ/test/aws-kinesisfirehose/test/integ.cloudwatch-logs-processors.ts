@@ -43,3 +43,5 @@ new firehose.DeliveryStream(stack, 'ExtractCloudWatchLogsEntry', {
 new IntegTest(app, 'integ-tests', {
   testCases: [stack],
 });
+
+app.synth();

@@ -35,3 +35,5 @@ scramSecrets.expect(ExpectedResult.objectLike({
     Match.stringLikeRegexp(`arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:AmazonMSK_integ-test_integ-user-2-.*`),
   ],
 }));
+
+app.synth();

@@ -23,3 +23,5 @@ new integ.IntegTest(app, 'integ-test', {
     new TestCase(app, s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL),
   ],
 });
+
+app.synth();

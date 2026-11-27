@@ -121,3 +121,5 @@ const result = integ.assertions.invokeFunction({
 result.expect(ExpectedResult.objectLike({
   Payload: '{"statusCode": 200}',
 }));
+
+app.synth();

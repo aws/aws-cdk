@@ -66,3 +66,5 @@ integ.assertions
       ]),
     },
   }));
+
+app.synth();

@@ -98,3 +98,5 @@ const integTest = new integ.IntegTest(app, 'SSMParameterStoreTest', {
 integTest.assertions.awsApiCall('SSM', 'deleteParameter', {
   Name: SECURE_PARAM_NAME,
 });
+
+app.synth();

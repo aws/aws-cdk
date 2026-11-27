@@ -42,3 +42,5 @@ const integ = new IntegTest(app, 'codebuild-project-docker-server-integ', {
 integ.assertions.awsApiCall('CodeBuild', 'startBuild', {
   projectName: project.projectName,
 }).waitForAssertions();
+
+app.synth();

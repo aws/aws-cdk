@@ -75,3 +75,5 @@ new IntegTest(app, 'table-v2-stream-resource-policy-integ-test', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

@@ -85,3 +85,5 @@ test.assertions.awsApiCall('CloudFormation', 'deleteStack', {
     }),
   })).waitForAssertions(),
 );
+
+app.synth();

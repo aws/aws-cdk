@@ -52,3 +52,5 @@ new IntegTest(app, 'integ-test', {
   diffAssets: true,
   enableLookups: true,
 });
+
+app.synth();

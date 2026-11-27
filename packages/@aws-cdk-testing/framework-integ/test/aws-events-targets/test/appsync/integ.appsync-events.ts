@@ -46,3 +46,5 @@ export const response = (ctx) => ctx.args.message
 
 const stack = new AwsAppSyncEvent(app, 'aws-cdk-aws-appsync-target-integ');
 new IntegTest(app, 'aws-appsync-integ', { testCases: [stack] });
+
+app.synth();

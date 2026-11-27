@@ -36,3 +36,5 @@ const stack = new TestStack(app, 'PITR-Integ-Test', { env: { region: 'eu-west-1'
 new IntegTest(app, 'table-v2-pitr-test', {
   testCases: [stack],
 });
+
+app.synth();

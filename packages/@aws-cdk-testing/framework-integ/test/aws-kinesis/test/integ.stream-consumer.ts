@@ -23,3 +23,5 @@ new IntegTest(app, 'integ-kinesis-stream-consumer', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

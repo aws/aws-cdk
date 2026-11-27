@@ -176,3 +176,5 @@ const stack = new TestStack(app, 'RecordFormatConversion');
 new integ.IntegTest(app, 'RecordFormatConversionTest', {
   testCases: [stack],
 });
+
+app.synth();

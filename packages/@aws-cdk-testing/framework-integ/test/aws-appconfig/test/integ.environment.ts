@@ -85,3 +85,5 @@ new HostedConfiguration(stack, 'MyConfig', {
 new IntegTest(app, 'appconfig-environment', {
   testCases: [stack],
 });
+
+app.synth();

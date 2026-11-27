@@ -45,3 +45,5 @@ response.expect(ExpectedResult.objectLike({
   StatusCode: 200,
   ExecutedVersion: '$LATEST',
 }));
+
+app.synth();

@@ -98,3 +98,5 @@ const testCase = new MainStack(app, 'code-pipeline-nested-stack', {
 new IntegTest(app, 'integ-code-pipeline-nested-stack', {
   testCases: [testCase],
 });
+
+app.synth();

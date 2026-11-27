@@ -59,3 +59,5 @@ new IntegTest(app, 'aws-cdk-global-table-ondemand-integ', {
   regions: ['us-east-1'],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

@@ -38,3 +38,5 @@ const stack = new FirehoseEnv(app, 'firehose-logsubscription-integ');
 new IntegTest(app, 'FirehoseInteg', {
   testCases: [stack],
 });
+
+app.synth();

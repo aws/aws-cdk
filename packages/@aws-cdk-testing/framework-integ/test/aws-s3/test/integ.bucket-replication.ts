@@ -141,3 +141,5 @@ firstAssertion
   .next(thirdAssertion)
   .next(fourthAssertion)
   .next(fifthAssertion);
+
+app.synth();

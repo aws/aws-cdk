@@ -19,3 +19,5 @@ new appsync.GraphqlApi(stack, 'LambdaAPI', {
 new IntegTest(app, 'GraphQLFieldLevelLog', {
   testCases: [stack],
 });
+
+app.synth();

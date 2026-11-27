@@ -17,3 +17,5 @@ cfnBucket.addPropertyOverride('BogusProperty', 'invalid-value');
 new IntegTest(app, 'CloudFormationValidatePluginTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -41,3 +41,5 @@ const integ = new IntegTest(app, 'linux-lambda-codebuild', {
 integ.assertions.awsApiCall('CodeBuild', 'startBuild', {
   projectName: codebuildLinuxLambda.project.projectName,
 }).waitForAssertions();
+
+app.synth();

@@ -33,3 +33,5 @@ new sfn.StateMachine(stack, 'StateMachine', {
 new integ.IntegTest(app, 'EvaluateExpressionMixedArchTest', {
   testCases: [stack],
 });
+
+app.synth();

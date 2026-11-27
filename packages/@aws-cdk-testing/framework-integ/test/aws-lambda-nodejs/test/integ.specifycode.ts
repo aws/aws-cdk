@@ -50,3 +50,5 @@ response.expect(ExpectedResult.objectLike({
   StatusCode: 200, // The lambda can fail to execute but still have StatusCode 200 -- so it's necessary to check that the Payload is correct.
   Payload: '"NICE"', // The generated lambda function returns text that says "NICE".
 }));
+
+app.synth();

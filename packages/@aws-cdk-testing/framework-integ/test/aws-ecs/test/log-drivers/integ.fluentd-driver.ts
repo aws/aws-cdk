@@ -69,3 +69,5 @@ new ecs.Ec2Service(stack, 'EC2Service', {
 new integ.IntegTest(app, 'cdk-ecs-fluentd-test', {
   testCases: [stack],
 });
+
+app.synth();

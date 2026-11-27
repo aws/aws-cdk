@@ -208,3 +208,5 @@ domain2api2Invoke.expect(ExpectedResult.objectLike({
   ok: true,
   status: 202,
 }));
+
+app.synth();

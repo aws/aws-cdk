@@ -26,3 +26,5 @@ const app = new App();
 new IntegTest(app, 'integ-test-acu', {
   testCases: [new TestStack(app, 'integ-aurora-serverlessv2-cluster-acu-0')],
 });
+
+app.synth();

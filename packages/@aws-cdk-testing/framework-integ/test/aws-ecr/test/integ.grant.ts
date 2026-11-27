@@ -24,3 +24,5 @@ new cdk.CfnOutput(stack, 'RepositoryURI', {
 new IntegTest(app, 'cdk-ecr-integ-test-grant', {
   testCases: [stack],
 });
+
+app.synth();

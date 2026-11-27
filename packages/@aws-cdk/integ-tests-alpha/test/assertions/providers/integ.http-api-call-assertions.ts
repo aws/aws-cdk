@@ -202,3 +202,5 @@ integ.assertions.httpApiCall(
     },
   }),
 );
+
+app.synth();

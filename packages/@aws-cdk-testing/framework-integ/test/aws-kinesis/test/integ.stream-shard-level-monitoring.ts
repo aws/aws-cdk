@@ -45,3 +45,5 @@ streams.forEach((stream) => {
     },
   }));
 });
+
+app.synth();

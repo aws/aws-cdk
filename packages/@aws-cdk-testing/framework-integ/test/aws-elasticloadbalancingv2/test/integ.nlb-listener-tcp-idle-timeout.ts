@@ -31,3 +31,5 @@ nlb.addListener('Listener', {
 new integ.IntegTest(app, 'nlb-tcp-idle-timeout-test', {
   testCases: [stack],
 });
+
+app.synth();

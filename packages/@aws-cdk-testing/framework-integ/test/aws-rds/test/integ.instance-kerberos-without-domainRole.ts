@@ -33,3 +33,4 @@ new integ.IntegTest(app, 'integ-instance-kerberos-without-domainRole', {
   testCases: [stack],
 });
 
+app.synth();

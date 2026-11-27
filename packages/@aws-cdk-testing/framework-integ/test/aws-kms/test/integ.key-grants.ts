@@ -20,3 +20,5 @@ new IntegTest(app, 'KeyGrantsIntegTest', {
     stack,
   ],
 });
+
+app.synth();

@@ -36,3 +36,5 @@ autoScalingGroup.scaleOnMetric('MetricScale', {
 new IntegTest(app, 'step-scaling-with-cooldown', {
   testCases: [stack],
 });
+
+app.synth();

@@ -21,3 +21,5 @@ new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
 new IntegTest(app, 'appconfig-deployment-strategy', {
   testCases: [stack],
 });
+
+app.synth();

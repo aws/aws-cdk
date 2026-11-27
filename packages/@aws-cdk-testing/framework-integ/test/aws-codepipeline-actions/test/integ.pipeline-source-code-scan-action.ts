@@ -110,3 +110,5 @@ startPipelineCall.next(
     totalTimeout: cdk.Duration.minutes(5),
   }),
 );
+
+app.synth();

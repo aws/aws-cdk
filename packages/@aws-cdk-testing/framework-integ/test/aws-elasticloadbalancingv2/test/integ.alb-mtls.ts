@@ -172,3 +172,5 @@ new IntegTest(app, 'alb-mtls-integ', {
   enableLookups: true,
   stackUpdateWorkflow: false,
 });
+
+app.synth();

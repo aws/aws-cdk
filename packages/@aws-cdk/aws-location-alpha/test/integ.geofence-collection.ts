@@ -27,3 +27,5 @@ new integ.IntegTest(app, 'GeofenceCollectionTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-geofence-collection')],
   regions: LOCATION_SUPPORTED_REGIONS,
 });
+
+app.synth();

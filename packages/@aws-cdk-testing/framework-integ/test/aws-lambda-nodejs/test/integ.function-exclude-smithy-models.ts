@@ -33,3 +33,4 @@ new IntegTest(app, 'NodeJsFunctionExcludeSmithyInteg', {
   diffAssets: true,
 });
 
+app.synth();

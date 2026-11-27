@@ -41,3 +41,5 @@ new Project(stack, 'LatestKernelArmProject', {
 new IntegTest(app, 'codebuild-project-host-kernel-integ', {
   testCases: [stack],
 });
+
+app.synth();

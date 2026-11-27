@@ -103,3 +103,5 @@ s3ApiCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 describeExecution.next(s3ApiCall);
+
+app.synth();

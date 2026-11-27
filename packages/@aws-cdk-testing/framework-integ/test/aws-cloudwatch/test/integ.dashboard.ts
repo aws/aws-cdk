@@ -23,3 +23,5 @@ new cdk.CfnOutput(stack, 'DashboardArn', {
 new integ.IntegTest(app, 'DashboardIntegrationTest', {
   testCases: [stack],
 });
+
+app.synth();

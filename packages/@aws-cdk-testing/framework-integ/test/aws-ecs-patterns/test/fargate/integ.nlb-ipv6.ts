@@ -50,3 +50,5 @@ integ.assertions.httpApiCall(`http://${nlbLoadbalancedFargateService.loadBalance
   totalTimeout: cdk.Duration.minutes(10),
   interval: cdk.Duration.seconds(10),
 });
+
+app.synth();

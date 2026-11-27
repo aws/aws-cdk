@@ -138,3 +138,5 @@ putEvent.next(
     .assertAtPath('Parameter.Value', ExpectedResult.stringLikeRegexp('new-value'))
     .waitForAssertions({ totalTimeout: cdk.Duration.minutes(1) }),
 );
+
+app.synth();

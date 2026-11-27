@@ -37,3 +37,5 @@ eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toLogGroup(logGroup, {
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],
 });
+
+app.synth();

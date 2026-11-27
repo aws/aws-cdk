@@ -50,3 +50,5 @@ stack.addDependency(crossAccountStack);
 new IntegTest(app, 'CrossAccountStreamConsumption', {
   testCases: [crossAccountStack, stack],
 });
+
+app.synth();

@@ -33,3 +33,5 @@ event.addTarget(new targets.SnsTopic(topic, {
 new IntegTest(app, 'sns-event-rule-target-role-enabled', {
   testCases: [stack],
 });
+
+app.synth();

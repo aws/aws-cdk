@@ -36,3 +36,5 @@ const stack = new TestStack(app, 'cdk-integ-lambda-nodejs-esbuildArgs');
 new IntegTest(app, 'LambdaNodeJsEsbuildArgsInteg', {
   testCases: [stack],
 });
+
+app.synth();

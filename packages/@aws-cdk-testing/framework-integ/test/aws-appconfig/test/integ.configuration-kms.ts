@@ -30,3 +30,4 @@ new IntegTest(app, 'appconfig-configuration-kms', {
   testCases: [stack],
 });
 
+app.synth();

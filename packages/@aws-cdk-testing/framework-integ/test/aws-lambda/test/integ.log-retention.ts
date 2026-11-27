@@ -46,3 +46,5 @@ new IntegTest(app, 'LambdaLogRetentionInteg', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();

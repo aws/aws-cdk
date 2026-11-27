@@ -63,3 +63,5 @@ const stack = new TestStack(app, 'cdk-backup-selection');
 new IntegTest(app, 'BackupSelectionTest', {
   testCases: [stack],
 });
+
+app.synth();

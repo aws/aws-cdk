@@ -32,3 +32,4 @@ new IntegTest(app, 'Ipv6Testing', {
   testCases: [stack],
 });
 
+app.synth();

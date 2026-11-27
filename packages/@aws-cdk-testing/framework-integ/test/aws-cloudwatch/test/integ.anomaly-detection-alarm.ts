@@ -164,3 +164,5 @@ integ.assertions
       }),
     ]),
   }));
+
+app.synth();

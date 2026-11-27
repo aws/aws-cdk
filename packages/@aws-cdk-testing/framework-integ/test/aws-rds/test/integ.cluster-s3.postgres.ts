@@ -38,3 +38,5 @@ class PostgresS3TestStack extends IntegTestBaseStack {
 new IntegTest(app, 'postgres-s3-integ-test', {
   testCases: [new PostgresS3TestStack(app, 'aws-cdk-rds-s3-postgres-15-integ')],
 });
+
+app.synth();

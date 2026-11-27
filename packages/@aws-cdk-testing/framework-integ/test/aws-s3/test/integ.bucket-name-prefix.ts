@@ -15,3 +15,4 @@ new integ.IntegTest(app, 'aws-cdk-s3-bucket-name-prefix-integ', {
   testCases: [stack],
 });
 
+app.synth();

@@ -293,3 +293,5 @@ function generateDummyRole(): iam.Role {
 
   return role;
 }
+
+app.synth();

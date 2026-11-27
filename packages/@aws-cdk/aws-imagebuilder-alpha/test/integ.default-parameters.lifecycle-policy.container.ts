@@ -19,3 +19,5 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
 new integ.IntegTest(app, 'LifecyclePolicyTest-AMI-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

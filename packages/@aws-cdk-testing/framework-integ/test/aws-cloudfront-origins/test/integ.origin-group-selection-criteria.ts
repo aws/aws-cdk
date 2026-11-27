@@ -33,3 +33,5 @@ new cloudfront.Distribution(stack, 'Distribution', {
 new IntegTest(app, 'origin-group-selection-criteria', {
   testCases: [stack],
 });
+
+app.synth();

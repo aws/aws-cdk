@@ -99,3 +99,5 @@ new IntegTest(app, 'integ-rds-cluster-from-lookup', {
     ],
   },
 });
+
+app.synth();

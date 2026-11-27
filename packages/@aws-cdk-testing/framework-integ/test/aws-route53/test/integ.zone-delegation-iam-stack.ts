@@ -64,3 +64,5 @@ const stack = new ZoneDelegationIamStack(app, 'ZoneDelegationStack');
 new IntegTest(app, 'ZoneDelegationIam', {
   testCases: [stack],
 });
+
+app.synth();

@@ -42,3 +42,5 @@ new IntegTest(app, 'CrossRegionBothReferenceTest', {
   regions: ['us-east-2'],
   diffAssets: true,
 });
+
+app.synth();

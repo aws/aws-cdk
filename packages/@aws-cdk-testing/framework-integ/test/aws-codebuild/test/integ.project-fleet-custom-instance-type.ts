@@ -139,3 +139,5 @@ for (const { fleet, project } of stacks) {
     interval: cdk.Duration.seconds(30),
   });
 }
+
+app.synth();

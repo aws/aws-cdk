@@ -17,3 +17,5 @@ new s3.Bucket(stack, 'ObjectLockWithRetentionBucket', {
 new integ.IntegTest(app, 'ServerAccessLogsImportTest', {
   testCases: [stack],
 });
+
+app.synth();

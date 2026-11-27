@@ -51,3 +51,5 @@ new Bucket(stack, 'VariesByStorageClass', {
 new IntegTest(app, 'cdk-integ-s3-lifecycle-transitions', {
   testCases: [stack],
 });
+
+app.synth();

@@ -21,3 +21,5 @@ distribution.addBehavior('/third', origin);
 new IntegTest(app, 'DistributionGrpc', {
   testCases: [stack],
 });
+
+app.synth();

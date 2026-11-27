@@ -113,3 +113,5 @@ new cdk.CfnOutput(stack, 'FirehoseStreamArn', {
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeObservabilityTest', {
   testCases: [stack],
 });
+
+app.synth();

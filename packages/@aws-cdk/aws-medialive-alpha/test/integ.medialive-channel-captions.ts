@@ -112,3 +112,5 @@ new medialive.Channel(stack, 'CaptionChannel', {
 new IntegTest(app, 'cdk-integ-medialive-channel-captions', {
   testCases: [stack],
 });
+
+app.synth();

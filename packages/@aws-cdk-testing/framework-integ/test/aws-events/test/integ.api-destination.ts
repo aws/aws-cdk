@@ -40,3 +40,5 @@ new CfnOutput(stack, 'DestinationArnForPolicy', {
 new IntegTest(app, 'events-api-destination-integ', {
   testCases: [stack],
 });
+
+app.synth();

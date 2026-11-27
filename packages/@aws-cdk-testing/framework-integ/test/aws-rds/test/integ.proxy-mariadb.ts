@@ -44,3 +44,5 @@ new integ.IntegTest(app, 'database-proxy-mariadb-integ-test', {
     },
   },
 });
+
+app.synth();

@@ -35,3 +35,5 @@ new IntegTest(app, 'integ-kinesis-resource-policy', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

@@ -102,3 +102,6 @@ const stackWithFeatureFlag = new TestStack(appWithFeatureFlag, 'aws-cdk-rds-inte
 new IntegTest(appWithFeatureFlag, 'test-rds-cluster-with-feature-flag', {
   testCases: [stackWithFeatureFlag],
 });
+
+app.synth();
+appWithFeatureFlag.synth();

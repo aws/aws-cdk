@@ -14,3 +14,5 @@ new inc.CfnInclude(stack, 'Stack', {
 new integ.IntegTest(app, 'ResourceTagIntrinsicStack', {
   testCases: [stack],
 });
+
+app.synth();

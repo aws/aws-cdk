@@ -89,3 +89,4 @@ new integ.IntegTest(app, 'BedrockAgentCoreGatewayIdentityOutbound', {
   ],
 });
 
+app.synth();

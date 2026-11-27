@@ -95,3 +95,5 @@ const stack = new MainStack(app, 'integ-bucket-deployment-cross-stack-ssm');
 new integ.IntegTest(app, 'integ-bucket-deployment-cross-stack-ssm-source', {
   testCases: [stack],
 });
+
+app.synth();

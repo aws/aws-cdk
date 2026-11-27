@@ -18,3 +18,5 @@ new ManagedEc2EcsComputeEnvironment(stack, 'ECS', {
 new integ.IntegTest(app, 'integ-managed-compute-environment-default-instance-class', {
   testCases: [stack],
 });
+
+app.synth();

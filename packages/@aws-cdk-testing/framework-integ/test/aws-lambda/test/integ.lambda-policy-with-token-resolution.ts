@@ -44,3 +44,5 @@ func.addToRolePolicy(new iam.PolicyStatement({
 new integ.IntegTest(app, 'lambda-policy-with-token-resolution', {
   testCases: [stack],
 });
+
+app.synth();

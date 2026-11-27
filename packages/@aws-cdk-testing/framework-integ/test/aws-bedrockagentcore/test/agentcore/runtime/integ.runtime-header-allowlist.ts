@@ -39,3 +39,5 @@ new integ.IntegTest(app, 'BedrockAgentCoreRuntimeHeaderAllowlistTest', {
   testCases: [stack],
   regions: ['us-west-2'],
 });
+
+app.synth();

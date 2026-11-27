@@ -33,3 +33,5 @@ topic.addSubscription(new subs.FirehoseSubscription(deliveryStream));
 new IntegTest(app, 'sns-firehose-integ', {
   testCases: [topicStack, firehoseStack],
 });
+
+app.synth();

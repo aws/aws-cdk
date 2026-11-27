@@ -14,3 +14,4 @@ new IntegTest(app, 'DualStackWebsocketApiInteg', {
   testCases: [stack],
 });
 
+app.synth();

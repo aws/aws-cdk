@@ -60,3 +60,5 @@ integ.assertions.awsApiCall('RDS', 'describeDBClusters', {
     ],
   }],
 }));
+
+app.synth();

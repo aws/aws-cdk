@@ -22,3 +22,5 @@ new rds.DatabaseInstance(stack, 'DatabaseInstance', {
 new IntegTest(app, 'test-instance-applyimmediately-integ', {
   testCases: [stack],
 });
+
+app.synth();

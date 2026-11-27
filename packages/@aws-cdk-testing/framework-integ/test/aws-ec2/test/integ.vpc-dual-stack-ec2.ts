@@ -81,3 +81,5 @@ const ipv4ipv6Invoke = integ.assertions.httpApiCall(`http://${testCase.instanceP
 ipv4ipv6Invoke.expect(ExpectedResult.objectLike({
   status: 200,
 }));
+
+app.synth();

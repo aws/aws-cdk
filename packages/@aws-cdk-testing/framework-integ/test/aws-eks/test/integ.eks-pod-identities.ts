@@ -79,3 +79,4 @@ new IntegTest(app, 'integ-eks-pod-identities', {
   testCases: [stack],
 });
 
+app.synth();

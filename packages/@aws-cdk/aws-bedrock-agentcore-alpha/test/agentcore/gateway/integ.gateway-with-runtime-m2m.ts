@@ -86,3 +86,5 @@ const invokeRuntime = integTest.assertions.awsApiCall('bedrock-agentcore', 'invo
 invokeRuntime.expect(integ.ExpectedResult.objectLike({
   statusCode: 200,
 }));
+
+app.synth();

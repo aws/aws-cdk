@@ -27,3 +27,5 @@ apiCall.expect(
     Body: '{"Resources":{"Bucket83908E77":{"Type":"AWS::S3::Bucket","UpdateReplacePolicy":"Retain","DeletionPolicy":"Retain"}}}',
   }),
 );
+
+app.synth();

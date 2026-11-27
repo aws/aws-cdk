@@ -64,3 +64,5 @@ new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete', {
   diffAssets: true,
   stackUpdateWorkflow: false, // will error because this stack has a cr that deletes its own resources
 });
+
+app.synth();

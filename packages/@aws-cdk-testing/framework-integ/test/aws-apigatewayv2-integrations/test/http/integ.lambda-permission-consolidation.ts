@@ -44,3 +44,5 @@ integ.assertions.httpApiCall(httpApi.apiEndpoint + '/path12').expect(ExpectedRes
   body: { message: 'Hello from /path10' },
   status: 200,
 }));
+
+app.synth();

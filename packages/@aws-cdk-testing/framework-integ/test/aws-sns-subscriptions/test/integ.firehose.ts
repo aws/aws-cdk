@@ -53,3 +53,5 @@ if (s3ApiCall instanceof AwsApiCall) {
     Resource: ['*'],
   });
 }
+
+app.synth();

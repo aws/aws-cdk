@@ -91,3 +91,5 @@ integTest.assertions.invokeFunction({
 
 new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.eventApi.httpDns });
 new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.eventApi.realtimeDns });
+
+app.synth();

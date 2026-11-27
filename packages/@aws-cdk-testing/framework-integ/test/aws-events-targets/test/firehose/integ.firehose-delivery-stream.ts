@@ -54,3 +54,5 @@ if (s3ApiCall instanceof AwsApiCall) {
 testCase.assertions.awsApiCall('EventBridge', 'disableRule', {
   Name: event.ruleName,
 });
+
+app.synth();

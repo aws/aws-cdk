@@ -16,3 +16,5 @@ new Bucket(stack, 'MyBucket', {
 new IntegTest(app, 'cdk-integ-lifecycle-expiration', {
   testCases: [stack],
 });
+
+app.synth();

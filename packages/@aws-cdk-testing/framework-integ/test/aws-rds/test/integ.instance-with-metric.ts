@@ -42,3 +42,5 @@ new IntegTest(app, 'rds-instance-with-metric-integ-test', {
     },
   },
 });
+
+app.synth();

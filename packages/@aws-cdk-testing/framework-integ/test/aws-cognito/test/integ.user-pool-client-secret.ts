@@ -60,3 +60,5 @@ const testCaseLogged = new TestStackSecretLogged(app, 'integ-user-pool-client-se
 new IntegTest(app, 'integ-user-pool-client-secret-test', {
   testCases: [testCaseNotLogged, testCaseLogged],
 });
+
+app.synth();

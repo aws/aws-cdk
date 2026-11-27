@@ -31,3 +31,5 @@ new rds.DatabaseCluster(stack, 'Database', {
 new IntegTest(app, 'instanceIdentifiersTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -58,3 +58,5 @@ const testStack = new TestStack(app, 'cdkinteg-opensearch-without-logs-resource-
 });
 
 new IntegTest(app, 'Integ', { testCases: [logGroupStack, testStack] });
+
+app.synth();

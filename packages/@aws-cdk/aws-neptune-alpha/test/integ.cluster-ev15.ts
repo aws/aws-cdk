@@ -53,3 +53,5 @@ cluster.grant(role, 'neptune-db:ReadDataViaQuery', 'neptune-db:GetEngineStatus')
 new integ.IntegTest(app, 'ClusterTest', {
   testCases: [stack],
 });
+
+app.synth();

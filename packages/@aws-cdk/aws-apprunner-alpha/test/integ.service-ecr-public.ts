@@ -28,3 +28,5 @@ new integ.IntegTest(app, 'AppRunnerEcrPublic', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
+
+app.synth();

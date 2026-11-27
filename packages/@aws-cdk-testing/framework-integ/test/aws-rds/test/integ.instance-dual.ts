@@ -41,3 +41,5 @@ new rds.DatabaseInstance(stack, 'Ipv4Instance', {
 new IntegTest(app, 'instance-dual-test', {
   testCases: [stack],
 });
+
+app.synth();

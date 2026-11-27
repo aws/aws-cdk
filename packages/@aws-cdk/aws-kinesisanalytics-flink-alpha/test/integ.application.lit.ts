@@ -31,3 +31,5 @@ flinkRuntimes.forEach((runtime) => {
 new integ.IntegTest(app, 'ApplicationTest', {
   testCases: [stack],
 });
+
+app.synth();

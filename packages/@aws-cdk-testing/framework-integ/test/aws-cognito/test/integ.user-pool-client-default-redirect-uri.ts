@@ -19,3 +19,5 @@ userpool.addClient('myuserpoolclient', {
 new IntegTest(app, 'integ-user-pool-client-default-redirect-uri-test', {
   testCases: [stack],
 });
+
+app.synth();

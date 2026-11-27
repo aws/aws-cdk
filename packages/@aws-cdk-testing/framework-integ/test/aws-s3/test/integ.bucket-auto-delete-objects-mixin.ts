@@ -67,3 +67,5 @@ new IntegTest(app, 'cdk-integ-s3-bucket-auto-delete-objects-mixin', {
   testCases: [new TestStack(app, 'cdk-s3-bucket-auto-delete-objects-mixin')],
   diffAssets: true,
 });
+
+app.synth();

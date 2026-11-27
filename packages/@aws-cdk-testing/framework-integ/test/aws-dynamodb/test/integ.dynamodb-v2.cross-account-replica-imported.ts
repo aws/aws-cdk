@@ -54,3 +54,5 @@ new dynamodb.TableV2MultiAccountReplica(replicaStack, 'Replica', {
 new IntegTest(app, 'ImportedReplicaTest', {
   testCases: [replicaStack],
 });
+
+app.synth();

@@ -59,3 +59,5 @@ test.assertions.invokeFunction({
   functionName: verifier.functionName,
   payload: JSON.stringify({ agentRuntimeId: runtime.agentRuntimeId }),
 }).expect(integ.ExpectedResult.objectLike({ Payload: '"/warmup:8080:4096"' }));
+
+app.synth();

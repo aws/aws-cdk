@@ -119,3 +119,5 @@ for (const [vpc, secondaryCidr] of secondaryBlocks) {
     ]),
   }));
 }
+
+app.synth();

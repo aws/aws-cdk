@@ -26,3 +26,5 @@ class DatabaseInstanceStack extends IntegTestBaseStack {
 }
 
 new DatabaseInstanceStack(app, 'aws-cdk-rds-fixed-username');
+
+app.synth();

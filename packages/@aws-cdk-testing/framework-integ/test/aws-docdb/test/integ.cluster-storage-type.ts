@@ -26,3 +26,5 @@ new DatabaseCluster(stack, 'DatabaseCluster', {
 new integ.IntegTest(app, 'StorageTypeClusterTest', {
   testCases: [stack],
 });
+
+app.synth();

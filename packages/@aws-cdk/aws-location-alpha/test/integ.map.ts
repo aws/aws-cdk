@@ -24,3 +24,5 @@ new integ.IntegTest(app, 'MapTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-map')],
   regions: LOCATION_SUPPORTED_REGIONS,
 });
+
+app.synth();

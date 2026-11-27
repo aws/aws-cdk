@@ -34,3 +34,5 @@ dashboard.addWidgets(widget);
 new integ.IntegTest(app, 'TableWidgetTest', {
   testCases: [stack],
 });
+
+app.synth();

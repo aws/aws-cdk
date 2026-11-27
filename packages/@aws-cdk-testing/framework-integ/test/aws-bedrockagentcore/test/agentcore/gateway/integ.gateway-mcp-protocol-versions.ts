@@ -50,3 +50,5 @@ apiCall.expect(integ.ExpectedResult.objectLike({
     },
   },
 }));
+
+app.synth();

@@ -69,3 +69,5 @@ const app = new App();
 new IntegTest(app, 'cdk-integ-dashboard-with-metric-id-and-visible', {
   testCases: [new DashboardWithMetricIdAndVisibleIntegrationTest(app, 'DashboardWithMetricIdAndVisibleIntegrationTest')],
 });
+
+app.synth();

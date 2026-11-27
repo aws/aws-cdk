@@ -107,3 +107,5 @@ rtbassertion.expect(ExpectedResult.objectLike({
     }),
   ],
 }));
+
+app.synth();

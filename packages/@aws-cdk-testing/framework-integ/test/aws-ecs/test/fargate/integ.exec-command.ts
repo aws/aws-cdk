@@ -65,3 +65,5 @@ new integ.IntegTest(app, 'exec-command-integ-test', {
     },
   },
 });
+
+app.synth();

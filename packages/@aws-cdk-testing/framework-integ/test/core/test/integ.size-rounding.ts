@@ -20,3 +20,5 @@ new lambda.CfnFunction(stack, 'Function', {
 new IntegTest(app, 'SizeRounding', {
   testCases: [stack],
 });
+
+app.synth();

@@ -72,3 +72,5 @@ const stack = new TestStack(app, 'cdk-amplify-monorepo-custom-headers');
 new IntegTest(app, 'amplify-app-monorepo-custom-headers-integ', {
   testCases: [stack],
 });
+
+app.synth();

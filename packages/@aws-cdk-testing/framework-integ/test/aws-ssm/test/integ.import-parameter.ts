@@ -46,3 +46,5 @@ new cdk.CfnOutput(stack, 'ImportedWithForceFlagOutput', {
 new IntegTest(app, 'cdk-integ-import-ssm-parameter', {
   testCases: [stack],
 });
+
+app.synth();

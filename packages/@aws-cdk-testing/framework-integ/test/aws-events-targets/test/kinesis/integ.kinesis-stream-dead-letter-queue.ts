@@ -26,3 +26,5 @@ event.addTarget(new targets.KinesisStream(stream, {
 new IntegTest(app, 'KinesisDlq', {
   testCases: [stack],
 });
+
+app.synth();

@@ -79,3 +79,5 @@ const stack = new TestStack(app, 'integ-aws-ecs-ebs-volume-initialization-rate')
 new integ.IntegTest(app, 'EBSVolumeInitializationRate', {
   testCases: [stack],
 });
+
+app.synth();

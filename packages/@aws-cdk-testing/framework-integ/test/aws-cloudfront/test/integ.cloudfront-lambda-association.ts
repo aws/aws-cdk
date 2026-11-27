@@ -59,3 +59,5 @@ new IntegTest(app, 'integ-cloudfront-lambda-association', {
     },
   },
 });
+
+app.synth();

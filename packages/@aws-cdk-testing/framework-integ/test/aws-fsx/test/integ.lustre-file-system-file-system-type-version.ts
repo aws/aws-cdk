@@ -26,3 +26,5 @@ new LustreFileSystem(stack, 'FsxLustreFileSystem', {
 new integ.IntegTest(app, 'FsxLustreFileSystemTypeVersionTest', {
   testCases: [stack],
 });
+
+app.synth();

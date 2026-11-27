@@ -61,3 +61,5 @@ const stage = new WebSocketStage(stack, 'mystage', {
 webSocketApi.addRoute('sendmessage', { integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler) });
 
 new CfnOutput(stack, 'ApiEndpoint', { value: stage.url });
+
+app.synth();

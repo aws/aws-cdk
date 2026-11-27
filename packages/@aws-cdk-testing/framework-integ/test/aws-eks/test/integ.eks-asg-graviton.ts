@@ -95,3 +95,5 @@ test.assertions.awsApiCall('CloudFormation', 'describeStacks', {
     }),
   ]),
 }));
+
+app.synth();

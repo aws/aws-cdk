@@ -23,3 +23,5 @@ distribution.grant(role2, 'cloudfront:ListInvalidations', 'cloudfront:ListDistri
 new IntegTest(stack, 'distribution-basic-test', {
   testCases: [stack],
 });
+
+app.synth();

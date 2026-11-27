@@ -49,3 +49,5 @@ const app = new cdk.App();
 new IntegTest(app, 'SearchExpressionIntegTest', {
   testCases: [new SearchExpressionStack(app, 'SearchExpressionStack')],
 });
+
+app.synth();

@@ -14,3 +14,5 @@ new inc.CfnInclude(stack, 'Stack', {
 new integ.IntegTest(app, 'DeletionPolicyTest', {
   testCases: [stack],
 });
+
+app.synth();

@@ -136,3 +136,5 @@ getManagedScalingPolicy.expect(ExpectedResult.objectLike({
     },
   },
 }));
+
+app.synth();

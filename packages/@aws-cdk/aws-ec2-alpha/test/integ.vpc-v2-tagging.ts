@@ -169,3 +169,5 @@ ipam_scope_assertion.expect(ExpectedResult.objectLike({
     }),
   ],
 }));
+
+app.synth();

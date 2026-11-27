@@ -33,3 +33,5 @@ integ.assertions.invokeFunction({
   interval: Duration.seconds(30),
   totalTimeout: Duration.minutes(90),
 });
+
+app.synth();

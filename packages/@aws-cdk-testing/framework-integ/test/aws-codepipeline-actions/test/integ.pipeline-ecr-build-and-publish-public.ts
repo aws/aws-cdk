@@ -111,3 +111,5 @@ startPipelineCall.next(
     totalTimeout: cdk.Duration.minutes(5),
   }).next(describeImagesCall),
 );
+
+app.synth();

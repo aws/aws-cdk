@@ -68,3 +68,5 @@ integTest.assertions.awsApiCall('Lambda', 'getEventSourceMapping', {
     MaximumPollers: 1000,
   },
 }));
+
+app.synth();

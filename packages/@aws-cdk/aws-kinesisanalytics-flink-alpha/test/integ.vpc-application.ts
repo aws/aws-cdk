@@ -17,3 +17,5 @@ new flink.Application(stack, 'App', {
 new integ.IntegTest(app, 'VpcTest', {
   testCases: [stack],
 });
+
+app.synth();

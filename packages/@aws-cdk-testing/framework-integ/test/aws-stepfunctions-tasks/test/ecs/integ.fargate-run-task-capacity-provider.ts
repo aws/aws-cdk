@@ -123,3 +123,5 @@ startExecutionCall.next(
     interval: Duration.seconds(10),
   }),
 );
+
+app.synth();

@@ -61,3 +61,5 @@ new integ.IntegTest(app, 'ApiKeyTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-api-key')],
   regions: LOCATION_SUPPORTED_REGIONS,
 });
+
+app.synth();

@@ -51,3 +51,5 @@ integ.assertions.awsApiCall('CloudWatch', 'listTagsForResource', {
     },
   ]),
 }));
+
+app.synth();

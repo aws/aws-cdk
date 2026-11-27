@@ -22,3 +22,5 @@ new integ.IntegTest(app, 'RouteCalculatorTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-route-calculator')],
   regions: LOCATION_SUPPORTED_REGIONS,
 });
+
+app.synth();

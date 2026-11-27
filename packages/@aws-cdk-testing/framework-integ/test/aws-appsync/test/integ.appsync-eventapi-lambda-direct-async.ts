@@ -82,3 +82,5 @@ integTest.assertions.invokeFunction({
     }],
   }),
 }));
+
+app.synth();

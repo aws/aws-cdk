@@ -56,3 +56,5 @@ const testCase = new TestStack(app, 'integ-user-pool-identity-provider-saml-stac
 new IntegTest(app, 'integ-user-pool-identity-provider-saml-test', {
   testCases: [testCase],
 });
+
+app.synth();

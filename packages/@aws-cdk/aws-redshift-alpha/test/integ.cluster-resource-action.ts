@@ -34,3 +34,5 @@ new redshift.Cluster(stack, 'Cluster', {
 new integ.IntegTest(app, 'ResourceActionInteg', {
   testCases: [stack],
 });
+
+app.synth();

@@ -111,3 +111,5 @@ message.assertAtPath('Messages.0.Body.requestContext.condition', ExpectedResult.
 message.assertAtPath('Messages.0.Body.requestPayload.status', ExpectedResult.stringLikeRegexp('OK'));
 message.assertAtPath('Messages.0.Body.responseContext.statusCode', ExpectedResult.stringLikeRegexp('200'));
 message.assertAtPath('Messages.0.Body.responsePayload', ExpectedResult.stringLikeRegexp('success'));
+
+app.synth();

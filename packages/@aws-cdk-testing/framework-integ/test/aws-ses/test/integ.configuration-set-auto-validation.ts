@@ -64,3 +64,5 @@ test.assertions.awsApiCall('SESV2', 'GetConfigurationSet', { ConfigurationSetNam
       },
     },
   }));
+
+app.synth();

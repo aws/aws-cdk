@@ -150,3 +150,5 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   })
   .assertAtPath('CanaryRuns.0.Status.State', ExpectedResult.stringLikeRegexp('PASSED'))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(5) }));
+
+app.synth();

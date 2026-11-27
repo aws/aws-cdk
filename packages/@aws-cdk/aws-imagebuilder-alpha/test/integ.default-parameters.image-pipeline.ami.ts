@@ -16,3 +16,5 @@ new imagebuilder.ImagePipeline(stack, 'ImagePipeline-AMI', { recipe: imageRecipe
 new integ.IntegTest(app, 'ImagePipelineTest-AMI-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

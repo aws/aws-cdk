@@ -26,3 +26,5 @@ testCase.assertions.awsApiCall('Firehose', 'putRecord', {
     Data: 'testData123',
   },
 });
+
+app.synth();

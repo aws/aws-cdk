@@ -40,3 +40,5 @@ new IntegTest(
     testCases: [stack],
   },
 );
+
+app.synth();

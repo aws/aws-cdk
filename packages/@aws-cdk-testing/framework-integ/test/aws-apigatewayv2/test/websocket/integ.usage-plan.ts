@@ -78,3 +78,5 @@ new RateLimitedApiKey(stack, 'RateLimitedApiKey', {
 new integ.IntegTest(app, 'WebSocketUsagePlanInteg', {
   testCases: [stack],
 });
+
+app.synth();

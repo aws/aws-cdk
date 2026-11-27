@@ -36,3 +36,5 @@ new Instance(stack, 'Instance', {
 new IntegTest(app, 'Ec2InstancePlacementGroup', {
   testCases: [stack],
 });
+
+app.synth();

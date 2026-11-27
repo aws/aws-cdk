@@ -43,3 +43,5 @@ integTest.assertions.awsApiCall('elbv2', 'describeTargetGroupAttributes', {
     },
   ]),
 }));
+
+app.synth();

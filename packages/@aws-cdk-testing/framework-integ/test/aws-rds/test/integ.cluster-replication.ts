@@ -69,3 +69,5 @@ integTest.assertions.awsApiCall('RDS', 'describeDBClusters', {
   'DBClusters.0.ReplicationSourceIdentifier',
   ExpectedResult.stringLikeRegexp(primaryCluster.clusterArn),
 );
+
+app.synth();

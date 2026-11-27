@@ -69,3 +69,5 @@ const stack = new TestStack(app, 'resource-policy-stack', {});
 new IntegTest(app, 'resource-policy-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

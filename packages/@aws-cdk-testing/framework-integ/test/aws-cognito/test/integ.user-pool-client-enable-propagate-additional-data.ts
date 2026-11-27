@@ -23,3 +23,5 @@ const testCase = new TestStack(app, 'integ-user-pool-client-enable-propagate-add
 new IntegTest(app, 'integ-user-pool-client-enable-propagate-additional-data-test', {
   testCases: [testCase],
 });
+
+app.synth();

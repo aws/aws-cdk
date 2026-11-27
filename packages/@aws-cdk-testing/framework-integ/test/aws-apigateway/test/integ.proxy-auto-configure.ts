@@ -72,3 +72,5 @@ integ.assertions.httpApiCall(stack.rootProxyApi.deploymentStage.urlForPath('/foo
   status: 200,
   body: { path: '/echo/foo/bar' },
 }));
+
+app.synth();

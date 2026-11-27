@@ -112,3 +112,5 @@ const requestorStack = new RequestorStack(app, 'requestor-stack', {
 new IntegTest(app, 'VpcpcCrossAccountInteg', {
   testCases: [acceptorStack, requestorStack],
 });
+
+app.synth();

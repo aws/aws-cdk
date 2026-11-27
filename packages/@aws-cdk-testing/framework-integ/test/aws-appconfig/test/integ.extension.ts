@@ -128,3 +128,5 @@ new IntegTest(app, 'appconfig-extension', {
     },
   },
 });
+
+cdkApp.synth();

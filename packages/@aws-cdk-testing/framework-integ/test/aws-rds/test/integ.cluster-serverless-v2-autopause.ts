@@ -27,3 +27,5 @@ const app = new App();
 new IntegTest(app, 'integ-test-autopause', {
   testCases: [new TestStack(app, 'integ-aurora-serverlessv2-cluster-autopause')],
 });
+
+app.synth();

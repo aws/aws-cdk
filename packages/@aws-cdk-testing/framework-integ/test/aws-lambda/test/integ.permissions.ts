@@ -41,3 +41,5 @@ const version1 = new lambda.Version(stack, 'v1', {
 });
 
 fn.grantInvokeVersion(role, version1);
+
+app.synth();

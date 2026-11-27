@@ -36,3 +36,5 @@ new redshift.Cluster(stack, 'Cluster', {
 new integ.IntegTest(app, 'AzRelocationClusterStackInteg', {
   testCases: [stack],
 });
+
+app.synth();

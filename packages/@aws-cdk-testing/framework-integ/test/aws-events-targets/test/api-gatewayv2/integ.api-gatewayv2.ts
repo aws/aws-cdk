@@ -30,3 +30,5 @@ integTest.assertions.awsApiCall('EventBridge', 'listTargetsByRule', {
     },
   ],
 }));
+
+app.synth();

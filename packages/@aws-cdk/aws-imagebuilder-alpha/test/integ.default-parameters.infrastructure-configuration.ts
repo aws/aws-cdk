@@ -10,3 +10,5 @@ new imagebuilder.InfrastructureConfiguration(stack, 'InfrastructureConfiguration
 new integ.IntegTest(app, 'InfrastructureConfigurationTest', {
   testCases: [stack],
 });
+
+app.synth();

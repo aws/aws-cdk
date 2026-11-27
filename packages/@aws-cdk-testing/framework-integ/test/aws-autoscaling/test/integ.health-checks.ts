@@ -54,3 +54,5 @@ const stack = new TestStack(app, 'integ-health-checks');
 new IntegTest(app, 'AutoScalingGroupHealthChecks', {
   testCases: [stack],
 });
+
+app.synth();

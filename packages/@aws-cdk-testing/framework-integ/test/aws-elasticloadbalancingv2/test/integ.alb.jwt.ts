@@ -102,3 +102,4 @@ new integ.IntegTest(app, 'IntegTestAlbJwt', {
   testCases: [testCase],
 });
 
+app.synth();

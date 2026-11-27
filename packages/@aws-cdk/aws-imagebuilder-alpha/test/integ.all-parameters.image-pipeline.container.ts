@@ -89,3 +89,5 @@ containerImagePipeline.onImagePipelineAutoDisabled('ImagePipelineAutoDisabledTri
 new integ.IntegTest(app, 'ImagePipelineTest-Container-AllParameters', {
   testCases: [stack],
 });
+
+app.synth();

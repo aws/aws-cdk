@@ -68,3 +68,5 @@ new cdk.CfnOutput(stack, 'PetsURL', {
 new IntegTest(app, 'inline-api-definition', {
   testCases: [stack],
 });
+
+app.synth();

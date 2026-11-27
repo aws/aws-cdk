@@ -110,3 +110,5 @@ new integ.IntegTest(app, 'aws-cdk-eks-grant-access-with-type-integ', {
     },
   },
 });
+
+app.synth();

@@ -25,3 +25,5 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 new integ.IntegTest(app, 'EvaluateExpressionArm64Test', {
   testCases: [stack],
 });
+
+app.synth();

@@ -66,3 +66,5 @@ result.expect(ExpectedResult.objectLike({
   interval: cdk.Duration.seconds(10),
   totalTimeout: cdk.Duration.minutes(2),
 });
+
+app.synth();

@@ -88,3 +88,5 @@ new integ.IntegTest(app, 'database-proxy-integ-test', {
     },
   },
 });
+
+app.synth();

@@ -51,3 +51,5 @@ new DatabaseInstance(stack, 'DisabledInstance', {
 new integ.IntegTest(app, 'AutoMinorVersionUpgradeInstanceInteg', {
   testCases: [stack],
 });
+
+app.synth();

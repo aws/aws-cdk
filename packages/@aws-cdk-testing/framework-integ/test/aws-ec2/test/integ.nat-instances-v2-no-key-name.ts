@@ -33,3 +33,5 @@ const stack = new NatInstanceNoKeyNameStack(app, 'aws-cdk-vpc-nat-instances-v2-n
 new IntegTest(app, 'nat-instance-v2-no-key-name-integ-test', {
   testCases: [stack],
 });
+
+app.synth();

@@ -49,3 +49,5 @@ driftRule.onComplianceChange('ComplianceChange', {
 new integ.IntegTest(app, 'aws-cdk-config-rule-integ', {
   testCases: [stack],
 });
+
+app.synth();

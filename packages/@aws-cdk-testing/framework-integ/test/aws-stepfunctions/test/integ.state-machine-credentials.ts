@@ -34,3 +34,5 @@ new sfn.StateMachine(stack, 'StateMachineWithJsonPathCredentials', {
 });
 
 new IntegTest(app, 'StateMachineCredentials', { testCases: [stack] });
+
+app.synth();

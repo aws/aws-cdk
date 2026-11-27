@@ -82,3 +82,5 @@ integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
 integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
   Id: distributionDualstack.distributionId,
 }).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(true));
+
+app.synth();

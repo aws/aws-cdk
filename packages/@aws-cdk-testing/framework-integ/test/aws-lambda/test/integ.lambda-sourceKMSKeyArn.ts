@@ -113,3 +113,5 @@ class TestStack extends Stack {
 new IntegTest(app, 'SourceKMSKeyArn', {
   testCases: [new TestStack(app, 'CMCMK-Stack')],
 });
+
+app.synth();

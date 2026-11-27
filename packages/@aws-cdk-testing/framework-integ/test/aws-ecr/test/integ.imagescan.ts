@@ -19,3 +19,5 @@ new cdk.CfnOutput(stack, 'RepositoryURI', {
 new IntegTest(app, 'cdk-integ-ecr-image-scan', {
   testCases: [stack],
 });
+
+app.synth();

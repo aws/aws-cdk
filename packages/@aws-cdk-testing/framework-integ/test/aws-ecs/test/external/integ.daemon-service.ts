@@ -29,3 +29,5 @@ integTest.assertions.awsApiCall('ECS', 'describeServices', {
   services: [service.serviceName],
 })
   .assertAtPath('services.0.schedulingStrategy', ExpectedResult.stringLikeRegexp('DAEMON'));
+
+app.synth();

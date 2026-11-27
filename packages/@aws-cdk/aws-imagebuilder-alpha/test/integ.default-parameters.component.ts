@@ -30,3 +30,5 @@ new imagebuilder.Component(stack, 'Component', {
 new integ.IntegTest(app, 'ComponentTest-DefaultParameters', {
   testCases: [stack],
 });
+
+app.synth();

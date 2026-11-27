@@ -25,3 +25,5 @@ new integ.IntegTest(app, 'integ-test-custom-resource-config-logGroup', {
   testCases: [stack],
   diffAssets: false,
 });
+
+app.synth();

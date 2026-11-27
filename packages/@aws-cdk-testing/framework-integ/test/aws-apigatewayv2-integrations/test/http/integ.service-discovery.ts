@@ -25,3 +25,5 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 new CfnOutput(stack, 'Endpoint', {
   value: httpEndpoint.url!,
 });
+
+app.synth();

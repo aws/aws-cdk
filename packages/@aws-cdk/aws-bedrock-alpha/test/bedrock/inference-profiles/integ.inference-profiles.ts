@@ -115,3 +115,5 @@ new IntegTest(app, 'BedrockInferenceProfilesTest', {
     },
   },
 });
+
+app.synth();

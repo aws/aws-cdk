@@ -35,3 +35,5 @@ new ec2.LaunchTemplate(stack, 'LTWithVolumeInitRate', {
 new integ.IntegTest(app, 'launchtemplate-volume-initialization-rate-integ', {
   testCases: [stack],
 });
+
+app.synth();

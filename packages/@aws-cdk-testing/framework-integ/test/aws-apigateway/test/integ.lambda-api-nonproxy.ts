@@ -43,3 +43,5 @@ const testCase = new LambdaApiIntegrationOptionsNonProxyIntegrationStack(app);
 new IntegTest(app, 'lambda-non-proxy-integration', {
   testCases: [testCase],
 });
+
+app.synth();

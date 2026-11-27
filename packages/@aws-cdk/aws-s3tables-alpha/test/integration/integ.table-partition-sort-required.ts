@@ -102,3 +102,4 @@ getMetadataLocation.expect(
   }),
 );
 
+app.synth();

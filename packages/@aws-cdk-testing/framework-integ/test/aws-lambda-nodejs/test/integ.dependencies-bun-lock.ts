@@ -48,3 +48,5 @@ response.expect(
     Payload: 'null',
   }),
 );
+
+app.synth();

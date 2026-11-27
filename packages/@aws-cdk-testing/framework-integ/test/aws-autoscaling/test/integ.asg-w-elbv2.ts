@@ -97,3 +97,5 @@ new integ.IntegTest(app, 'LambdaTest', {
     new ElbV2AsgAtgStack(app, 'aws-cdk-asg-atg-integ'),
   ],
 });
+
+app.synth();

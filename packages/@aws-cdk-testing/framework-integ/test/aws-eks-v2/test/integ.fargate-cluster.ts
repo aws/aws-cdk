@@ -35,3 +35,5 @@ new integ.IntegTest(app, 'eks-fargate-cluster', {
   testCases: [stack],
   diffAssets: false,
 });
+
+app.synth();

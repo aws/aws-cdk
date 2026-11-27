@@ -129,4 +129,7 @@ class DeployStack extends NestedStack {
   }
 }
 
-new RootStack(new App());
+const app = new App();
+new RootStack(app);
+
+app.synth();

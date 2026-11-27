@@ -22,3 +22,4 @@ new IntegTest(app, 'instance-ca-certificate-integ-test', {
   testCases: [stack],
 });
 
+app.synth();

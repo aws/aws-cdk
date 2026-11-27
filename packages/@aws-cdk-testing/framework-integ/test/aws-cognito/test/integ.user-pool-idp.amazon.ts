@@ -41,3 +41,5 @@ new CfnOutput(stack, 'SignInLink', {
 new IntegTest(app, 'integ-user-pool-idp-amazon-test', {
   testCases: [stack],
 });
+
+app.synth();

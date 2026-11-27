@@ -40,3 +40,5 @@ new cdk.CfnOutput(stack, 'BooksURL', {
 new IntegTest(app, 'restapi-fromdefinition', {
   testCases: [stack],
 });
+
+app.synth();

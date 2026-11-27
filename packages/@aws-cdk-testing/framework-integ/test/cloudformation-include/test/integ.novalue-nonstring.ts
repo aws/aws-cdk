@@ -23,3 +23,5 @@ new cdk.CfnOutput(stack, 'BucketName', {
 new IntegTest(app, 'CfnIncludeNoValueBooleanTest', {
   testCases: [stack],
 });
+
+app.synth();

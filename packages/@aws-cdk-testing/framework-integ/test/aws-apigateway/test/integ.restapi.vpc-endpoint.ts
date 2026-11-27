@@ -161,3 +161,5 @@ testCase.testFunctions.forEach((testFunction) => {
     }),
   );
 });
+
+app.synth();

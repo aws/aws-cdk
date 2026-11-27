@@ -71,3 +71,5 @@ tcpWithUdpListener.addTargetGroups('TcpWithUdpTargetGroup', tcpWithUdpTargetGrou
 new integ.IntegTest(app, 'NlbEnablePrefixForIpv6NatStackTest', {
   testCases: [stack],
 });
+
+app.synth();

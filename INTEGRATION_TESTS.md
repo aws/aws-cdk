@@ -101,7 +101,14 @@ const fn = new lambda.Function(stack, 'MyLambda', {
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
+
+app.synth();
 ```
+
+The test ends with `app.synth()`. An integration test is a complete CDK app, so it synthesizes
+explicitly instead of relying on the App synthesizing itself when the process exits. Call
+`synth()` on every App the test creates, after the `IntegTest` and its assertions. Lint rejects
+an `integ.*.ts` file without the call.
 
 To run the test you would run:
 

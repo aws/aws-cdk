@@ -19,3 +19,5 @@ new s3.Bucket(stack, 'MyBucket', {
 new IntegTest(app, 'cdk-integ-intelligent-tiering', {
   testCases: [stack],
 });
+
+app.synth();

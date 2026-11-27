@@ -28,3 +28,5 @@ new ecr.Repository(stack, 'MutableRepoWithExclusions', {
 new IntegTest(app, 'cdk-ecr-tag-mutability-exclusion-test', {
   testCases: [stack],
 });
+
+app.synth();

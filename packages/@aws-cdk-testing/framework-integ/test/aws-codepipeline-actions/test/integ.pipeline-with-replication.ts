@@ -66,3 +66,5 @@ new IntegTest(app, 'codepipeline-integ-test', {
   testCases: [stack2],
   stackUpdateWorkflow: false,
 });
+
+app.synth();

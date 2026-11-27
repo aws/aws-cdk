@@ -68,3 +68,5 @@ integ.assertions.awsApiCall('elastic-load-balancing-v2', 'describeLoadBalancers'
     }),
   ],
 }));
+
+app.synth();

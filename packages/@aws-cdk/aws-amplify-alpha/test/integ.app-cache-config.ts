@@ -24,3 +24,5 @@ new IntegTest(app, 'amplify-app-cache-cofig-integ', {
   enableLookups: true,
   stackUpdateWorkflow: false,
 });
+
+app.synth();

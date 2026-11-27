@@ -124,3 +124,4 @@ new integ.IntegTest(app, 'AlbDualstackWithoutPublicIpv4', {
   testCases: [stack],
 });
 
+app.synth();

@@ -22,3 +22,5 @@ const stack = new TestStack(app, 'cdk-amplify-branch-skew-protection');
 new IntegTest(app, 'amplify-branch-skew-protection', {
   testCases: [stack],
 });
+
+app.synth();

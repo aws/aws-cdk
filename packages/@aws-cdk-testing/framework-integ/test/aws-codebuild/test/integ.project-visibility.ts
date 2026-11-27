@@ -31,3 +31,4 @@ new IntegTest(app, 'Visibility', {
   stackUpdateWorkflow: true,
 });
 
+app.synth();

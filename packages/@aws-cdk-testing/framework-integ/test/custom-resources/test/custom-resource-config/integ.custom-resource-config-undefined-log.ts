@@ -26,3 +26,4 @@ new integ.IntegTest(app, 'integ-test-custom-resource-config-undefined-log', {
   diffAssets: false,
 });
 
+app.synth();

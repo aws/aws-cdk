@@ -25,3 +25,5 @@ for (const p of params) {
 new IntegTest(app, 'cdk-integ-ssm-parameter-arns', {
   testCases: [stack],
 });
+
+app.synth();

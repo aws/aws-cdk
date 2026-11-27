@@ -60,3 +60,5 @@ new cdk.CfnOutput(stack, 'ApplicationLogGroupArn', {
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeApplicationLogGroupTest', {
   testCases: [stack],
 });
+
+app.synth();
