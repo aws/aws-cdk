@@ -6,6 +6,7 @@ import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceTy
 import type { ApplicationListener } from '../../aws-elasticloadbalancingv2';
 import { ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
@@ -1217,6 +1218,103 @@ describe('auto scaling group', () => {
         }],
       });
     }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);
+  });
+
+  test('can specify a kmsKey for an encrypted block device on a launch template', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+    const vpc = mockVpc(stack);
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      machineImage: new ec2.AmazonLinuxImage(),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+          encrypted: true,
+          kmsKey: key,
+        }),
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        BlockDeviceMappings: [{
+          DeviceName: 'ebs',
+          Ebs: {
+            Encrypted: true,
+            VolumeSize: 15,
+            VolumeType: 'gp3',
+            KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        }],
+      },
+    });
+  });
+
+  test('does not render KmsKeyId when kmsKey is not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      machineImage: new ec2.AmazonLinuxImage(),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      vpc,
+      blockDevices: [{
+        deviceName: 'ebs',
+        volume: autoscaling.BlockDeviceVolume.ebs(15, {
+          volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+          encrypted: true,
+        }),
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        BlockDeviceMappings: [{
+          DeviceName: 'ebs',
+          Ebs: {
+            Encrypted: true,
+            KmsKeyId: Match.absent(),
+          },
+        }],
+      },
+    });
+  });
+
+  test('throws if kmsKey is specified on a launch configuration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN / THEN
+    // Launch configurations have no KmsKeyId property, so the key would be dropped silently.
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        machineImage: new ec2.AmazonLinuxImage(),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        vpc,
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: autoscaling.BlockDeviceVolume.ebs(15, {
+            volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+            encrypted: true,
+            kmsKey: key,
+          }),
+        }],
+      });
+    }).toThrow(/'kmsKey' is not supported for block devices of a launch configuration/);
   });
 
   test('throws if throughput / iops ratio is greater than 0.25', () => {
