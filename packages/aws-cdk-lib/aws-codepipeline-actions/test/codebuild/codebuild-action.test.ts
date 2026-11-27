@@ -5,7 +5,7 @@ import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
-import { App, CfnParameter, SecretValue, Stack } from '../../../core';
+import { App, CfnParameter, PhysicalName, SecretValue, Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -310,7 +310,7 @@ describe('CodeBuild Action', () => {
       const PASS_ROLE_CONDITION = { 'StringEquals': { 'iam:PassedToService': 'codebuild.amazonaws.com' } };
 
       // Builds a single-stack pipeline whose Build stage holds one CodeBuild action.
-      function setup(roleFactory?: (stack: Stack) => iam.IRoleRef, pipelineProps: Partial<codepipeline.PipelineProps> = {}) {
+      function setup(roleFactory?: (stack: Stack) => iam.IRoleRef & iam.IGrantable, pipelineProps: Partial<codepipeline.PipelineProps> = {}) {
         const stack = new Stack();
         const serviceRoleOverride = roleFactory?.(stack);
         const project = new codebuild.PipelineProject(stack, 'CodeBuild');
@@ -391,7 +391,21 @@ describe('CodeBuild Action', () => {
         expectPassRoleOnlyOn(template, ROLE_ARN, /^PipelineRole/);
       });
 
-      test('when provided as a role in the same stack: references the role ARN and adds nothing to the role', () => {
+      // All actions in the policies attached to `role`, with array Actions flattened.
+      // With `s3Resources`, returns instead the resources of the statements that grant s3 actions.
+      function roleActions(template: Template, stack: Stack, role: iam.Role, s3Resources = false): any[] {
+        const roleRef = { 'Ref': stack.getLogicalId(role.node.defaultChild as any) };
+        const statements = Object.values(template.findResources('AWS::IAM::Policy', { Properties: { Roles: Match.arrayWith([roleRef]) } }))
+          .flatMap(policy => policy.Properties.PolicyDocument.Statement);
+        if (s3Resources) {
+          return statements
+            .filter((statement: any) => [statement.Action].flat().some((action: string) => action.startsWith('s3:')))
+            .flatMap((statement: any) => [statement.Resource].flat());
+        }
+        return statements.flatMap((statement: any) => [statement.Action].flat());
+      }
+
+      test('when provided as a role in the same stack: references the role ARN and grants it only the artifact bucket', () => {
         const { stack, serviceRoleOverride, template } = setup(s => new iam.Role(s, 'OverrideRole', {
           assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
         }));
@@ -399,16 +413,101 @@ describe('CodeBuild Action', () => {
 
         expectBuildConfiguration(template, Match.objectLike({ 'ServiceRoleArnOverride': roleArn }));
         expectPassRoleOnlyOn(template, roleArn, /^PipelineBuildCodeBuildCodePipelineActionRole/);
-        // CDK grants nothing to the override role itself
-        template.resourcePropertiesCountIs('AWS::IAM::Policy', {
-          'Roles': Match.arrayWith([{ 'Ref': stack.getLogicalId((serviceRoleOverride as iam.Role).node.defaultChild as any) }]),
-        }, 0);
+        // the action has no outputs, so the override role can read the artifact bucket and its key, and nothing else
+        expect(new Set(roleActions(template, stack, serviceRoleOverride as iam.Role))).toEqual(new Set([
+          's3:GetObject*', 's3:GetBucket*', 's3:List*', 'kms:Decrypt', 'kms:DescribeKey',
+        ]));
+      });
+
+      test('when provided on an action with outputs: grants the override role read/write on the artifact bucket and its key', () => {
+        const stack = new Stack();
+        const overrideRole = new iam.Role(stack, 'OverrideRole', { assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com') });
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          crossAccountKeys: true,
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(stack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                outputs: [new codepipeline.Artifact()],
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                serviceRoleOverride: overrideRole,
+              })],
+            },
+          ],
+        });
+
+        const actions = roleActions(Template.fromStack(stack), stack, overrideRole);
+        expect(actions).toEqual(expect.arrayContaining(['s3:GetObject*', 's3:PutObject', 'kms:Decrypt', 'kms:Encrypt']));
+      });
+
+      test('cross-region: grants the override role the replication bucket in the action\'s region', () => {
+        const app = new App();
+        const pipelineStack = new Stack(app, 'PipelineStack', { env: { account: '123456789012', region: 'us-east-1' } });
+        const projectStack = new Stack(app, 'ProjectStack', { env: { account: '123456789012', region: 'eu-west-1' } });
+        const project = new codebuild.PipelineProject(projectStack, 'Project', { projectName: 'MyProject' });
+        const overrideRole = new iam.Role(projectStack, 'OverrideRole', {
+          assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+          roleName: PhysicalName.GENERATE_IF_NEEDED,
+        });
+        const replicationBucket = new s3.Bucket(projectStack, 'ReplicationBucket', { bucketName: 'my-replication-bucket' });
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          crossRegionReplicationBuckets: { 'eu-west-1': replicationBucket },
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(pipelineStack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                project,
+                serviceRoleOverride: overrideRole,
+              })],
+            },
+          ],
+        });
+
+        Template.fromStack(projectStack).hasResourceProperties('AWS::IAM::Policy', {
+          'Roles': [{ 'Ref': projectStack.getLogicalId(overrideRole.node.defaultChild as any) }],
+          'PolicyDocument': {
+            'Statement': Match.arrayWith([Match.objectLike({
+              'Action': Match.arrayWith(['s3:GetObject*']),
+              'Resource': Match.arrayWith([{ 'Fn::GetAtt': [projectStack.getLogicalId(replicationBucket.node.defaultChild as any), 'Arn'] }]),
+            })]),
+          },
+        });
+        // and not the pipeline's bucket in us-east-1, which the build never reads
+        const s3Resources = roleActions(Template.fromStack(projectStack), projectStack, overrideRole, true);
+        expect(s3Resources.length).toBeGreaterThan(0);
+        for (const resource of s3Resources) {
+          expect(JSON.stringify(resource)).toContain(projectStack.getLogicalId(replicationBucket.node.defaultChild as any));
+        }
       });
 
       test('when not provided: no ServiceRoleArnOverride and no CodeBuild PassRole', () => {
         const { template } = setup();
 
-        expectBuildConfiguration(template, Match.not(Match.objectLike({ 'ServiceRoleArnOverride': Match.anyValue() })));
+        expectBuildConfiguration(template, Match.objectLike({ 'ServiceRoleArnOverride': Match.absent() }));
         expect(policyActions(template)).not.toContain('iam:PassRole');
       });
 
@@ -456,6 +555,15 @@ describe('CodeBuild Action', () => {
         // The grant lands on the action role CDK generates in the project's account, which CodePipeline
         // assumes to start the build.
         expectPassRoleOnlyOn(Template.fromStack(projectStack), ROLE_ARN, /^PipelineStackPipeline[0-9A-F]+BuildCodeBuildActionRole/);
+        // the override role is in the project's account, so the artifact bucket and its key in the
+        // pipeline's account grant it through their resource policies
+        const overridePrincipal = Match.objectLike({ 'Principal': { 'AWS': ROLE_ARN }, 'Action': Match.arrayWith(['s3:GetObject*']) });
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+          'PolicyDocument': { 'Statement': Match.arrayWith([overridePrincipal]) },
+        });
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::KMS::Key', {
+          'KeyPolicy': { 'Statement': Match.arrayWith([Match.objectLike({ 'Principal': { 'AWS': ROLE_ARN }, 'Action': Match.arrayWith(['kms:Decrypt']) })]) },
+        });
         // IAM only allows passing a role to a service in the same account as the role, so a PassRole
         // grant on the pipeline role in the pipeline's account could never be used here.
         // https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html
@@ -610,12 +718,19 @@ describe('CodeBuild Action', () => {
         return stack;
       }
 
-      test('imported project: accepts a role from the project\'s account', () => {
+      test('imported project: accepts a role from the project\'s account and grants it the artifact bucket', () => {
         const stack = addImportedProjectAction('234567890123');
+        const template = Template.fromStack(stack);
+        const roleArn = 'arn:aws:iam::234567890123:role/MyCodeBuildRole';
 
-        expectBuildConfiguration(Template.fromStack(stack), Match.objectLike({
-          'ServiceRoleArnOverride': 'arn:aws:iam::234567890123:role/MyCodeBuildRole',
-        }));
+        expectBuildConfiguration(template, Match.objectLike({ 'ServiceRoleArnOverride': roleArn }));
+        // the role is in the project's account, so the bucket and key in the pipeline's account grant it
+        template.hasResourceProperties('AWS::S3::BucketPolicy', {
+          'PolicyDocument': { 'Statement': Match.arrayWith([Match.objectLike({ 'Principal': { 'AWS': roleArn } })]) },
+        });
+        template.hasResourceProperties('AWS::KMS::Key', {
+          'KeyPolicy': { 'Statement': Match.arrayWith([Match.objectLike({ 'Principal': { 'AWS': roleArn } })]) },
+        });
       });
 
       test('imported project: fails for a role from the pipeline\'s account', () => {

@@ -462,16 +462,16 @@ The role must be in the same account as the project, and its trust policy must a
 than the pipeline, create the role in the project's stack with
 `roleName: PhysicalName.GENERATE_IF_NEEDED`.
 
-CDK grants nothing else to the override role, and the action stops granting the project's
-role access to the pipeline artifact bucket, its source connections and CodeCommit
-repositories, and its environment variable secrets, so a shared project's role does not
-collect those permissions for builds it never runs. Other actions that use the same project
-without an override still grant them to the project's role as before. Grant the override role
-what the build needs, for example:
+CDK grants the override role access to the pipeline artifact bucket the action uses and its
+KMS key: read, or read/write if the action has outputs. For a cross-region action this is the
+replication bucket in the action's region. A role imported with `mutable: false` gets no
+grant, so grant it the bucket yourself. CDK grants nothing else to the override role, and
+the action stops granting the project's role access to the artifact bucket, its source
+connections and CodeCommit repositories, and its environment variable secrets, so a shared
+project's role does not collect those permissions for builds it never runs. Other actions that
+use the same project without an override still grant them to the project's role as before.
+Grant the override role everything else the build needs, for example:
 
-* the artifact bucket in the action's region: read, or read/write if the action has outputs.
-  For a cross-region action this is `pipeline.crossRegionSupport[region].replicationBucket`,
-  which exists only after the action is added to the pipeline;
 * encrypt/decrypt on the project's own `encryptionKey`, if it has one;
 * CloudWatch Logs for `/aws/codebuild/<project name>`, or the project's `logging` destinations;
 * test report groups, if the buildspec publishes reports;
@@ -499,13 +499,12 @@ const connectionArn = 'arn:aws:codeconnections:us-east-1:123456789012:connection
 const buildRole = new iam.Role(this, 'BuildRole', {
   assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
 });
-
-// Read the input artifacts (use grantReadWrite if the action has outputs). If the
-// project has its own encryptionKey, also call key.grantEncryptDecrypt(buildRole).
-pipeline.artifactBucket.grantRead(buildRole);
+// CDK grants the artifact bucket. If the project has its own encryptionKey,
+// also call key.grantEncryptDecrypt(buildRole).
 
 const partition = project.stack.partition;
-const { account, region } = project.env;
+const account = project.env.account;
+const region = project.env.region;
 
 // Write the build logs
 const logGroupArn = `arn:${partition}:logs:${region}:${account}:log-group:/aws/codebuild/${project.projectName}`;

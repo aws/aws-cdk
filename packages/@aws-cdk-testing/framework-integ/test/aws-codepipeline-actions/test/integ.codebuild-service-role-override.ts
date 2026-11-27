@@ -69,8 +69,6 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-pipeline.artifactBucket.grantRead(buildRole);
-
 const logGroupArn = stack.formatArn({
   service: 'logs',
   resource: 'log-group',
