@@ -882,7 +882,7 @@
          "Arn"
         ]
        },
-       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+       "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\",\\\"eks:kube-proxy-windows\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
       ]
      ]
     },
@@ -1098,7 +1098,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/97ee6a914d2fbfe5bb80a0b85c8c881434402abf573fc51d19280f912afe39ae.json"
+       "/badb2bad53a1136074ee54b6a874e46cc8f533f5291527046b33465494aa5e85.json"
       ]
      ]
     }
@@ -1148,7 +1148,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/209f028b66d57e553f57e8761781082c5b020618a7e1387ba45d8a368c758566.json"
+       "/3a31fe8e39f6308a01107e1703f17d752581a9ee30feb5a4be3b0fbad8420911.json"
       ]
      ]
     }
@@ -1160,6 +1160,39 @@
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
     "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsAuthMapRolesValueB0604A45": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesObjectValue",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkeksclusterwindowsngtestawscdkawseksKubectlProviderframeworkonEventCEC3AFF7Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "ObjectType": "configmap",
+    "ObjectName": "aws-auth",
+    "ObjectNamespace": "kube-system",
+    "JsonPath": ".data.mapRoles",
+    "TimeoutSeconds": 300
+   },
+   "DependsOn": [
+    "ClusterAwsAuthmanifestFE51F8AE",
+    "ClusterKubectlReadyBarrier200052AF",
+    "ClusterNodegroupWindowsNodegroupNodeGroupRoleD51D4054",
+    "ClusterNodegroupWindowsNodegroup4D72A84B"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1221,6 +1254,14 @@
        ]
       }
      ]
+    ]
+   }
+  },
+  "AwsAuthMapRoles": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsAuthMapRolesValueB0604A45",
+     "Value"
     ]
    }
   }
