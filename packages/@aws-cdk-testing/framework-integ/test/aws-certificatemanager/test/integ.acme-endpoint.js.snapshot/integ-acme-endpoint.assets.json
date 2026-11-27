@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "278a71bce7ebc2e173aca9d215142d15eeca9c6344891a6ddaea777a9f7a6f46": {
+      "displayName": "integ-acme-endpoint Template",
+      "source": {
+        "path": "integ-acme-endpoint.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c02ac5fc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "278a71bce7ebc2e173aca9d215142d15eeca9c6344891a6ddaea777a9f7a6f46.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

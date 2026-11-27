@@ -1,0 +1,124 @@
+{
+  "/integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (packages/aws-cdk-lib/core/lib/app.js:164:51)",
+        "Object.onceWrapper (node:events:631:26)",
+        "process.emit (node:events:509:28)"
+      ]
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9"
+    }
+  ]
+}
