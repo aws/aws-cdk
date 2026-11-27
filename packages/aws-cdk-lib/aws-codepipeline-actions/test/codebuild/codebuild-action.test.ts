@@ -1,9 +1,11 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
+import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
+import type { CfnElement } from '../../../core';
 import { App, SecretValue, Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
@@ -11,6 +13,203 @@ import * as cpactions from '../../lib';
 
 describe('CodeBuild Action', () => {
   describe('CodeBuild action', () => {
+    test('pipeline depends on the policy for a shared action role', () => {
+      const stack = new Stack(new App(), 'Stack');
+      const sourceActionRole = new iam.Role(stack, 'SourceActionRole', {
+        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      });
+      const buildActionRole = new iam.Role(stack, 'BuildActionRole', {
+        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      });
+      const repository = new codecommit.Repository(stack, 'Repository', { repositoryName: 'repository' });
+      const sourceOutput = new codepipeline.Artifact();
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'Source',
+              repository,
+              output: sourceOutput,
+              role: sourceActionRole,
+              trigger: cpactions.CodeCommitTrigger.POLL,
+            })],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'BuildOne',
+                input: sourceOutput,
+                project: new codebuild.PipelineProject(stack, 'BuildProjectOne'),
+                role: buildActionRole,
+              }),
+              new cpactions.CodeBuildAction({
+                actionName: 'BuildTwo',
+                input: sourceOutput,
+                project: new codebuild.PipelineProject(stack, 'BuildProjectTwo'),
+                role: buildActionRole,
+              }),
+            ],
+          },
+        ],
+      });
+
+      const sourceRolePolicy = sourceActionRole.node.tryFindChild('DefaultPolicy');
+      const buildRolePolicy = buildActionRole.node.tryFindChild('DefaultPolicy');
+      if (!sourceRolePolicy?.node.defaultChild || !buildRolePolicy?.node.defaultChild) {
+        throw new Error('expected both action roles to have a default policy');
+      }
+      const sourceRolePolicyId = stack.getLogicalId(sourceRolePolicy.node.defaultChild as CfnElement);
+      const buildRolePolicyId = stack.getLogicalId(buildRolePolicy.node.defaultChild as CfnElement);
+
+      const template = Template.fromStack(stack);
+      template.hasResource('AWS::CodePipeline::Pipeline', {
+        DependsOn: Match.arrayWith([sourceRolePolicyId]),
+      });
+      template.hasResource('AWS::CodePipeline::Pipeline', {
+        DependsOn: Match.arrayWith([buildRolePolicyId]),
+      });
+    });
+
+    test('pipeline depends on the policy for a generated CodeBuild action role', () => {
+      const stack = new Stack(new App(), 'Stack');
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'Source',
+              repository: new codecommit.Repository(stack, 'Repository', { repositoryName: 'repository' }),
+              output: sourceOutput,
+              trigger: cpactions.CodeCommitTrigger.POLL,
+            })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new cpactions.CodeBuildAction({
+              actionName: 'Build',
+              input: sourceOutput,
+              project: new codebuild.PipelineProject(stack, 'BuildProject'),
+            })],
+          },
+        ],
+      });
+
+      const buildRolePolicyId = getPolicyLogicalId(stack, 'Pipeline/Build/Build/CodePipelineActionRole/DefaultPolicy');
+      Template.fromStack(stack).hasResource('AWS::CodePipeline::Pipeline', {
+        DependsOn: Match.arrayWith([buildRolePolicyId]),
+      });
+    });
+
+    test('pipeline depends on policy updates to a mutable imported action role', () => {
+      const stack = new Stack(new App(), 'Stack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+      const actionRole = iam.Role.fromRoleArn(stack, 'ImportedActionRole', 'arn:aws:iam::123456789012:role/ImportedActionRole');
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'Source',
+              repository: new codecommit.Repository(stack, 'Repository', { repositoryName: 'repository' }),
+              output: sourceOutput,
+              trigger: cpactions.CodeCommitTrigger.POLL,
+            })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new cpactions.CodeBuildAction({
+              actionName: 'Build',
+              input: sourceOutput,
+              project: new codebuild.PipelineProject(stack, 'BuildProject'),
+              role: actionRole,
+            })],
+          },
+        ],
+      });
+
+      const importedRolePolicyId = getPolicyLogicalId(stack, 'ImportedActionRole/Policy');
+      Template.fromStack(stack).hasResource('AWS::CodePipeline::Pipeline', {
+        DependsOn: Match.arrayWith([importedRolePolicyId]),
+      });
+    });
+
+    test('does not create a policy for an immutable imported action role', () => {
+      const stack = new Stack(new App(), 'Stack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+      const actionRole = iam.Role.fromRoleArn(stack, 'ImportedActionRole', 'arn:aws:iam::123456789012:role/ImportedActionRole', {
+        mutable: false,
+      });
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'Source',
+              repository: new codecommit.Repository(stack, 'Repository', { repositoryName: 'repository' }),
+              output: sourceOutput,
+              trigger: cpactions.CodeCommitTrigger.POLL,
+            })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new cpactions.CodeBuildAction({
+              actionName: 'Build',
+              input: sourceOutput,
+              project: new codebuild.PipelineProject(stack, 'BuildProject'),
+              role: actionRole,
+            })],
+          },
+        ],
+      });
+
+      expect(stack.node.findAll().some(construct => construct.node.path.endsWith('ImportedActionRole/Policy'))).toBe(false);
+      expect(() => Template.fromStack(stack)).not.toThrow();
+    });
+
+    test('can synthesize a cross-account CodeBuild action', () => {
+      const app = new App();
+      const pipelineStack = new Stack(app, 'PipelineStack', {
+        env: { account: '111111111111', region: 'us-east-1' },
+      });
+      const actionStack = new Stack(app, 'ActionStack', {
+        env: { account: '222222222222', region: 'us-east-1' },
+      });
+      const sourceOutput = new codepipeline.Artifact();
+
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        crossAccountKeys: true,
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'Source',
+              repository: new codecommit.Repository(pipelineStack, 'Repository', { repositoryName: 'repository' }),
+              output: sourceOutput,
+              trigger: cpactions.CodeCommitTrigger.POLL,
+            })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new cpactions.CodeBuildAction({
+              actionName: 'Build',
+              input: sourceOutput,
+              project: new codebuild.PipelineProject(actionStack, 'BuildProject', { projectName: 'ActionBuildProject' }),
+            })],
+          },
+        ],
+      });
+
+      expect(() => app.synth()).not.toThrow();
+    });
+
     describe('that is cross-account and has outputs', () => {
       test('causes an error', () => {
         const app = new App();
@@ -380,3 +579,11 @@ describe('CodeBuild Action', () => {
     });
   });
 });
+
+function getPolicyLogicalId(stack: Stack, policyPathSuffix: string): string {
+  const policy = stack.node.findAll().find(construct => construct.node.path.endsWith(policyPathSuffix));
+  if (!policy?.node.defaultChild) {
+    throw new Error(`expected a policy at the end of construct path '${policyPathSuffix}'`);
+  }
+  return stack.getLogicalId(policy.node.defaultChild as CfnElement);
+}
