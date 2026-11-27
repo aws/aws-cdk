@@ -1,0 +1,84 @@
+{
+ "Resources": {
+  "Domain66AC69E0": {
+   "Type": "AWS::CloudWatch::Domain",
+   "Properties": {
+    "IdentityProviders": [
+     "IAM"
+    ],
+    "Name": "cdk-integ-omni-domain",
+    "Tags": [
+     {
+      "Key": "Purpose",
+      "Value": "integ-test"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "DomainId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Domain66AC69E0",
+     "DomainId"
+    ]
+   }
+  },
+  "DomainEndpointUrl": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Domain66AC69E0",
+     "DomainEndpointUrl"
+    ]
+   }
+  },
+  "ExportsOutputFnGetAttDomain66AC69E0ArnA2ECE2E0": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Domain66AC69E0",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "OmniDomainIntegStack:ExportsOutputFnGetAttDomain66AC69E0ArnA2ECE2E0"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,50 @@
+{
+  "/OmniDomainIntegStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "OmniDomainIntegStack.template.json"
+    }
+  ],
+  "/OmniDomainIntegStack/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/OmniDomainIntegStack/DomainId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainId"
+    }
+  ],
+  "/OmniDomainIntegStack/DomainEndpointUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainEndpointUrl"
+    }
+  ],
+  "/OmniDomainIntegStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/OmniDomainIntegStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/OmniDomainIntegStack/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Domain66AC69E0"
+    }
+  ],
+  "/OmniDomainIntegStack/Exports/Output{\"Fn::GetAtt\":[\"Domain66AC69E0\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDomain66AC69E0ArnA2ECE2E0"
+    }
+  ]
+}

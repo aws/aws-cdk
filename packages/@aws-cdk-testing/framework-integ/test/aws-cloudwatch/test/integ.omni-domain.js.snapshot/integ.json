@@ -1,0 +1,17 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "OmniDomainInteg/DefaultTest": {
+      "stacks": [
+        "OmniDomainIntegStack"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "OmniDomainInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OmniDomainIntegDefaultTestDeployAssertF93675F3"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
