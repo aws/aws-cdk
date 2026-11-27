@@ -1,0 +1,156 @@
+{
+ "Resources": {
+  "MemoryWithKeysServiceRole5B3AB37A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":memory/memory_with_namespace_indexed_keys*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MemoryWithKeysMemoryD26B16EC": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "Description": "A test memory with namespace keys and indexed keys",
+    "EventExpiryDuration": 90,
+    "IndexedKeys": [
+     {
+      "Key": "priority",
+      "Type": "NUMBER"
+     },
+     {
+      "Key": "source",
+      "Type": "STRING"
+     },
+     {
+      "Key": "labels",
+      "Type": "STRINGLIST"
+     }
+    ],
+    "MemoryExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MemoryWithKeysServiceRole5B3AB37A",
+      "Arn"
+     ]
+    },
+    "MemoryStrategies": [
+     {
+      "SemanticMemoryStrategy": {
+       "Name": "tenant_facts",
+       "Namespaces": [
+        "/tenant/{tenant}/env/{env}/actor/{actorId}"
+       ]
+      }
+     }
+    ],
+    "Name": "memory_with_namespace_indexed_keys",
+    "NamespaceKeys": [
+     {
+      "Key": "tenant",
+      "Validation": {
+       "RegexPattern": "^[a-z0-9-]+$"
+      }
+     },
+     {
+      "Key": "env",
+      "Validation": {
+       "AllowedValues": [
+        "dev",
+        "staging",
+        "prod"
+       ]
+      }
+     },
+     {
+      "Key": "region"
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttMemoryWithKeysMemoryD26B16ECMemoryId68468A2C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MemoryWithKeysMemoryD26B16EC",
+     "MemoryId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-agentcore-memory-namespace-indexed-keys:ExportsOutputFnGetAttMemoryWithKeysMemoryD26B16ECMemoryId68468A2C"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

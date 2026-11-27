@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "1d7d24415de5e350b88972dad906ec2e6e34b0a07cf86959ac542d5ed3082836": {
+      "displayName": "aws-cdk-agentcore-memory-namespace-indexed-keys Template",
+      "source": {
+        "path": "aws-cdk-agentcore-memory-namespace-indexed-keys.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8f262079": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1d7d24415de5e350b88972dad906ec2e6e34b0a07cf86959ac542d5ed3082836.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
