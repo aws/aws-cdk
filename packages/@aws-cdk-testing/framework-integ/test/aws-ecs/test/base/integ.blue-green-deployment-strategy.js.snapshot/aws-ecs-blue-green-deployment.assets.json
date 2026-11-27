@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "3f2de3687de753e01df8af1f3f5db3418f528a660a93dfdd7cb90e7ed75c213f": {
+    "077a3711d8dac75cd630d8384a4e392dfea4b16f0a7fad17127786a32432e674": {
       "displayName": "aws-ecs-blue-green-deployment Template",
       "source": {
         "path": "aws-ecs-blue-green-deployment.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-289748b6": {
+        "current_account-current_region-7fcc0b81": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3f2de3687de753e01df8af1f3f5db3418f528a660a93dfdd7cb90e7ed75c213f.json",
+          "objectKey": "077a3711d8dac75cd630d8384a4e392dfea4b16f0a7fad17127786a32432e674.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
