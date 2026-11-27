@@ -12,20 +12,19 @@ import {
 import type {
   ApplicationListener, ApplicationProtocolVersion, ApplicationTargetGroup,
   IApplicationLoadBalancer, AddApplicationTargetsProps, SslPolicy,
-  IpAddressType,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
-import { ApplicationLoadBalancer, ApplicationProtocol, ListenerCertificate, ListenerAction } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, IpAddressType, ListenerCertificate, ListenerAction } from '../../../aws-elasticloadbalancingv2';
 import type { IRole } from '../../../aws-iam';
 import type { IHostedZone } from '../../../aws-route53';
-import { ARecord, RecordTarget, CnameRecord } from '../../../aws-route53';
+import { ARecord, AaaaRecord, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
+import { Annotations, CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
 
 /**
- * Describes the type of DNS record the service should create
+ * Describes the type of DNS record the service should create.
  */
 export enum ApplicationLoadBalancedServiceRecordType {
   /**
@@ -40,6 +39,15 @@ export enum ApplicationLoadBalancedServiceRecordType {
    * Do not create any DNS records
    */
   NONE,
+  /**
+   * Create Route 53 A and AAAA alias records.
+   *
+   * This option creates DNS records only. It does not configure the load balancer for IPv6.
+   * If the pattern creates the load balancer, set `ipAddressType` to a dual-stack type so that
+   * IPv6 clients can reach the service. If you provide your own `loadBalancer`, `ipAddressType`
+   * is ignored; configure that load balancer with a dual-stack IP address type instead.
+   */
+  ALIAS_DUAL_STACK,
 }
 
 /**
@@ -235,7 +243,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly redirectHTTP?: boolean;
 
   /**
-   * Specifies whether the Route53 record should be a CNAME, an A record using the Alias feature or no record at all.
+   * Specifies whether the Route 53 record should be a CNAME, an A record using the Alias feature,
+   * an A and AAAA record using the Alias feature, or no record at all.
    * This is useful if you need to work with DNS systems that do not support alias records.
    *
    * @default ApplicationLoadBalancedServiceRecordType.ALIAS
@@ -578,15 +587,26 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
         throw new ValidationError(lit`RouteHostedDomainZoneName`, 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
-      switch (props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS) {
+      const recordType = props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS;
+      switch (recordType) {
         case ApplicationLoadBalancedServiceRecordType.ALIAS:
-          let aliasRecord = new ARecord(this, 'DNS', {
+        case ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK: {
+          const aliasProps = {
             zone: props.domainZone,
             recordName: props.domainName,
             target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-          });
+          };
+          const aliasRecord = new ARecord(this, 'DNS', aliasProps);
+          if (recordType === ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK) {
+            new AaaaRecord(this, 'DNSAAAA', aliasProps);
+            if (loadBalancer.ipAddressType === IpAddressType.IPV4) {
+              Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:aliasDualStackWithIpv4LoadBalancer',
+                'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Configure the load balancer with IpAddressType.DUAL_STACK or IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4.');
+            }
+          }
           domainName = aliasRecord.domainName;
           break;
+        }
         case ApplicationLoadBalancedServiceRecordType.CNAME:
           let cnameRecord = new CnameRecord(this, 'DNS', {
             zone: props.domainZone,
