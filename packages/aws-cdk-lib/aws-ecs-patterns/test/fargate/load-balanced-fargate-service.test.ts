@@ -1,11 +1,11 @@
-import { Match, Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import { AutoScalingGroup } from '../../../aws-autoscaling';
 import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, IpAddressType, NetworkLoadBalancer, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as route53 from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
@@ -2223,6 +2223,209 @@ describe('NetworkLoadBalancedFargateService', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::Route53::RecordSet', 0);
+  });
+
+  test('default NLB record type creates only an A alias', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
+      cluster,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Route53::RecordSet', 1);
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'fakeId',
+      Name: 'test.domain.com.',
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: { 'Fn::GetAtt': ['FargateNlbServiceLBC7004B25', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['FargateNlbServiceLBC7004B25', 'DNSName'] }]] },
+      },
+    });
+  });
+
+  test('setting NLB dual-stack alias option creates matching A and AAAA records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC', { ipProtocol: ec2.IpProtocol.DUAL_STACK });
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
+      cluster,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
+      ipAddressType: IpAddressType.DUAL_STACK,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const expectedAliasTarget = {
+      HostedZoneId: { 'Fn::GetAtt': ['FargateNlbServiceLBC7004B25', 'CanonicalHostedZoneID'] },
+      DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['FargateNlbServiceLBC7004B25', 'DNSName'] }]] },
+    };
+    template.resourceCountIs('AWS::Route53::RecordSet', 2);
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'fakeId',
+      Name: 'test.domain.com.',
+      Type: 'A',
+      AliasTarget: expectedAliasTarget,
+    });
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'fakeId',
+      Name: 'test.domain.com.',
+      Type: 'AAAA',
+      AliasTarget: expectedAliasTarget,
+    });
+  });
+
+  const NLB_DUAL_STACK_ALIAS_WARNING = 'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Configure the load balancer with IpAddressType.DUAL_STACK. [ack: @aws-cdk/aws-ecs-patterns:aliasDualStackWithIpv4LoadBalancer]';
+
+  function createNlbDualStackAliasService(stack: cdk.Stack, props: Partial<ecsPatterns.NetworkLoadBalancedFargateServiceProps> = {}) {
+    const vpc = props.cluster?.vpc ?? new ec2.Vpc(stack, 'VPC');
+    const cluster = props.cluster ?? new ecs.Cluster(stack, 'Cluster', { vpc });
+    return new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
+      cluster,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      ...props,
+    });
+  }
+
+  test('NLB dual-stack alias option warns when the created load balancer uses the default IPv4 address type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // WHEN
+    createNlbDualStackAliasService(stack);
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/FargateNlbService', NLB_DUAL_STACK_ALIAS_WARNING);
+  });
+
+  test('NLB dual-stack alias option warns when the created load balancer is explicitly IPv4', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // WHEN
+    createNlbDualStackAliasService(stack, { ipAddressType: IpAddressType.IPV4 });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/FargateNlbService', NLB_DUAL_STACK_ALIAS_WARNING);
+  });
+
+  test('NLB dual-stack alias option does not warn when the created load balancer is dual-stack', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC', { ipProtocol: ec2.IpProtocol.DUAL_STACK });
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    createNlbDualStackAliasService(stack, { cluster, ipAddressType: IpAddressType.DUAL_STACK });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/FargateNlbService', Match.stringLikeRegexp('aliasDualStackWithIpv4LoadBalancer'));
+  });
+
+  test('NLB dual-stack alias option warns when a provided load balancer uses the default IPv4 address type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const loadBalancer = new NetworkLoadBalancer(stack, 'LoadBalancer', { vpc, internetFacing: true });
+
+    // WHEN
+    createNlbDualStackAliasService(stack, { cluster, loadBalancer });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/FargateNlbService', NLB_DUAL_STACK_ALIAS_WARNING);
+  });
+
+  test('NLB dual-stack alias option does not warn when a provided load balancer is dual-stack', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC', { ipProtocol: ec2.IpProtocol.DUAL_STACK });
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const loadBalancer = new NetworkLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: IpAddressType.DUAL_STACK,
+    });
+
+    // WHEN
+    createNlbDualStackAliasService(stack, { cluster, loadBalancer });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/FargateNlbService', Match.stringLikeRegexp('aliasDualStackWithIpv4LoadBalancer'));
+  });
+
+  test('NLB dual-stack alias option does not warn when the provided load balancer address type is unknown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const loadBalancer = NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'ImportedLoadBalancer', {
+      loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/net/my-load-balancer/50dc6c495c0c9188',
+      loadBalancerCanonicalHostedZoneId: 'Z18D5FSROUN65G',
+      loadBalancerDnsName: 'my-load-balancer-1234567890.elb.us-west-2.amazonaws.com',
+      vpc,
+    });
+
+    // WHEN
+    createNlbDualStackAliasService(stack, { cluster, loadBalancer });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Route53::RecordSet', 2);
+    Annotations.fromStack(stack).hasNoWarning('/Default/FargateNlbService', Match.stringLikeRegexp('aliasDualStackWithIpv4LoadBalancer'));
+  });
+
+  test('NLB default alias option does not warn for an IPv4 load balancer', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // WHEN
+    createNlbDualStackAliasService(stack, { recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.ALIAS });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/FargateNlbService', Match.stringLikeRegexp('aliasDualStackWithIpv4LoadBalancer'));
   });
 
   test('passing in existing network load balancer to NLB Fargate Service', () => {

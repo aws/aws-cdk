@@ -1,0 +1,136 @@
+{
+  "/NlbIpv6Test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "process.<anonymous> (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:181:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "NlbIpv6TestDefaultTestDeployAssertFB8F1DF0.template.json"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/AwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/AwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27d"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForRole178B021A"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForC585FC77"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/AwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForIsCompleteProviderInvoke657E0119"
+    }
+  ],
+  "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForTimeoutProviderInvokeDC2D23CF"
+    }
+  ]
+}
