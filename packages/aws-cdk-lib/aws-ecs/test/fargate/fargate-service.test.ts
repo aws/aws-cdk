@@ -3787,6 +3787,117 @@ describe('fargate service', () => {
       const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
       expect(annotations.length).toBe(0);
     });
+
+    describe('desiredCount with task count auto scaling', () => {
+      const desiredCountWarning = 'desiredCount has been configured on a service that uses task count auto scaling. Be aware this will reset the number of tasks to desiredCount on every deployment that updates the service. Remove desiredCount and use minCapacity instead. See https://github.com/aws/aws-cdk/issues/39129 [ack: @aws-cdk/aws-ecs:desiredCountWithAutoScaling]';
+
+      function createService(stack: cdk.Stack, desiredCount?: number) {
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        taskDefinition.addContainer('MainContainer', {
+          image: ecs.ContainerImage.fromRegistry('hello'),
+        });
+        return new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          desiredCount,
+        });
+      }
+
+      test('warns when desiredCount is set and a scaling policy is added', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const service = createService(stack, 2);
+
+        // WHEN
+        const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 2 });
+        capacity.scaleOnCpuUtilization('Cpu', { targetUtilizationPercent: 60 });
+        capacity.scaleOnMemoryUtilization('Memory', { targetUtilizationPercent: 60 });
+
+        // THEN
+        const warnings = Annotations.fromStack(stack).findWarning('/Default/Service', desiredCountWarning);
+        expect(warnings.length).toBe(1);
+      });
+
+      test('warns when desiredCount is set and a scheduled action is added', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const service = createService(stack, 2);
+
+        // WHEN
+        const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 2 });
+        capacity.scaleOnSchedule('ScaleUp', {
+          schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
+          minCapacity: 5,
+        });
+
+        // THEN
+        Annotations.fromStack(stack).hasWarning('/Default/Service', desiredCountWarning);
+      });
+
+      test('warns when desiredCount is set through the L1 escape hatch', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const service = createService(stack);
+        (service.node.defaultChild as ecs.CfnService).desiredCount = 2;
+
+        // WHEN
+        const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 2 });
+        capacity.scaleOnCpuUtilization('Cpu', { targetUtilizationPercent: 60 });
+
+        // THEN
+        Annotations.fromStack(stack).hasWarning('/Default/Service', desiredCountWarning);
+      });
+
+      test('does not warn when auto scaling has no scaling policy or scheduled action', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const service = createService(stack, 2);
+
+        // WHEN
+        service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 2 });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('/Default/Service', desiredCountWarning);
+      });
+
+      test('does not warn when desiredCount is not set', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const service = createService(stack);
+
+        // WHEN
+        const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 2 });
+        capacity.scaleOnCpuUtilization('Cpu', { targetUtilizationPercent: 60 });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('/Default/Service', desiredCountWarning);
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DesiredCount: Match.absent(),
+        });
+      });
+
+      test('does not warn when the warning is acknowledged', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const service = createService(stack, 2);
+        cdk.Annotations.of(service).acknowledgeWarning('@aws-cdk/aws-ecs:desiredCountWithAutoScaling');
+
+        // WHEN
+        const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 2 });
+        capacity.scaleOnCpuUtilization('Cpu', { targetUtilizationPercent: 60 });
+
+        // THEN
+        Annotations.fromStack(stack).hasNoWarning('/Default/Service', desiredCountWarning);
+      });
+    });
   });
 
   describe('When enabling service discovery', () => {
