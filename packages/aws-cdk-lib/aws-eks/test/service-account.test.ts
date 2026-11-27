@@ -30,7 +30,7 @@ describe('service account', () => {
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'Cluster',
         openIdConnectProvider: oidcProvider,
-        kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
+        kubectlRoleArn: 'arn:aws:iam::123456789012:role/service-role/k8sservicerole',
       });
 
       cluster.addServiceAccount('MyServiceAccount');

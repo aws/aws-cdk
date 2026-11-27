@@ -6,7 +6,7 @@ import type { IConstruct } from 'constructs';
 import { collectAnnotationReport } from './annotation-plugin';
 import type { Acknowledgement } from './collect-acknowledged-rule-ids';
 import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
-import { iterateAssembliesPostorder, iterateAssembliesPreorder } from './construct-iteration';
+import { iterateAssembliesPostorder, iterateAssembliesPreorder, iterateStackConstructs, tryFindByPath } from './construct-iteration';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
@@ -15,8 +15,9 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
+import { Token } from '../token';
 import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
-import { APP_TYPE } from './core-construct-finders';
+import { APP_TYPE, STACK_TYPE, stageOf } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
@@ -34,7 +35,8 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
-  const stacksByPlugin: Map<IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>> = new Map();
+  // Keyed by template path, so a template reached through several stages is validated once
+  const stacksByPlugin = new DefaultMap<IPolicyValidationPlugin, Map<string, PolicyValidationStack>>(() => new Map());
 
   // The default plugin is configured at root level, but is auto-added to the list per stage.
   const addDefaultPlugin = defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root);
@@ -44,12 +46,15 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${stage.stageName}`);
 
     const plugins = pluginsToEvaluate(root, stage, addDefaultPlugin);
+
+    const validatableTemplates = stageAssembly.stacksRecursively.flatMap((artifact) => allTemplatesForStack(root, artifact));
+
     for (const plugin of plugins) {
-      if (!stacksByPlugin.has(plugin)) {
-        stacksByPlugin.set(plugin, new Set());
-      }
-      for (const stack of stageAssembly.stacksRecursively) {
-        stacksByPlugin.get(plugin)!.add(stack);
+      const stacks = stacksByPlugin.ensure(plugin);
+      for (const stack of validatableTemplates) {
+        if (!stacks.has(stack.templatePath)) {
+          stacks.set(stack.templatePath, stack);
+        }
       }
     }
   }
@@ -189,6 +194,48 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
       console.error(preamble);
     }
   }
+}
+
+/**
+ * Return all validatable templates for the given stack artifact.
+ *
+ * This includes the template for the stack artifact, as well as the templates produced by
+ * all constructs within the stack (like NestedStacks, ProductStacks, etc).
+ */
+function allTemplatesForStack(root: IConstruct, artifact: private_cxapi.CloudFormationStackArtifact): PolicyValidationStack[] {
+  const ret: PolicyValidationStack[] = [];
+
+  // We get the stack template itself from the Assembly, only because I'm only 99% confident that
+  // we could get it from the construct tree.
+  ret.push({
+    stackConstructPath: artifact.hierarchicalId,
+    templatePath: artifact.templateFullPath,
+    accountId: artifact.environment.account !== cxapi.UNKNOWN_ACCOUNT ? artifact.environment.account : undefined,
+    region: artifact.environment.region !== cxapi.UNKNOWN_REGION ? artifact.environment.region : undefined,
+  });
+
+  const stackConstruct = tryFindByPath(root, artifact.hierarchicalId);
+  if (stackConstruct && STACK_TYPE.isMarked(stackConstruct)) {
+    for (const child of iterateStackConstructs(stackConstruct)) {
+      // This is guaranteed to not return top-level Stacks other than the stack
+      // construct itself, so anything that still looks like a Stack here must
+      // be some kind of template producer.
+
+      if (STACK_TYPE.isMarked(child) && child !== stackConstruct) {
+        const templateConstruct = child;
+        const stage = stageOf(templateConstruct)!;
+
+        ret.push({
+          stackConstructPath: templateConstruct.node.path,
+          templatePath: path.resolve(stage.outdir, templateConstruct.templateFile),
+          accountId: Token.isUnresolved(templateConstruct.account) ? undefined : templateConstruct.account,
+          region: Token.isUnresolved(templateConstruct.region) ? undefined : templateConstruct.region,
+        });
+      }
+    }
+  }
+
+  return ret;
 }
 
 /**
@@ -434,7 +481,7 @@ function collectViolationStackTraces(
  */
 function doInvokeValidationPlugins(
   outdir: string,
-  plugins: Array<[IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>]>,
+  plugins: Array<[IPolicyValidationPlugin, Map<string, PolicyValidationStack>]>,
   root: App,
 ) {
   const untrustedPlugins = new Set(Array.from(plugins.values())
@@ -443,7 +490,7 @@ function doInvokeValidationPlugins(
 
   const preExistingFileHashes = untrustedPlugins.size > 0 && root._confirmValidationPluginsDoNotMutate ? snapshotFileHashes(outdir) : undefined;
 
-  const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+  const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks.values())));
 
   if (preExistingFileHashes) {
     if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
@@ -456,20 +503,13 @@ function doInvokeValidationPlugins(
 
   function invokeSinglePlugin(
     plugin: IPolicyValidationPlugin,
-    stackArtifacts: private_cxapi.CloudFormationStackArtifact[],
+    stackTemplates: PolicyValidationStack[],
   ): NamedValidationPluginReport[] {
     // Nothing to validate; also keeps external plugins symmetric with the
     // per-environment path, which produces no invocations for zero stacks.
-    if (stackArtifacts.length === 0) {
+    if (stackTemplates.length === 0) {
       return [];
     }
-
-    const stackTemplates = stackArtifacts.map((s) => ({
-      stackConstructPath: s.hierarchicalId,
-      templatePath: s.templateFullPath,
-      accountId: s.environment.account !== cxapi.UNKNOWN_ACCOUNT ? s.environment.account : undefined,
-      region: s.environment.region !== cxapi.UNKNOWN_REGION ? s.environment.region : undefined,
-    } satisfies PolicyValidationStack));
 
     // Global account and region
     const accountId = stackTemplates.every(s => s.accountId === stackTemplates[0].accountId) ? stackTemplates[0].accountId : undefined;
@@ -649,4 +689,17 @@ function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {
 
   // Unknown mode, either a legacy CLI or running via toolkit-lib.
   return 'unknown';
+}
+
+class DefaultMap<K, V> extends Map<K, V> {
+  constructor(private readonly defaultFactory: (key: K) => V) {
+    super();
+  }
+
+  public ensure(key: K): V {
+    if (!this.has(key)) {
+      this.set(key, this.defaultFactory(key));
+    }
+    return this.get(key)!;
+  }
 }
