@@ -43,9 +43,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -73,9 +71,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -84,7 +80,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/integ-servicecatalog-two-products/Product1": [
@@ -329,21 +325,13 @@
       "data": "TestAssetBucketAutoDeleteObjectsCustomResource5A0F8F22"
     }
   ],
-  "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -495,12 +483,6 @@
       "data": "HelloHandler2109B0120"
     }
   ],
-  "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
-    }
-  ],
   "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResource-256MiB/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -532,12 +514,6 @@
     }
   ],
   "/integ-servicecatalog-two-products/MyProductStack2/HelloHandler2/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

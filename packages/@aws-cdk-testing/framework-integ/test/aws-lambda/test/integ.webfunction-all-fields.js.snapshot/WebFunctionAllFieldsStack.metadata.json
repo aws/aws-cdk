@@ -36,9 +36,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -66,9 +64,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -77,7 +73,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/WebFunctionAllFieldsStack/LogGroup": [
@@ -174,21 +170,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/WebFunctionAllFieldsStack/DeployCode/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/WebFunctionAllFieldsStack/DeployCode/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -368,12 +356,6 @@
       "data": "CodeBucketAutoDeleteObjectsCustomResourceA4EDF0CF"
     }
   ],
-  "/WebFunctionAllFieldsStack/DeployCode/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployCodeAwsCliLayerB38BC350"
-    }
-  ],
   "/WebFunctionAllFieldsStack/DeployCode/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -454,12 +436,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AllFieldsEndpoint1B3E2E37"
-    }
-  ],
-  "/WebFunctionAllFieldsStack/DeployCode/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/WebFunctionAllFieldsStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [

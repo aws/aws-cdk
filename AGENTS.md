@@ -36,7 +36,6 @@ Principles:
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
 | Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
-| Update integ snapshots (no deploy) | `yarn integ --dry-run --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ with deploy | `yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 
 > **Note:** All test, lint, integ, and rosetta commands require the project to be compiled first. Run the build command above before any of these.
@@ -101,7 +100,7 @@ Standard constructor: `constructor(scope: Construct, id: string, props: FooProps
 |------|---------|-----------------|
 | `IFooRef` | Bare identifiers (ARN, name) — auto-generated | Default — when you only need IDs |
 | `IFoo` | Full interface + Facade properties | When you need convenience methods |
-| `FooBase` | Abstract base (exported, but treat as internal) | Never |
+| `FooBase` | Abstract base (internal by default) | Never |
 | `Foo` | Concrete class | Exceptional cases only |
 
 ### Static Type Check (never use `instanceof`)
@@ -346,7 +345,10 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 - **SHOULD NOT use fluent API patterns** (method chaining returning `this`) - this is a consistency rule, not a jsii limitation (chaining works in all jsii languages): the library configures through props objects, and returning `this` both hides mutation behind a return value and permanently reserves the method's return type. A fluent API that is present MUST come with a written justification, and accepting it is at the maintainer's discretion. When you find one, notify the human that it is present as a warning, not as a blocking issue. ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
 - **MUST NOT add speculative abstractions** — add what customers need today; unused abstractions become maintenance burden and API surface that can't be removed ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
 - **MUST NOT change construct IDs** — logical IDs derive from the full construct path; any change replaces all resources in scope, causing data loss ([DESIGN_GUIDELINES.md#construct-ids](./docs/DESIGN_GUIDELINES.md#construct-ids))
-- **MUST NOT leave commented-out code, dead code, or `eslint-disable` directives** — they rot, confuse future contributors, and mask real lint violations
+- **MUST NOT leave commented-out code or dead code** — they rot, confuse future contributors, and mask real lint violations
+- **MUST ask for user confirmation to add `eslint-disable` directives** - you should avoid using structures that lead to linting violations. If it is not possible to avoid (some
+rules are written such that they must be silenced explicitly), ask for user confirmation
+first.
 - **MUST NOT add validation to existing constructs without considering backwards compatibility** — adding validation that rejects previously accepted input is a breaking change. Two cases apply:
   - **Input that previously deployed successfully** → MUST gate behind a feature flag so existing apps continue to synthesize
   - **Input that was accepted by synth but always failed at deploy time** (e.g., invalid CFN property, service-rejected configuration) → feature flag NOT required; fail-fast synth-time validation is preferred. The PR MUST document why the breaking change is justified (e.g., "this input always caused CloudFormation error X")
