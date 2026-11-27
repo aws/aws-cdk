@@ -380,6 +380,101 @@ describe('delivery stream', () => {
     });
   });
 
+  test('grantPutRecords grants kms:GenerateDataKey and kms:Decrypt on a customer managed key', () => {
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const key = new kms.Key(stack, 'Key');
+    const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destination: mockS3Destination,
+      encryption: firehose.StreamEncryption.customerManagedKey(key),
+    });
+
+    deliveryStream.grantPutRecords(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'firehose:PutRecord',
+              'firehose:PutRecordBatch',
+            ],
+            Resource: stack.resolve(deliveryStream.deliveryStreamArn),
+          }),
+          Match.objectLike({
+            Action: [
+              'kms:GenerateDataKey',
+              'kms:Decrypt',
+            ],
+            Resource: stack.resolve(key.keyArn),
+          }),
+        ]),
+      },
+      Roles: [stack.resolve(role.roleName)],
+    });
+    expect(deliveryStream.encryptionKey).toBe(key);
+  });
+
+  test('grants.putRecords grants KMS access on the key created for customerManagedKey()', () => {
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destination: mockS3Destination,
+      encryption: firehose.StreamEncryption.customerManagedKey(),
+    });
+
+    deliveryStream.grants.putRecords(role);
+
+    const key = deliveryStream.node.findChild('Key') as kms.Key;
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'kms:GenerateDataKey',
+              'kms:Decrypt',
+            ],
+            Resource: stack.resolve(key.keyArn),
+          }),
+        ]),
+      },
+      Roles: [stack.resolve(role.roleName)],
+    });
+    expect(deliveryStream.encryptionKey).toBe(key);
+  });
+
+  test.each([
+    ['unencrypted', undefined],
+    ['AWS owned key', firehose.StreamEncryption.awsOwnedKey()],
+  ])('grantPutRecords does not grant KMS access when the stream is %s', (_name, encryption) => {
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const deliveryStream = new firehose.DeliveryStream(stack, 'Delivery Stream', {
+      destination: mockS3Destination,
+      encryption,
+    });
+
+    deliveryStream.grantPutRecords(role);
+
+    expect(deliveryStream.encryptionKey).toBeUndefined();
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Action: [
+              'firehose:PutRecord',
+              'firehose:PutRecordBatch',
+            ],
+          }),
+        ],
+      },
+      Roles: [stack.resolve(role.roleName)],
+    });
+  });
+
   test('dependables supplied from destination are depended on by just the CFN resource', () => {
     const dependableId = stack.resolve((Node.of(dependable).defaultChild as cdk.CfnResource).logicalId);
 
