@@ -100,7 +100,7 @@ Standard constructor: `constructor(scope: Construct, id: string, props: FooProps
 |------|---------|-----------------|
 | `IFooRef` | Bare identifiers (ARN, name) — auto-generated | Default — when you only need IDs |
 | `IFoo` | Full interface + Facade properties | When you need convenience methods |
-| `FooBase` | Abstract base (internal; a new one is not exported) | Never |
+| `FooBase` | Abstract base (internal by default) | Never |
 | `Foo` | Concrete class | Exceptional cases only |
 
 ### Static Type Check (never use `instanceof`)

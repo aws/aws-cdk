@@ -84,7 +84,7 @@
 ## Abstract Base Class
 
 - You SHOULD implement an abstract `FooBase` for each resource that implements the full construct interface with resource attributes as abstract properties
-- Keep it internal (not exported)
+- Keep it internal: no `export`, or `export` with `@internal` when another file in the module needs it. Make it public only when another package or users extend it
 - Use it to implement `from{Attribute}` import methods via ad-hoc local classes
 
 ---
