@@ -1,0 +1,35 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "WithExpressConfiguration: Additional properties are not allowed ('WithExpressConfiguration' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-express-cluster/Cluster/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-express-cluster.template.json",
+                "logicalId": "ClusterEB0386A7",
+                "propertyPaths": [
+                  "Properties.WithExpressConfiguration"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

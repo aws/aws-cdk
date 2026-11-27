@@ -1,0 +1,34 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f": {
+      "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+      "source": {
+        "path": "asset.c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-542beac9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c9e084a249774d97a978bed2e1976874a70517128a904136b8737f0792322c1f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f1743f329f524efca56e2629a32e8d31b8d5dfd1f81786f7b9a5f1993d5426e1": {
+      "displayName": "aws-cdk-rds-express-cluster Template",
+      "source": {
+        "path": "aws-cdk-rds-express-cluster.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-712b002f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f1743f329f524efca56e2629a32e8d31b8d5dfd1f81786f7b9a5f1993d5426e1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
