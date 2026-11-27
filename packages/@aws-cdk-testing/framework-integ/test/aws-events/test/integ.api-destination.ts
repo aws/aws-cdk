@@ -1,6 +1,7 @@
 import { App, CfnOutput, SecretValue, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as events from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 const app = new App();
@@ -36,6 +37,14 @@ new CfnOutput(stack, 'DestinationArnForPolicy', {
   value: destination.apiDestinationArnForPolicy || '',
   description: 'The ARN of the API destination in resource format',
 });
+
+// Grant a role permission to invoke the API destination. This produces an
+// IAM policy with the `events:InvokeApiDestination` action scoped to the
+// destination's resource-format ARN (ArnForPolicy).
+const invokeRole = new iam.Role(stack, 'InvokeRole', {
+  assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+});
+destination.grantInvokeApiDestination(invokeRole);
 
 new IntegTest(app, 'events-api-destination-integ', {
   testCases: [stack],
