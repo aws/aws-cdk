@@ -117,7 +117,7 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * Agent addon. If the addon has not been created yet, it will be created and
    * returned.
    */
-  readonly eksPodIdentityAgent?: IAddon;
+  readonly eksPodIdentityAgent?: IAddon | undefined;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -182,7 +182,7 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    *
    * If not defined, a default provider will be used
    */
-  readonly kubectlProvider?: IKubectlProvider;
+  readonly kubectlProvider?: IKubectlProvider | undefined;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.

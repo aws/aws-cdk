@@ -353,7 +353,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroup | undefined;
 
   /**
    * Add an instance type to this compute environment
@@ -976,7 +976,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedEc2ComputeEnvironment
    *
    * @default - no placement group
    */
-  readonly placementGroup?: ec2.IPlacementGroup;
+  readonly placementGroup?: ec2.IPlacementGroup | undefined;
 }
 
 /**

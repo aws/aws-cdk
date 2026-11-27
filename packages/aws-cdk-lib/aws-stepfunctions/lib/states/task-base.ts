@@ -133,8 +133,8 @@ export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions
 export abstract class TaskStateBase extends State implements INextable {
   public readonly endStates: INextable[];
 
-  protected abstract readonly taskMetrics?: TaskMetricsConfig;
-  protected abstract readonly taskPolicies?: iam.PolicyStatement[];
+  protected abstract readonly taskMetrics?: TaskMetricsConfig | undefined;
+  protected abstract readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly timeout?: cdk.Duration;
   private readonly taskTimeout?: Timeout;

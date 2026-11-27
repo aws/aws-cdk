@@ -64,5 +64,5 @@ export interface IFileSetProducer {
    *
    * @default - This producer doesn't produce any file set
    */
-  readonly primaryOutput?: FileSet;
+  readonly primaryOutput?: FileSet | undefined;
 }

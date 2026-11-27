@@ -23,7 +23,7 @@
     "watch": "tsc -b -w",
     "lint": "eslint",
     "pkglint": "pkglint -f",
-    "test": "echo success",
+    "test": "jest",
     "build+test+package": "yarn build+test",
     "build+test": "yarn build && yarn test",
     "build+extract": "yarn build",

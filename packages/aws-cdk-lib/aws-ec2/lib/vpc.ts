@@ -179,7 +179,7 @@ export interface IVpc extends IResource, IVPCRef {
   /**
    * Identifier for the VPN gateway
    */
-  readonly vpnGatewayId?: string;
+  readonly vpnGatewayId?: string | undefined;
 
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
