@@ -722,6 +722,71 @@ pipeline.addStage(stage, {
 });
 ```
 
+#### Running commands without a CodeBuild project
+
+A `ShellStep` or `CodeBuildStep` creates a CodeBuild project (with a role and a
+policy) for every step. For short commands, such as a smoke test between waves,
+you can use a `CommandsStep` instead. It runs the commands with the
+[CodePipeline Commands action](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html),
+which uses CodeBuild compute that CodePipeline manages, so no CodeBuild project is
+created. The compute is still billed as CodeBuild. The Commands action is only
+available in pipelines of type `PipelineType.V2`.
+
+```ts
+declare const synth: pipelines.ShellStep;
+declare const beta: Stage;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  synth,
+});
+
+const smokeTest = new pipelines.CommandsStep('SmokeTest', {
+  commands: [
+    'mkdir -p report',
+    'curl -fsS https://my.webservice.com/health > report/health.json',
+    'export RESULT=healthy',
+  ],
+  // Exported as the primary output of the step, paths are kept as they are
+  outputFiles: ['report/**/*'],
+  computeType: codebuild.ComputeType.SMALL,
+});
+
+pipeline.addStage(beta, {
+  post: [
+    smokeTest,
+    new pipelines.ShellStep('Publish', {
+      input: smokeTest,
+      env: { RESULT: smokeTest.exportedVariable('RESULT') },
+      commands: ['cat report/health.json', 'echo "$RESULT"'],
+    }),
+  ],
+});
+```
+
+A `CommandsStep` supports the `input` property of a `ShellStep` and `exportedVariable()` of a
+`CodeBuildStep`. Some differences apply because of the Commands action:
+
+* At most 50 single-line commands run.
+* Environment variables (`env`, `envFromCfnOutputs`) and `additionalInputs` are not supported yet.
+  They will follow once the Commands action supports action environment variables in the CDK
+  ([#35741](https://github.com/aws/aws-cdk/pull/35741)). Until then, a command can reference the
+  `exportedVariable()` of another step directly, for example
+  `` `echo "${build.exportedVariable('VERSION')}"` ``. CodePipeline substitutes the value into the
+  command text before the command runs, without quoting or escaping it, so only reference variables
+  whose values you trust.
+* The output is selected with `outputFiles` patterns. Unlike `primaryOutputDirectory`, the files
+  keep their paths in the output, and there is at most one output. For this reason, a `CommandsStep`
+  can't be used as the synth step.
+* Use `computeType`, `environmentType`, `vpc`, `subnetSelection` and `securityGroups` to configure
+  the build environment. The pipeline's `codeBuildDefaults` don't apply to a `CommandsStep`.
+* The commands run with the credentials of the action role. Use `rolePolicyStatements` or
+  `actionRole` to allow them to call AWS APIs. Unlike for a `CodeBuildStep`, `rolePolicyStatements`
+  are added to the action role, not to a CodeBuild project role. A Commands action can't currently
+  be combined with `usePipelineRoleForActions` ([#34522](https://github.com/aws/aws-cdk/issues/34522)).
+* Build images, caching, privileged mode and timeouts can't be configured; the timeout is 55 minutes.
+  Use a `CodeBuildStep` if you need these.
+
 ### Customizing CodeBuild Projects
 
 CDK pipelines will generate CodeBuild projects for each `ShellStep` you use, and it
