@@ -1,0 +1,56 @@
+{
+  "/integ-distribution-behavior-path-patterns": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-distribution-behavior-path-patterns.template.json"
+    }
+  ],
+  "/integ-distribution-behavior-path-patterns/Dist": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        },
+        "additionalBehaviors": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-distribution-behavior-path-patterns/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-distribution-behavior-path-patterns/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-distribution-behavior-path-patterns/Dist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistB3B78991"
+    }
+  ]
+}

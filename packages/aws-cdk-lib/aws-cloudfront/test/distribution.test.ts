@@ -1844,6 +1844,24 @@ describe('feature flag: CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HT
     });
   });
 
+  test('addBehavior() throws when a behavior with the same path pattern already exists', () => {
+    const origin = defaultOrigin();
+    const distribution = new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+    distribution.addBehavior('/api/*', origin);
+
+    expect(() => distribution.addBehavior('/api/*', origin)).toThrow(/already exists/);
+  });
+
+  test('addBehavior() throws when the path pattern duplicates one from additionalBehaviors', () => {
+    const origin = defaultOrigin();
+    const distribution = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      additionalBehaviors: { '/api/*': { origin } },
+    });
+
+    expect(() => distribution.addBehavior('/api/*', origin)).toThrow(/already exists/);
+  });
+
   test.each([false, undefined])('all behaviors keep defaulting to allow-all when the flag is %p', (flagValue) => {
     const flagApp = new App({ context: flagValue === undefined ? {} : { [flag]: flagValue } });
     const flagStack = new Stack(flagApp, 'FlagStack', { env: { account: '1234', region: 'testregion' } });

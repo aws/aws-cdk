@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-distribution-behavior-path-patterns/distribution-behavior-path-patterns-test/DefaultTest": {
+      "stacks": [
+        "integ-distribution-behavior-path-patterns"
+      ],
+      "assertionStack": "integ-distribution-behavior-path-patterns/distribution-behavior-path-patterns-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integdistributionbehaviorpathpatternsdistributionbehaviorpathpatternstestDefaultTestDeployAssertE28DCC5E"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
