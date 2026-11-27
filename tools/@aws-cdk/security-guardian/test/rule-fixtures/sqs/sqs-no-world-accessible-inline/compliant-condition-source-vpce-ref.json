@@ -1,0 +1,30 @@
+{
+  "Description": "SQS_NO_WORLD_ACCESSIBLE_INLINE passes: the inline queue policy lets any principal send messages only through the VPC endpoint of the template",
+  "Resources": {
+    "Endpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Properties": {
+        "ServiceName": "com.amazonaws.us-west-2.sqs",
+        "VpcId": "vpc-1a2b3c4d"
+      }
+    },
+    "EndpointSendQueueInlinePolicy": {
+      "Type": "AWS::SQS::QueueInlinePolicy",
+      "Properties": {
+        "Queue": "https://sqs.us-west-2.amazonaws.com/123456789012/example-queue",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "*" },
+              "Action": "sqs:SendMessage",
+              "Resource": "arn:aws:sqs:us-west-2:123456789012:example-queue",
+              "Condition": { "StringEquals": { "aws:SourceVpce": { "Ref": "Endpoint" } } }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

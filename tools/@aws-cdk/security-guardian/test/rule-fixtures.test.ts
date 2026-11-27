@@ -1,6 +1,8 @@
 import { preprocessTemplates } from '../src/template-preprocessor';
 import { runCfnGuardValidation } from '../src/cfn-guard-runner';
-import { failedRules, testCases } from './junit-report';
+import { TemplateVerdicts } from '../src/condition-verdict';
+import { judgeTemplateFiles, verdictsOfResolvedCopies } from '../src/scan';
+import { failedRules, failures, ReportElement, reportTree, testCases } from './junit-report';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -139,6 +141,10 @@ interface PolicyShape {
   readonly resource?: PolicyResource;
   /** The resource's Metadata, such as Metadata.guard.SuppressedRules */
   readonly metadata?: Record<string, unknown>;
+  /** Resources of the template beside the policy, such as one its Condition refers to */
+  readonly otherResources?: Record<string, unknown>;
+  /** Whether a failure must quote the rule's message for a "*" Principal */
+  readonly reportsPrincipalMessage?: boolean;
 }
 
 const fires = { static: 'fail', resolved: 'fail' };
@@ -150,6 +156,18 @@ const roleArn = 'arn:aws:iam::123456789012:role/Example';
 const rootArn = 'arn:aws:iam::123456789012:root';
 // CDK writes ARNs as intrinsic functions, which only the resolved scan turns into strings
 const roleArnJoin = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/Example']] };
+
+// The world access rules pass an Allow statement whose Condition limits it to fixed values, such as
+// a VPC endpoint of the template, in both scans
+const vpcEndpoint = { Type: 'AWS::EC2::VPCEndpoint', Properties: { ServiceName: 'com.amazonaws.us-west-2.s3', VpcId: 'vpc-1a2b3c4d' } };
+const sourceVpceRef = { StringEquals: { 'aws:SourceVpce': { Ref: 'Endpoint' } } };
+const worldPrincipals: Array<[string, unknown]> = [
+  ['"*"', '*'],
+  ['{ AWS: "*" }', { AWS: '*' }],
+  ['{ AWS: ["*"] }', { AWS: ['*'] }],
+  ['{ AWS: [role ARN, "*"] }', { AWS: [roleArn, '*'] }],
+  ['{ AWS: [Fn::Join, "*"] }', { AWS: [roleArnJoin, '*'] }],
+];
 
 // A rule skips a resource whose Metadata.guard.SuppressedRules lists the rule's name, and still checks
 // a resource that suppresses only other rules
@@ -178,7 +196,7 @@ function principalShapes(rule: WorldAccessRule, action: unknown): PolicyShape[] 
     {
       title: 'Principal { AWS: "*" } with an aws:PrincipalOrgID Condition',
       statement: grant('Allow', { AWS: '*' }, { StringEquals: { 'aws:PrincipalOrgID': 'o-exampleorgid' } }),
-      status: fires,
+      status: passes,
     },
     { title: 'Principal { AWS: ["*"] }', statement: grant('Allow', { AWS: ['*'] }), status: fires },
     { title: 'Principal { AWS: [role ARN, "*"] }', statement: grant('Allow', { AWS: [roleArn, '*'] }), status: fires },
@@ -205,6 +223,24 @@ function principalShapes(rule: WorldAccessRule, action: unknown): PolicyShape[] 
     },
     { title: 'a Deny of NotPrincipal { AWS: role ARN }', statement: withNotPrincipal('Deny', { AWS: roleArn }), status: skips },
   ];
+  // Each way to write a "*" Principal passes with a Condition that limits it to a VPC endpoint of
+  // the template, and fires with Conditions that match patterns
+  for (const [title, principal] of worldPrincipals) {
+    shapes.push(
+      {
+        title: `Principal ${title} with StringEquals aws:SourceVpce = Ref to a VPC endpoint of the template`,
+        statement: grant('Allow', principal, sourceVpceRef),
+        otherResources: { Endpoint: vpcEndpoint },
+        status: passes,
+      },
+      ...[['aws:SourceVpc', 'vpc-*'], ['aws:SourceVpce', 'vpce-1a2b3c4?']].map(([key, pattern]): PolicyShape => ({
+        title: `Principal ${title} with StringLike ${key} = "${pattern}"`,
+        statement: grant('Allow', principal, { StringLike: { [key]: pattern } }),
+        status: fires,
+        reportsPrincipalMessage: true,
+      })),
+    );
+  }
   // Of these policy types, only bucket policies accept CanonicalUser principals
   if (rule.type === 'AWS::S3::BucketPolicy') {
     shapes.push({
@@ -362,6 +398,124 @@ const shapeSuites: Record<string, ShapeSuite> = {
   },
 };
 
+/** Policies scanned as a folder of data files, as the action scans the changed templates */
+interface VerdictCase {
+  readonly title: string;
+  /** The data files by name: a template, or text that JSON.parse rejects */
+  readonly files: Record<string, unknown>;
+  /** The rule's status for each data file in each scan; a scan without a status has no test case for the file */
+  readonly status: Record<string, Partial<Record<string, string>>>;
+  /** Whether the failure quotes none of the rule's messages, as for a check on the Statement list itself */
+  readonly checksWithoutMessage?: boolean;
+}
+
+/**
+ * Policies whose statements the Condition verdicts name, or that look as though they do: the rule
+ * passes only where every failed check is on a statement whose Condition limits it
+ */
+function conditionVerdictCases(rule: WorldAccessRule, action: unknown): VerdictCase[] {
+  const statement = (Effect: string, Principal: unknown, Condition?: unknown) =>
+    ({ Effect, Principal, Action: action, Resource: rule.resource, ...(Condition === undefined ? {} : { Condition }) });
+  const limited = statement('Allow', { AWS: '*' }, sourceVpceRef);
+  const unlimited = statement('Allow', { AWS: '*' });
+  const policy = (Statement: unknown, options: { logicalId?: string; metadata?: unknown } = {}) => ({
+    [options.logicalId ?? 'ExamplePolicy']: {
+      Type: rule.type,
+      ...(options.metadata ? { Metadata: options.metadata } : {}),
+      Properties: { ...rule.properties, PolicyDocument: { Version: '2012-10-17', Statement } },
+    },
+  });
+  const template = (...policies: Record<string, unknown>[]) => ({ Resources: Object.assign({ Endpoint: vpcEndpoint }, ...policies) });
+  const oneTemplate = (title: string, Statement: unknown, status: Record<string, string>, options?: { logicalId?: string; metadata?: unknown }): VerdictCase =>
+    ({ title, files: { 'template.json': template(policy(Statement, options)) }, status: { 'template.json': status } });
+  const trailingComma = JSON.stringify(template(policy([limited])), null, 2).replace(/\n}$/, ',\n}');
+
+  const cases: VerdictCase[] = [
+    oneTemplate('a policy with a limited statement and a statement for Principal { AWS: "*" } without Condition', [limited, unlimited], fires),
+    oneTemplate('a policy with a limited statement and a statement for a role ARN', [limited, statement('Allow', { AWS: roleArn })], passes),
+    oneTemplate('a statement with Principal "*", NotPrincipal and a limiting Condition', [{ ...statement('Allow', '*', sourceVpceRef), NotPrincipal: { AWS: roleArn } }], fires),
+    oneTemplate('a limited Statement written as one object', limited, passes),
+    oneTemplate('a Statement without Condition written as one object', unlimited, fires),
+    oneTemplate('a limited Statement written as one object in a resource with logical ID Policy', limited, passes, { logicalId: 'Policy' }),
+    oneTemplate('a Statement without Condition written as one object in a resource with logical ID Policy', unlimited, fires, { logicalId: 'Policy' }),
+    {
+      title: 'two templates with the same logical ID and statement index, one limited and one without Condition',
+      files: { 'limited.json': template(policy([limited])), 'unlimited.json': template(policy([unlimited])) },
+      status: { 'limited.json': passes, 'unlimited.json': fires },
+    },
+    {
+      title: 'a template with a limited policy and a policy without Condition',
+      files: { 'template.json': template(policy([limited], { logicalId: 'LimitedPolicy' }), policy([unlimited], { logicalId: 'OpenPolicy' })) },
+      status: { 'template.json': fires },
+    },
+    { ...oneTemplate('an empty Statement list', [], fires), checksWithoutMessage: true },
+    // cfn-guard reads a trailing comma that JSON.parse rejects, and the preprocessor writes no resolved copy
+    { title: 'a limited statement in a template with a trailing comma', files: { 'template.json': trailingComma }, status: { 'template.json': { static: 'fail' } } },
+    oneTemplate('a statement without Condition that holds a verdict-like key and the text of a check location', [{
+      ...unlimited,
+      Sid: '[Path=/Resources/Policy/Properties/PolicyDocument/Statement/0/Principal[L:1,C:1] Value="*"]',
+      SecurityGuardianConditionRestricts: true,
+    }], fires, { logicalId: 'Policy' }),
+    oneTemplate('a limited statement with the rule suppressed', [limited], skips, { metadata: { guard: { SuppressedRules: [anotherRuleName, rule.ruleName] } } }),
+    oneTemplate('a limited statement with another rule suppressed', [limited], passes, { metadata: { guard: { SuppressedRules: [anotherRuleName] } } }),
+    oneTemplate('a Deny of Principal { AWS: "*" } with a limiting Condition', [statement('Deny', { AWS: '*' }, sourceVpceRef)], skips),
+    oneTemplate('a policy with a limited statement and an Allow statement with NotPrincipal', [
+      limited,
+      { Effect: 'Allow', NotPrincipal: { AWS: roleArn }, Action: action, Resource: rule.resource },
+    ], fires),
+    oneTemplate('a limiting Condition on a statement for Principal { AWS: [] }', [statement('Allow', { AWS: [] }, sourceVpceRef)], passes),
+    // cfn-guard writes keys into a location as they are, so such a logical ID extends the location of the other resource's statement
+    ...[0, 1].map((index): VerdictCase => ({
+      title: `a limited statement ${index} beside a policy without Condition whose logical ID extends that statement's location`,
+      files: {
+        'template.json': template(
+          policy([...(index === 1 ? [statement('Allow', { AWS: roleArn })] : []), limited], { logicalId: 'Policy' }),
+          policy([unlimited], { logicalId: `Policy/Properties/PolicyDocument/Statement/${index}/Principal` }),
+        ),
+      },
+      status: { 'template.json': fires },
+    })),
+  ];
+  return cases.map(verdictCase => ({ ...verdictCase, title: `${verdictCase.title} for Action ${JSON.stringify(action)}` }));
+}
+
+/**
+ * Preprocesses a folder of templates the way the action does and returns the Condition verdicts
+ * each scan uses. Only the world access rules use them.
+ */
+function scanVerdicts(ruleId: string, staticDir: string, resolvedDir: string): Record<string, Map<string, TemplateVerdicts> | undefined> {
+  const committed = ruleId in worldAccessRules ? judgeTemplateFiles(staticDir) : undefined;
+  const { mapping } = preprocessTemplates(staticDir, resolvedDir);
+  return { static: committed, resolved: committed && verdictsOfResolvedCopies(committed, mapping) };
+}
+
+/** The ##ERROR:…## messages in a rule file or in a failure's text */
+function errorTexts(text: string): string[] {
+  return [...text.matchAll(/##ERROR:[\s\S]*?##/g)].map(match => match[0]);
+}
+
+/** The message a world access rule gives for a "*" Principal, as its rule file writes it */
+function principalErrorText(ruleFile: string): string {
+  const messages = new Set([...fs.readFileSync(ruleFile, 'utf8').matchAll(/Principal(?:\.AWS(?:\[\*\]\[ this is_string \])?)? != "\*"\s*<<(##ERROR:[\s\S]*?##)>>/g)].map(match => match[1]));
+  if (messages.size !== 1) {
+    throw new Error(`expected one message for a "*" Principal in ${ruleFile}, found ${JSON.stringify([...messages])}`);
+  }
+  return [...messages][0];
+}
+
+/** The test cases of each data file in a report, by the file's name */
+function resultsByFile(report: string): Map<string, { ruleFile: string; status: string; message?: string; text?: string }[]> {
+  return new Map((reportTree(report).children as ReportElement[]).map(testsuite => [
+    path.basename(testsuite.attributes.name),
+    (testsuite.children as ReportElement[]).map(testCase => {
+      const failure = testCase.children.find((child): child is ReportElement => typeof child !== 'string' && child.name === 'failure');
+      return failure
+        ? { ruleFile: testCase.attributes.name, status: 'fail', message: failure.attributes.message, text: failure.children.join('') }
+        : { ruleFile: testCase.attributes.name, status: testCase.attributes.status };
+    }),
+  ]));
+}
+
 describe('Guard Rule Fixtures', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'security-guardian-rule-fixtures-'));
 
@@ -393,6 +547,7 @@ describe('Guard Rule Fixtures', () => {
     const fireCases = cases.filter(([scan, fixture]) => !isSkipped(scan, fixture) && fixture.startsWith('non-'));
     const passCases = cases.filter(([scan, fixture]) => !isSkipped(scan, fixture) && !fixture.startsWith('non-'));
     let ruleName: string;
+    let verdicts: Record<string, Map<string, TemplateVerdicts> | undefined>;
 
     beforeAll(() => {
       const ruleNames = [...fs.readFileSync(ruleFile, 'utf8').matchAll(/^rule\s+(\w+)/gm)].map(match => match[1]);
@@ -407,13 +562,13 @@ describe('Guard Rule Fixtures', () => {
       }
 
       fs.mkdirSync(reportDir, { recursive: true });
-      preprocessTemplates(fixtureDir, resolvedDir);
+      verdicts = scanVerdicts(ruleId, fixtureDir, resolvedDir);
     });
 
     async function validate(scan: string, fixture: string) {
       const dataFile = path.join(scan === 'static' ? fixtureDir : resolvedDir, fixture);
       const report = path.join(reportDir, `${scan}-${path.basename(fixture, '.json')}.xml`);
-      const success = await runCfnGuardValidation(dataFile, ruleFile, report, scan, new Map(), false);
+      const success = await runCfnGuardValidation(dataFile, ruleFile, report, scan, new Map(), false, verdicts[scan]);
       return { success, report };
     }
 
@@ -451,6 +606,7 @@ describe('Guard Rule Fixtures', () => {
     const ruleFile = path.join(rulesDir, `${ruleId}.guard`);
     const shapesDir = path.join(outputDir, 'policy-shapes', ruleId);
     const shapes = rule.shapes;
+    let verdicts: Record<string, Map<string, TemplateVerdicts> | undefined>;
 
     beforeAll(() => {
       fs.mkdirSync(path.join(shapesDir, 'static'), { recursive: true });
@@ -458,6 +614,7 @@ describe('Guard Rule Fixtures', () => {
         const resource = shape.resource ?? rule.resource;
         const template = {
           Resources: {
+            ...shape.otherResources,
             Policy: {
               Type: resource.type,
               ...(shape.metadata ? { Metadata: shape.metadata } : {}),
@@ -467,7 +624,7 @@ describe('Guard Rule Fixtures', () => {
         };
         fs.writeFileSync(path.join(shapesDir, 'static', `${index}.json`), JSON.stringify(template, null, 2));
       });
-      preprocessTemplates(path.join(shapesDir, 'static'), path.join(shapesDir, 'resolved'));
+      verdicts = scanVerdicts(ruleId, path.join(shapesDir, 'static'), path.join(shapesDir, 'resolved'));
     });
 
     const cases = scans.flatMap(scan => shapes.map((shape, index): [string, string, number] =>
@@ -476,11 +633,106 @@ describe('Guard Rule Fixtures', () => {
     test.each(cases)('%s', async (_name, scan, index) => {
       const status = shapes[index].status[scan];
       const report = path.join(shapesDir, `${scan}-${index}.xml`);
-      const success = await runCfnGuardValidation(path.join(shapesDir, scan, `${index}.json`), ruleFile, report, scan, new Map(), false);
+      const success = await runCfnGuardValidation(path.join(shapesDir, scan, `${index}.json`), ruleFile, report, scan, new Map(), false, verdicts[scan]);
 
       expect(testCases(report)).toEqual([{ ruleFile: path.basename(ruleFile), status }]);
       expect(failedRules(report)).toEqual(status === 'fail' ? [rule.ruleName] : []);
       expect(success).toBe(status !== 'fail');
+      if (shapes[index].reportsPrincipalMessage) {
+        expect(failures(report).map(failure => failure.text)).toEqual([expect.stringContaining(principalErrorText(ruleFile))]);
+      }
+    });
+  });
+
+  describe.each(Object.keys(worldAccessRules))('rules/%s.guard with Condition verdicts', (ruleId) => {
+    const rule = worldAccessRules[ruleId];
+    const ruleFile = path.join(rulesDir, `${ruleId}.guard`);
+    const casesDir = path.join(outputDir, 'verdict-cases', ruleId);
+    const verdictCases = rule.actions.flatMap(action => conditionVerdictCases(rule, action));
+    const verdicts: Array<Record<string, Map<string, TemplateVerdicts> | undefined>> = [];
+
+    beforeAll(() => {
+      verdictCases.forEach((verdictCase, index) => {
+        const staticDir = path.join(casesDir, `${index}`, 'static');
+        fs.mkdirSync(staticDir, { recursive: true });
+        // As in the action, the resolved scan's folder exists even when the preprocessor writes no copy into it
+        fs.mkdirSync(path.join(casesDir, `${index}`, 'resolved'));
+        for (const [file, content] of Object.entries(verdictCase.files)) {
+          fs.writeFileSync(path.join(staticDir, file), typeof content === 'string' ? content : JSON.stringify(content, null, 2));
+        }
+        verdicts[index] = scanVerdicts(ruleId, staticDir, path.join(casesDir, `${index}`, 'resolved'));
+      });
+    });
+
+    const cases = scans.flatMap(scan => verdictCases.map((verdictCase, index): [string, string, number] =>
+      [`${scan}: ${Object.entries(verdictCase.status).map(([file, status]) => `${file} ${status[scan] ?? 'has no test case'}`).join(', ')} for ${verdictCase.title}`, scan, index]));
+
+    test.each(cases)('%s', async (_name, scan, index) => {
+      const verdictCase = verdictCases[index];
+      const report = path.join(casesDir, `${scan}-${index}.xml`);
+      const success = await runCfnGuardValidation(path.join(casesDir, `${index}`, scan), ruleFile, report, scan, new Map(), false, verdicts[index][scan]);
+
+      const results = resultsByFile(report);
+      const expected = Object.entries(verdictCase.status).filter(([, status]) => status[scan] !== undefined);
+      expect([...results.keys()].sort()).toEqual(expected.map(([file]) => file).sort());
+      for (const [file, status] of expected) {
+        const result = results.get(file)!;
+        expect([file, result.map(testCase => testCase.status)]).toEqual([file, [status[scan]]]);
+        if (status[scan] === 'fail') {
+          // The failure keeps the rule's own messages, as the rule file writes them
+          const texts = errorTexts(result[0].text!);
+          expect(result[0].message).toBe(`[Type: ${scan}] ${rule.ruleName}`);
+          expect(texts.filter(text => !errorTexts(fs.readFileSync(ruleFile, 'utf8')).includes(text))).toEqual([]);
+          expect(texts.includes(principalErrorText(ruleFile))).toBe(!verdictCase.checksWithoutMessage);
+        }
+      }
+      expect(success).toBe(expected.every(([, status]) => status[scan] !== 'fail'));
+    });
+  });
+
+  describe('a bucket policy statement for [any principal, an account root] with a fixed aws:SourceVpce, scanned with every rule', () => {
+    const caseDir = path.join(outputDir, 'verdict-cases', 'all-rules');
+    const template = {
+      Resources: {
+        ExamplePolicy: {
+          Type: 'AWS::S3::BucketPolicy',
+          Properties: {
+            Bucket: 'example-bucket',
+            PolicyDocument: {
+              Version: '2012-10-17',
+              Statement: [{
+                Effect: 'Allow',
+                Principal: { AWS: ['*', rootArn] },
+                Action: 's3:GetObject',
+                Resource: 'arn:aws:s3:::example-bucket/*',
+                Condition: { StringLike: { 'aws:SourceVpce': 'vpce-1a2b3c4d' } },
+              }],
+            },
+          },
+        },
+      },
+    };
+    let verdicts: Record<string, Map<string, TemplateVerdicts> | undefined>;
+
+    beforeAll(() => {
+      fs.mkdirSync(path.join(caseDir, 'static'), { recursive: true });
+      fs.writeFileSync(path.join(caseDir, 'static', 'template.json'), JSON.stringify(template, null, 2));
+      verdicts = scanVerdicts('s3/s3-no-world-readable', path.join(caseDir, 'static'), path.join(caseDir, 'resolved'));
+    });
+
+    test.each(scans)('%s: S3_NO_WORLD_READABLE passes, RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS still fires and every other rule keeps its status', async (scan) => {
+      const withVerdicts = path.join(caseDir, `${scan}-verdicts.xml`);
+      const withoutVerdicts = path.join(caseDir, `${scan}.xml`);
+      const success = await runCfnGuardValidation(path.join(caseDir, scan), rulesDir, withVerdicts, scan, new Map(), false, verdicts[scan]);
+      await runCfnGuardValidation(path.join(caseDir, scan), rulesDir, withoutVerdicts, scan, new Map(), false);
+
+      const statuses = (report: string) => Object.fromEntries(resultsByFile(report).get('template.json')!.map(testCase => [testCase.ruleFile, testCase.status]));
+      const before = statuses(withoutVerdicts);
+      expect(before['s3-no-world-readable.guard']).toBe('fail');
+      expect(before['resource-policy-root-principal-needs-conditions.guard']).toBe('fail');
+      expect(statuses(withVerdicts)).toEqual({ ...before, 's3-no-world-readable.guard': 'pass' });
+      expect(failedRules(withVerdicts)).toEqual(['RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS']);
+      expect(success).toBe(false);
     });
   });
 });

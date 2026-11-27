@@ -1,0 +1,30 @@
+{
+  "Description": "SNS_NO_WORLD_ACCESSIBLE_INLINE passes: the topic's inline policy lets any principal publish only through the VPC endpoint of the template",
+  "Resources": {
+    "Endpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Properties": {
+        "ServiceName": "com.amazonaws.us-west-2.sns",
+        "VpcId": "vpc-1a2b3c4d"
+      }
+    },
+    "EndpointPublishTopicInlinePolicy": {
+      "Type": "AWS::SNS::TopicInlinePolicy",
+      "Properties": {
+        "TopicArn": "arn:aws:sns:us-west-2:123456789012:example-topic",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "*" },
+              "Action": "sns:Publish",
+              "Resource": "arn:aws:sns:us-west-2:123456789012:example-topic",
+              "Condition": { "StringEquals": { "aws:SourceVpce": { "Ref": "Endpoint" } } }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

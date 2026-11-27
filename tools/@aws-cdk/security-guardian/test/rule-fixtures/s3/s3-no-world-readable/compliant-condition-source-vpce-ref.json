@@ -1,0 +1,30 @@
+{
+  "Description": "S3_NO_WORLD_READABLE passes: any principal can read objects only through the VPC endpoint of the template",
+  "Resources": {
+    "Endpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Properties": {
+        "ServiceName": "com.amazonaws.us-west-2.s3",
+        "VpcId": "vpc-1a2b3c4d"
+      }
+    },
+    "EndpointReadBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "example-bucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "*" },
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::example-bucket/*",
+              "Condition": { "StringEquals": { "aws:SourceVpce": { "Ref": "Endpoint" } } }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
