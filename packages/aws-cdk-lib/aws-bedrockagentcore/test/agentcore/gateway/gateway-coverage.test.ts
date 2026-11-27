@@ -25,7 +25,7 @@ import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
 import { GatewayProtocol, MCPProtocolVersion, McpGatewaySearchType } from '../../../lib/gateway/protocol';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
-import { ApiGatewayHttpMethod } from '../../../lib/gateway/targets/target-configuration';
+import { ApiGatewayHttpMethod, McpListingMode } from '../../../lib/gateway/targets/target-configuration';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
 
 /**
@@ -1362,6 +1362,50 @@ describe('Gateway target convenience methods tests', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
         CredentialProviderConfigurations: Match.absent(),
+      });
+    });
+
+    test('Should render ListingMode DEFAULT on GatewayTarget when specified', () => {
+      gateway.addMcpServerTarget('McpTargetDefault', {
+        gatewayTargetName: 'mcp-target-default',
+        endpoint: 'https://mcp-server.example.com',
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
+        listingMode: McpListingMode.DEFAULT,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'mcp-target-default',
+        TargetConfiguration: {
+          Mcp: {
+            McpServer: {
+              Endpoint: 'https://mcp-server.example.com',
+              ListingMode: 'DEFAULT',
+            },
+          },
+        },
+      });
+    });
+
+    test('Should render ListingMode DYNAMIC on GatewayTarget when specified', () => {
+      gateway.addMcpServerTarget('McpTargetDynamic', {
+        gatewayTargetName: 'mcp-target-dynamic',
+        endpoint: 'https://mcp-server.example.com',
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
+        listingMode: McpListingMode.DYNAMIC,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'mcp-target-dynamic',
+        TargetConfiguration: {
+          Mcp: {
+            McpServer: {
+              Endpoint: 'https://mcp-server.example.com',
+              ListingMode: 'DYNAMIC',
+            },
+          },
+        },
       });
     });
   });

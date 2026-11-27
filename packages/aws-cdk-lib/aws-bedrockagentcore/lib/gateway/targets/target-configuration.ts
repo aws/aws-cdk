@@ -317,6 +317,33 @@ export class SmithyTargetConfiguration extends McpTargetConfiguration {
  *****************************************************************************/
 
 /**
+ * The listing mode for an MCP server gateway target.
+ */
+export enum McpListingMode {
+  /**
+   * Syncs the server's tools at create/update time.
+   */
+  DEFAULT = 'DEFAULT',
+
+  /**
+   * Discovers tools dynamically at runtime.
+   */
+  DYNAMIC = 'DYNAMIC',
+}
+
+/**
+ * Configuration options for MCP Server targets
+ */
+export interface McpServerTargetConfigurationProps {
+  /**
+   * The listing mode for the MCP server tools.
+   *
+   * @default - CloudFormation default (syncs at create/update time or provider default)
+   */
+  readonly listingMode?: McpListingMode;
+}
+
+/**
  * Configuration for MCP Server-based targets
  *
  * MCP (Model Context Protocol) servers provide tools, data access, and custom
@@ -329,10 +356,14 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
    * Create an MCP server target configuration
    *
    * @param endpoint The HTTPS endpoint URL of the MCP server
+   * @param props Optional configuration options for the MCP server
    * @returns A new McpServerTargetConfiguration instance
    */
-  public static create(endpoint: string): McpServerTargetConfiguration {
-    return new McpServerTargetConfiguration(endpoint);
+  public static create(
+    endpoint: string,
+    props?: McpServerTargetConfigurationProps,
+  ): McpServerTargetConfiguration {
+    return new McpServerTargetConfiguration(endpoint, props);
   }
 
   public readonly targetType = McpTargetType.MCP_SERVER;
@@ -342,9 +373,15 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
    */
   public readonly endpoint: string;
 
-  constructor(endpoint: string) {
+  /**
+   * The listing mode for the MCP server tools
+   */
+  public readonly listingMode?: McpListingMode;
+
+  constructor(endpoint: string, props?: McpServerTargetConfigurationProps) {
     super();
     this.endpoint = endpoint;
+    this.listingMode = props?.listingMode;
     this.validateEndpoint(endpoint);
   }
 
@@ -366,7 +403,10 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
    */
   protected renderMcpConfiguration(): any {
     return {
-      mcpServer: { endpoint: this.endpoint },
+      mcpServer: {
+        endpoint: this.endpoint,
+        ...(this.listingMode ? { listingMode: this.listingMode } : {}),
+      },
     };
   }
 
