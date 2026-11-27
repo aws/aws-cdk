@@ -714,6 +714,27 @@ test('Bundling a function with uv dependencies', () => {
 });
 
 describe('local bundling wiring', () => {
+  test('rejects Docker options when local bundling is skipped', () => {
+    expect(() => Bundling.bundle({
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_11,
+      skip: true,
+      localBundling: {},
+      image: DockerImage.fromRegistry('custom-image'),
+    })).toThrow('localBundling cannot be combined with Docker options: image.');
+    expect(Code.fromAsset).not.toHaveBeenCalled();
+  });
+
+  test('rejects incompatible platform tags when local bundling is skipped', () => {
+    expect(() => Bundling.bundle({
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_11,
+      skip: true,
+      localBundling: { additionalPlatformTags: ['manylinux2014_aarch64'] },
+    })).toThrow(/Platform tag 'manylinux2014_aarch64' does not match Lambda architecture/);
+    expect(Code.fromAsset).not.toHaveBeenCalled();
+  });
+
   test.each([
     ['buildArgs', { PIP_INDEX_URL: 'https://example.test/simple' }],
     ['bundlingFileAccess', BundlingFileAccess.VOLUME_COPY],

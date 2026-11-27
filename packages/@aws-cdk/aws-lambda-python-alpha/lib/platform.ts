@@ -2,6 +2,7 @@ import { UnscopedValidationError } from 'aws-cdk-lib';
 import type { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Architecture, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { LocalBundlingOptions } from './types';
 
 /**
  * Minor Python version at and above which the Lambda runtime base image is
@@ -32,7 +33,16 @@ export function validateArchitecture(architecture: Architecture): void {
   }
 }
 
-export function validatePlatformTags(runtime: Runtime, architecture: Architecture, platformTags: string[]): void {
+export function resolvePlatformTags(runtime: Runtime, architecture: Architecture, options: LocalBundlingOptions): string[] {
+  const tags = [
+    ...(options.platformTags ?? defaultPlatformTags(runtime, architecture)),
+    ...(options.additionalPlatformTags ?? []),
+  ];
+  validatePlatformTags(runtime, architecture, tags);
+  return tags;
+}
+
+function validatePlatformTags(runtime: Runtime, architecture: Architecture, platformTags: string[]): void {
   if (platformTags.length === 0) {
     throw new UnscopedValidationError(
       lit`PythonLocalBundlingEmptyPlatformTags`,

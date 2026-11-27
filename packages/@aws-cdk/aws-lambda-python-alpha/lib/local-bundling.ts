@@ -7,7 +7,7 @@ import type * as cdk from 'aws-cdk-lib/core';
 import { lit, profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Packaging } from './packaging';
 import { DependenciesFile } from './packaging';
-import { defaultPlatformTags, runtimeToAbiTag, runtimeToPythonVersion, validatePlatformTags } from './platform';
+import { resolvePlatformTags, runtimeToAbiTag, runtimeToPythonVersion } from './platform';
 import type { ICommandHooks } from './types';
 import { runCommand } from './util';
 
@@ -34,11 +34,7 @@ export class LocalBundling implements cdk.ILocalBundling {
   constructor(private readonly props: LocalBundlingProps) {
     const pythonVersion = runtimeToPythonVersion(props.runtime);
     const abiTag = runtimeToAbiTag(props.runtime);
-    const tags = [
-      ...(props.platformTags ?? defaultPlatformTags(props.runtime, props.architecture)),
-      ...(props.additionalPlatformTags ?? []),
-    ];
-    validatePlatformTags(props.runtime, props.architecture, tags);
+    const tags = resolvePlatformTags(props.runtime, props.architecture, props);
     // Check before asset staging so a previously bundled copy cannot bypass validation.
     validateSourceSymlinks(props.entry, props.excludes);
     this.pipArgs = [

@@ -7,6 +7,7 @@ import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit, posixShellEscape, recordPerformanceEntry } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { LocalBundling } from './local-bundling';
 import { Packaging, DependenciesFile } from './packaging';
+import { resolvePlatformTags } from './platform';
 import type { BundlingOptions, ICommandHooks } from './types';
 
 /**
@@ -95,6 +96,10 @@ export class Bundling implements CdkBundlingOptions {
     }
 
     if (options.skip) {
+      if (options.localBundling) {
+        validateLocalBundlingOptions(options);
+        resolvePlatformTags(options.runtime, options.architecture ?? Architecture.X86_64, options.localBundling);
+      }
       // Skipped assets are staged without bundling options, so asset staging can't count them
       recordPerformanceEntry('bundle:PythonFunction:skipped', { telemetry: true });
     }
@@ -135,15 +140,7 @@ export class Bundling implements CdkBundlingOptions {
     } = props;
 
     if (props.localBundling) {
-      const incompatible = Object.entries(props)
-        .filter(([key, value]) => value !== undefined && LOCAL_BUNDLING_SUPPORT[key as keyof BundlingProps] !== true)
-        .map(([key]) => key);
-      if (incompatible.length > 0) {
-        throw new UnscopedValidationError(
-          lit`PythonLocalBundlingDockerOptions`,
-          `localBundling cannot be combined with Docker options: ${incompatible.join(', ')}.`,
-        );
-      }
+      validateLocalBundlingOptions(props);
     }
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -203,6 +200,18 @@ export class Bundling implements CdkBundlingOptions {
         environment: props.environment,
       });
     }
+  }
+}
+
+function validateLocalBundlingOptions(props: BundlingProps): void {
+  const incompatible = Object.entries(props)
+    .filter(([key, value]) => value !== undefined && LOCAL_BUNDLING_SUPPORT[key as keyof BundlingProps] !== true)
+    .map(([key]) => key);
+  if (incompatible.length > 0) {
+    throw new UnscopedValidationError(
+      lit`PythonLocalBundlingDockerOptions`,
+      `localBundling cannot be combined with Docker options: ${incompatible.join(', ')}.`,
+    );
   }
 }
 
