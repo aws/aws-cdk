@@ -1,6 +1,6 @@
 ---
 name: cdk-review-skill-authoring
-description: "Practices for writing and editing the AWS CDK review skills in skills/cdk-review/: what backs a rule, how a rule states its case, scope, tier and ID, what to leave out, what a finding's comment holds, how to add a skill, and how to check a change before merging. Use when adding, changing or removing a review rule, or editing a review skill's SKILL.md or reference files."
+description: "Practices for writing and editing the AWS CDK review skills in skills/cdk-review/: what backs a rule, how a rule states its case, scope, tier and ID, what to leave out, what a finding's comment holds, how to add a skill, and how to check a change before merging. Use when adding, changing or removing a review rule, adding a review skill, or editing a review skill's SKILL.md or reference files."
 ---
 
 # Authoring the CDK review skills
@@ -29,25 +29,24 @@ rather than restate them.
   is not a condition.
 - **Scope a rule** as its guide is scoped, for example to stable modules, and define a term several rules
   share once, in the principles.
-- **Take the tier** from what backs the rule: BLOCKING for a guide's MUST or MUST NOT in capitals,
-  RECOMMENDED otherwise, unless the rule states its own case and tier. A Tier line names a second case the
-  reviewer can tell apart from the header's.
+- **Take the tier** from the guide line the rule rests on: BLOCKING for a MUST or MUST NOT in capitals,
+  RECOMMENDED otherwise. Depart from it only for a case the rule states, after reading how the library treats
+  that case. A Tier line names a second case the reviewer can tell apart from the header's.
 - **Name the case in the ID.** When the case changes, change the ID and every mention of it; when only the
   words change, keep the ID.
 - **Say what the fix has to respect** where a wrong fix is the risk.
 - **Link aws-cdk files** at `https://github.com/aws/aws-cdk/blob/main/...`; `scripts/check-skills.js`
   checks those links and anchors, not a link pinned to a commit.
-- **Match the [comment format](https://github.com/aws/aws-cdk/blob/main/skills/cdk-review/cdk-review-principles/references/pr-comment-format.md):**
-  the message says what is wrong and what goes wrong for a user or a maintainer, and links the guide; a
-  finding on a guide line alone adds the words that state the requirement; the change goes in the
-  suggested fix.
+- **Leave what a finding's comment holds to the
+  [comment format](https://github.com/aws/aws-cdk/blob/main/skills/cdk-review/cdk-review-principles/references/pr-comment-format.md)**;
+  a rule states its case, not the comment.
 
 ## Leave out
 
 - **Leave to the build and the pull request linter**
   ([`prlint/lint.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/lint.ts)) a case they
-  already fail, stated by the pull request's title and files. A check that reads free text, such as a
-  breaking-change note, does not count.
+  already fail. Name a linter check by what it reads, the pull request's title and files; a linter check
+  that reads free text, such as a breaking-change note, does not count.
 - **Keep one home.** A rule sits in the dimension that owns it; restated guide text, duplicates across
   skills, rationale and text about the file go.
 - **Use plain words** at normal volume: no coined or informal terms, no capitals or MUST aimed at the
@@ -80,4 +79,4 @@ rather than restate them.
   confirm the result on pull requests the wording never saw, against the current skills. One review of one
   pull request is one observation.
 - **Report a wrong outcome outside the skills** when the reviewer followed the text and still reached it:
-  the cause is in what runs the skills, and more text does not fix it.
+  the cause is in a guide or in what runs the skills, and more text does not fix it.
