@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "aws-cdk-eks-asg-al2023/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-asg-al2023-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-asg-al2023/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksasgal2023DefaultTestDeployAssert05E695E2"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
