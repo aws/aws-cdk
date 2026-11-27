@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "S3MrapOriginTest/DefaultTest": {
+      "stacks": [
+        "cloudfront-s3-mrap-origin"
+      ],
+      "assertionStack": "S3MrapOriginTest/DefaultTest/DeployAssert",
+      "assertionStackName": "S3MrapOriginTestDefaultTestDeployAssert7440E3D0"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
