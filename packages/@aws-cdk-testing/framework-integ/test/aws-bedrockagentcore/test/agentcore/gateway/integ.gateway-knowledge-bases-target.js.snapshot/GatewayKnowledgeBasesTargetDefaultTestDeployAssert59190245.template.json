@@ -42,7 +42,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795657625982"
+    "salt": "1795758850353"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -270,6 +270,55 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputRefToolCallerED5CBE22CCD2BE17"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -379,6 +428,46 @@
          ],
          "Resource": [
           "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputRefToolCallerED5CBE22CCD2BE17"
+             }
+            ]
+           ]
+          }
          ]
         }
        ]
@@ -499,7 +588,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795657625985"
+    "salt": "1795758850357"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -663,7 +752,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795657625985"
+    "salt": "1795758850358"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -784,6 +873,173 @@
    "DependsOn": [
     "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770"
    ]
+  },
+  "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"\\\"allSucceeded\\\":true\"}}}",
+    "stateMachineArn": {
+     "Ref": "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitFor0C570E0D"
+    },
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputRefToolCallerED5CBE22CCD2BE17"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795758850417"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2Invoke31200DB1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputRefToolCallerED5CBE22CCD2BE17"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForIsCompleteProviderInvokeEC18811C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForRole2CEC8265",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForTimeoutProviderInvoke188F98E4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForRole2CEC8265",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForRole2CEC8265": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitFor0C570E0D": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":20,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForRole2CEC8265",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForRole2CEC8265"
+   ]
   }
  },
  "Outputs": {
@@ -807,6 +1063,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke1fb72e59a761d582aea05d64ac3672c2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2",
      "assertion"
     ]
    }

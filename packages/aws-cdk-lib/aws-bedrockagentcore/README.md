@@ -1777,7 +1777,7 @@ use `addKnowledgeBasesTarget()` or `GatewayTarget.forKnowledgeBases()`. The conn
 - `retrieve` configures the `Retrieve` tool, which performs a single search on one knowledge base and returns the most relevant passages
 
 The target exposes only the tools you configure. Agentic retrieval runs with the service-managed foundation model.
-To attach a guardrail, filter results by metadata, or use your own foundation or reranking model, add the fields with
+To filter results by metadata, use your own foundation or reranking model, or attach a guardrail, add the fields with
 a property override on the target's `CfnGatewayTarget`. The target keeps the permissions described below, and you grant
 the gateway role what the added fields need. The first number in the path is the position of the tool:
 `AgenticRetrieveStream` comes first when it is configured. The number after `retrievers` is the position of the retriever.
@@ -1786,15 +1786,49 @@ the gateway role what the added fields need. The first number in the path is the
 declare const knowledgeBasesTarget: agentcore.GatewayTarget;
 
 const cfnTarget = knowledgeBasesTarget.node.defaultChild as agentcore.CfnGatewayTarget;
-cfnTarget.addPropertyOverride(
-  "TargetConfiguration.Mcp.Connector.Configurations.0.ParameterValues.agenticRetrieveConfiguration.policyConfiguration",
-  { guardrailConfiguration: { guardrailId: "abcdefghijkl", guardrailVersion: "1" } },
-);
 // Only return results from the first retriever whose "team" metadata is "platform"
 cfnTarget.addPropertyOverride(
   "TargetConfiguration.Mcp.Connector.Configurations.0.ParameterValues.retrievers.0.configuration.knowledgeBase.retrievalOverrides.filter",
   { equals: { key: "team", value: "platform" } },
 );
+```
+
+A guardrail is only supported with your own foundation model, so it takes three overrides: `foundationModelType: CUSTOM`,
+the model in `foundationModelConfiguration`, and the guardrail in `policyConfiguration`. `policyConfiguration` sits next to
+`agenticRetrieveConfiguration`, not inside it. The gateway role then needs permission to apply the guardrail and to invoke the model.
+When the guardrail blocks a request, the tool call can fail with an error instead of returning the blocked message.
+
+```typescript fixture=default
+declare const gateway: agentcore.Gateway;
+declare const knowledgeBasesTarget: agentcore.GatewayTarget;
+declare const guardrail: bedrock.CfnGuardrail;
+declare const guardrailVersion: bedrock.CfnGuardrailVersion;
+
+const stack = cdk.Stack.of(gateway);
+const inferenceProfileArn = stack.formatArn({ service: "bedrock", resource: "inference-profile", resourceName: "us.amazon.nova-pro-v1:0" });
+const parameterValues = "TargetConfiguration.Mcp.Connector.Configurations.0.ParameterValues";
+const cfnTarget = knowledgeBasesTarget.node.defaultChild as agentcore.CfnGatewayTarget;
+
+cfnTarget.addPropertyOverride(`${parameterValues}.agenticRetrieveConfiguration.foundationModelType`, "CUSTOM");
+cfnTarget.addPropertyOverride(`${parameterValues}.agenticRetrieveConfiguration.foundationModelConfiguration`, {
+  type: "BEDROCK_FOUNDATION_MODEL",
+  bedrockFoundationModelConfiguration: { modelConfiguration: { modelArn: inferenceProfileArn } },
+});
+cfnTarget.addPropertyOverride(`${parameterValues}.policyConfiguration`, {
+  bedrockGuardrailConfiguration: { guardrailId: guardrail.attrGuardrailId, guardrailVersion: guardrailVersion.attrVersion },
+});
+
+gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ["bedrock:GetGuardrail", "bedrock:ApplyGuardrail"],
+  resources: [guardrail.attrGuardrailArn],
+}));
+gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ["bedrock:GetInferenceProfile", "bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+  resources: [
+    inferenceProfileArn,
+    stack.formatArn({ service: "bedrock", region: "*", account: "", resource: "foundation-model", resourceName: "amazon.nova-pro-v1:0" }),
+  ],
+}));
 ```
 
 The construct grants the gateway role the permissions the configured tools need:
@@ -1804,6 +1838,15 @@ The construct grants the gateway role the permissions the configured tools need:
 - `bedrock:AgenticRetrieveStream`, which does not support resource-level permissions, when `agenticRetrieve` is configured
 - `kms:Decrypt` on the `encryptionKey` of a knowledge base, when you pass one. The grant only applies to requests
   made through Amazon Bedrock (`kms:ViaService`)
+
+For `agenticRetrieve`, the AgentCore gateway guide lists only `bedrock:GetKnowledgeBase` and `bedrock:AgenticRetrieveStream`,
+but agentic retrieval also calls `Retrieve` and `GetDocumentContent` with the gateway role, as the Amazon Bedrock User Guide
+lists. The construct does not grant `bedrock:InvokeModelWithResponseStream`: with the service-managed foundation model,
+Amazon Bedrock does not invoke the model with the gateway role's credentials. Grant it yourself, on your model only,
+when you override the foundation model.
+
+The `kms:Decrypt` grant is added to the gateway role's policy, so the key policy must allow IAM policies to grant
+access to the key, as the default key policy does. For a key in another account, the key policy must also allow the gateway role.
 
 If a knowledge base is encrypted with a customer managed KMS key, pass that key as `encryptionKey` next to the knowledge base.
 Amazon Bedrock requires the caller to have decrypt permission on the key, and tool calls fail with an access denied error without it.

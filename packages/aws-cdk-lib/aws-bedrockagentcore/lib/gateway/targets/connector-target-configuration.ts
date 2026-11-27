@@ -3,7 +3,6 @@ import { McpTargetType } from './target-base';
 import type { TargetConfigurationConfig } from './target-configuration';
 import { McpTargetConfiguration } from './target-configuration';
 import * as iam from '../../../../aws-iam';
-import { KeyGrants } from '../../../../aws-kms';
 import { Stack, Token } from '../../../../core';
 import { UnscopedValidationError } from '../../../../core/lib/errors';
 import { lit } from '../../../../core/lib/helpers-internal';
@@ -298,8 +297,11 @@ export interface KnowledgeBaseRetriever {
   /**
    * The customer managed KMS key that encrypts the knowledge base.
    *
-   * The gateway role is granted permission to decrypt with this key through Amazon Bedrock, which
-   * requires it from the caller when it reads a knowledge base encrypted with a customer managed key.
+   * Amazon Bedrock requires decrypt permission on the key from the caller when it reads a knowledge
+   * base encrypted with a customer managed key. The gateway role's policy is granted `kms:Decrypt` on
+   * the key, only for requests made through Amazon Bedrock (`kms:ViaService`). The key policy must
+   * allow IAM policies to grant access to the key, as the default key policy does. For a key in
+   * another account, the key policy must also allow the gateway role.
    *
    * @default - the knowledge base is not encrypted with a customer managed key, no KMS permission is granted
    */
@@ -313,10 +315,11 @@ export interface KnowledgeBaseRetriever {
  * knowledge bases, and returns the supporting results with a synthesized, citation-backed answer.
  *
  * It runs with the service-managed foundation model, and the reranking model follows the service
- * default for each knowledge base. To attach a guardrail, filter the results of a retriever by
- * metadata, or use your own foundation or reranking model, add the fields with a property override
- * on the target's `CfnGatewayTarget`. The target
- * keeps the permissions this configuration grants, and you grant what the added fields need.
+ * default for each knowledge base. To filter the results of a retriever by metadata, or to use your
+ * own foundation or reranking model, add the fields with a property override on the target's
+ * `CfnGatewayTarget`. A guardrail (`policyConfiguration`) is only supported with your own foundation
+ * model (`foundationModelType: CUSTOM`). The target keeps the permissions this configuration grants,
+ * and you grant what the added fields need, such as invoking your model and applying the guardrail.
  */
 export interface KnowledgeBaseAgenticRetrieveOptions {
   /**
@@ -373,8 +376,11 @@ export interface KnowledgeBaseRetrieveOptions {
   /**
    * The customer managed KMS key that encrypts the knowledge base.
    *
-   * The gateway role is granted permission to decrypt with this key through Amazon Bedrock, which
-   * requires it from the caller when it reads a knowledge base encrypted with a customer managed key.
+   * Amazon Bedrock requires decrypt permission on the key from the caller when it reads a knowledge
+   * base encrypted with a customer managed key. The gateway role's policy is granted `kms:Decrypt` on
+   * the key, only for requests made through Amazon Bedrock (`kms:ViaService`). The key policy must
+   * allow IAM policies to grant access to the key, as the default key policy does. For a key in
+   * another account, the key policy must also allow the gateway role.
    *
    * @default - the knowledge base is not encrypted with a customer managed key, no KMS permission is granted
    */
@@ -504,7 +510,15 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
     if (retrieverArns.size > 0) {
       // Agentic retrieval searches each knowledge base and expands passages to full documents with
       // the gateway role, on top of the GetKnowledgeBase check the gateway runs when the target is created.
-      // See https://docs.aws.amazon.com/bedrock/latest/userguide/kb-test-agentic-retrieve.html
+      // The AgentCore gateway guide lists only GetKnowledgeBase and AgenticRetrieveStream for this tool,
+      // but on a deployed gateway AgenticRetrieveStream failed with a 403 without Retrieve, and could
+      // not expand passages to full documents without GetDocumentContent. Both are listed in
+      // https://docs.aws.amazon.com/bedrock/latest/userguide/kb-test-agentic-retrieve.html
+      //
+      // That page also lists bedrock:InvokeModelWithResponseStream on '*'. The service invokes the
+      // foundation model with the caller's credentials only when the caller names the model, and this
+      // configuration always uses the service-managed one, so it is not granted. On a deployed gateway
+      // agentic retrieval generated answers without it.
       grants.push(iam.Grant.addToPrincipal({
         grantee: gateway.role,
         actions: ['bedrock:GetKnowledgeBase', 'bedrock:Retrieve', 'bedrock:GetDocumentContent'],
@@ -534,16 +548,19 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
         encryptionKeys.set(key.keyRef.keyArn, key);
       }
     }
-    // The gateway role only needs to decrypt through Amazon Bedrock
+    // The gateway role only needs to decrypt through Amazon Bedrock. The condition is set on the
+    // identity statement itself, because a key policy statement cannot be added for every key
+    // (imported keys, `CfnKey`s and keys in other environments).
     const viaBedrock = {
       StringEquals: { 'kms:ViaService': `bedrock.${Stack.of(scope).region}.amazonaws.com` },
     };
     for (const key of encryptionKeys.values()) {
-      const grant = KeyGrants.fromKey(key).decrypt(gateway.role);
-      for (const statement of [...grant.principalStatements, ...grant.resourceStatements]) {
-        statement.addConditions(viaBedrock);
-      }
-      grants.push(grant);
+      grants.push(iam.Grant.addToPrincipal({
+        grantee: gateway.role,
+        actions: ['kms:Decrypt'],
+        resourceArns: [key.keyRef.keyArn],
+        conditions: viaBedrock,
+      }));
     }
 
     // The gateway validates the knowledge bases as soon as the target is created

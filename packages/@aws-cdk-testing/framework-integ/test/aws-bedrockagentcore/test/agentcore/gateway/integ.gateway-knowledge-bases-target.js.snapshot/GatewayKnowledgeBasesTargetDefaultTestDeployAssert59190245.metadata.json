@@ -131,6 +131,32 @@
       "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa"
     }
   ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2Invoke31200DB1"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke1fb72e59a761d582aea05d64ac3672c2"
+    }
+  ],
   "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -185,6 +211,24 @@
       "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitFor821ABBDF"
     }
   ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForRole2CEC8265"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitFor0C570E0D"
+    }
+  ],
   "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/WaitFor/IsCompleteProvider/Invoke": [
     {
       "type": "aws:cdk:logicalId",
@@ -219,6 +263,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForTimeoutProviderInvoke2A9F28F2"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForIsCompleteProviderInvokeEC18811C"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/LambdaInvoke1fb72e59a761d582aea05d64ac3672c2/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1fb72e59a761d582aea05d64ac3672c2WaitForTimeoutProviderInvoke188F98E4"
     }
   ]
 }

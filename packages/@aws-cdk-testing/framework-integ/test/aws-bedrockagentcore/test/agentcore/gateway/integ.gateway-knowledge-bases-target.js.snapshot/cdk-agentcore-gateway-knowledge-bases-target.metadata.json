@@ -46,6 +46,63 @@
       "data": "RetrieveOnlyKnowledgeBase"
     }
   ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
   "/cdk-agentcore-gateway-knowledge-bases-target/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -164,6 +221,60 @@
       "data": "*"
     }
   ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ToolCallerED5CBE22"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"Gateway43CB3636\",\"GatewayIdentifier\"]}": [
     {
       "type": "aws:cdk:logicalId",
@@ -174,6 +285,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputFnGetAttGatewayKnowledgeBases9289AC1ATargetId4DBB45D3"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Ref\":\"ToolCallerED5CBE22\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefToolCallerED5CBE22CCD2BE17"
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"GatewayRetrieveOnlyF6191441\",\"TargetId\"]}": [
@@ -316,6 +433,48 @@
       "data": "GatewayWebSearchFCF67CA7"
     }
   ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ToolCallerServiceRole7CED933D"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ToolCallerLogGroup42621CEB"
+    }
+  ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -338,6 +497,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GatewayUserPoolDomainCD8A1197"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/ToolCaller/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ToolCallerServiceRoleDefaultPolicy9D36356D"
     }
   ]
 }

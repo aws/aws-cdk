@@ -123,6 +123,26 @@ describe('Connector gateway targets', () => {
       });
     });
 
+    test('omits ParameterOverrides for an empty list of parameter overrides', () => {
+      new GatewayTarget(stack, 'Target', {
+        gateway,
+        targetConfiguration: ConnectorTargetConfiguration.create({
+          connector: McpConnector.WEB_SEARCH,
+          toolConfigurations: [{ name: 'WebSearch', parameterOverrides: [] }],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        TargetConfiguration: {
+          Mcp: {
+            Connector: {
+              Configurations: [{ Name: 'WebSearch', ParameterOverrides: Match.absent() }],
+            },
+          },
+        },
+      });
+    });
+
     test.each([
       ['no tool configurations', undefined],
       ['an empty list of tool configurations', []],
@@ -687,6 +707,51 @@ describe('Connector gateway targets', () => {
             Resource: { 'Fn::GetAtt': [stack.getLogicalId(key.node.defaultChild as cdk.CfnElement), 'Arn'] },
             Condition: VIA_BEDROCK,
           },
+        ]);
+      });
+
+      test('grants decrypt through Amazon Bedrock on an imported key in another account', () => {
+        const keyArn = 'arn:aws:kms:us-east-1:999999999999:key/11111111-1111-1111-1111-111111111111';
+
+        gateway.addKnowledgeBasesTarget('Target', {
+          retrieve: { knowledgeBase: kb1, encryptionKey: kms.Key.fromKeyArn(stack, 'Key1', keyArn) },
+        });
+
+        expect(statementsFor('kms')).toEqual([
+          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: keyArn, Condition: VIA_BEDROCK },
+        ]);
+      });
+
+      test('grants decrypt through Amazon Bedrock on a CfnKey', () => {
+        const key = new kms.CfnKey(stack, 'Key', {
+          keyPolicy: {
+            Version: '2012-10-17',
+            Statement: [{ Effect: 'Allow', Principal: { AWS: 'arn:aws:iam::123456789012:root' }, Action: 'kms:*', Resource: '*' }],
+          },
+        });
+
+        gateway.addKnowledgeBasesTarget('Target', {
+          retrieve: { knowledgeBase: kb1, encryptionKey: key },
+        });
+
+        expect(statementsFor('kms')).toEqual([
+          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: { 'Fn::GetAtt': [stack.getLogicalId(key), 'Arn'] }, Condition: VIA_BEDROCK },
+        ]);
+      });
+
+      test('grants decrypt through Amazon Bedrock on a key defined in a stack of another account', () => {
+        const keyStack = new cdk.Stack(stack.node.root as cdk.App, 'KeyStack', {
+          env: { account: '999999999999', region: 'us-east-1' },
+        });
+        const key = new kms.Key(keyStack, 'Key');
+
+        gateway.addKnowledgeBasesTarget('Target', {
+          retrieve: { knowledgeBase: kb1, encryptionKey: key },
+        });
+
+        expect(statementsFor('kms')).toEqual([
+          // The key ARN is read from the other account's stack output
+          expect.objectContaining({ Action: 'kms:Decrypt', Effect: 'Allow', Condition: VIA_BEDROCK }),
         ]);
       });
 

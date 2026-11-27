@@ -524,6 +524,150 @@
      ]
     }
    }
+  },
+  "ToolCallerServiceRole7CED933D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ToolCallerServiceRoleDefaultPolicy9D36356D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cognito-idp:DescribeUserPoolClient",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "GatewayUserPoolAC9C51BE",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ToolCallerServiceRoleDefaultPolicy9D36356D",
+    "Roles": [
+     {
+      "Ref": "ToolCallerServiceRole7CED933D"
+     }
+    ]
+   }
+  },
+  "ToolCallerED5CBE22": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\nconst { CognitoIdentityProviderClient, DescribeUserPoolClientCommand } = require('@aws-sdk/client-cognito-identity-provider');\n\nconst EXPECTED_TOOLS = [\n  'managed-kb___AgenticRetrieveStream',\n  'managed-kb___Retrieve',\n  'managed-kb-retrieve___Retrieve',\n  'web-search___WebSearch',\n];\nconst CALLS = {\n  'managed-kb___AgenticRetrieveStream': { messages: [{ role: 'user', content: { text: 'What do the documents cover?' } }] },\n  'managed-kb___Retrieve': { retrievalQuery: { text: 'What do the documents cover?' } },\n  'managed-kb-retrieve___Retrieve': { retrievalQuery: { text: 'What do the documents cover?' } },\n  'web-search___WebSearch': { query: 'AWS CDK' },\n};\n\nasync function rpc(token, id, method, params) {\n  const response = await fetch(process.env.GATEWAY_URL, {\n    method: 'POST',\n    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream' },\n    body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),\n  });\n  const text = await response.text();\n  if (!response.ok) { return { error: { code: response.status, message: text.slice(0, 500) } }; }\n  if ((response.headers.get('content-type') || '').startsWith('text/event-stream')) {\n    const messages = text.split('\\n').filter(l => l.startsWith('data:')).map(l => JSON.parse(l.slice(5)));\n    return messages.filter(m => m.id === id).pop() || { error: { message: 'no response' } };\n  }\n  return JSON.parse(text);\n}\n\nexports.handler = async () => {\n  const cognito = new CognitoIdentityProviderClient({});\n  const client = await cognito.send(new DescribeUserPoolClientCommand({ UserPoolId: process.env.USER_POOL_ID, ClientId: process.env.CLIENT_ID }));\n  const basic = Buffer.from(process.env.CLIENT_ID + ':' + client.UserPoolClient.ClientSecret).toString('base64');\n  const tokenResponse = await fetch(process.env.TOKEN_ENDPOINT, {\n    method: 'POST',\n    headers: { 'Authorization': 'Basic ' + basic, 'Content-Type': 'application/x-www-form-urlencoded' },\n    body: new URLSearchParams({ grant_type: 'client_credentials', scope: process.env.SCOPES }).toString(),\n  });\n  const token = (await tokenResponse.json()).access_token;\n\n  const list = await rpc(token, 1, 'tools/list', {});\n  const tools = ((list.result && list.result.tools) || []).map(t => t.name).filter(n => !n.startsWith('x_amz_bedrock_agentcore_')).sort();\n  const toolsMatch = JSON.stringify(tools) === JSON.stringify([...EXPECTED_TOOLS].sort());\n\n  const calls = {};\n  let id = 10;\n  for (const [name, args] of Object.entries(CALLS)) {\n    const response = await rpc(token, id++, 'tools/call', { name, arguments: args });\n    const failed = response.error || !response.result || response.result.isError;\n    calls[name] = failed ? JSON.stringify(response.error || response.result).slice(0, 500) : 'ok';\n  }\n\n  const allSucceeded = toolsMatch && Object.values(calls).every(v => v === 'ok');\n  return { allSucceeded, tools, calls };\n};\n"
+    },
+    "Environment": {
+     "Variables": {
+      "GATEWAY_URL": {
+       "Fn::GetAtt": [
+        "Gateway43CB3636",
+        "GatewayUrl"
+       ]
+      },
+      "TOKEN_ENDPOINT": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Ref": "GatewayUserPoolDomainCD8A1197"
+         },
+         ".auth.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazoncognito.com/oauth2/token"
+        ]
+       ]
+      },
+      "USER_POOL_ID": {
+       "Ref": "GatewayUserPoolAC9C51BE"
+      },
+      "CLIENT_ID": {
+       "Ref": "GatewayUserPoolDefaultClient48FC6ADE"
+      },
+      "SCOPES": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Ref": "GatewayUserPoolResourceServerA9AA7EAD"
+         },
+         "/read ",
+         {
+          "Ref": "GatewayUserPoolResourceServerA9AA7EAD"
+         },
+         "/write"
+        ]
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ToolCallerServiceRole7CED933D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "ToolCallerServiceRoleDefaultPolicy9D36356D",
+    "ToolCallerServiceRole7CED933D"
+   ]
+  },
+  "ToolCallerLogGroup42621CEB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ToolCallerED5CBE22"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {
@@ -547,6 +691,14 @@
    },
    "Export": {
     "Name": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputFnGetAttGatewayKnowledgeBases9289AC1ATargetId4DBB45D3"
+   }
+  },
+  "ExportsOutputRefToolCallerED5CBE22CCD2BE17": {
+   "Value": {
+    "Ref": "ToolCallerED5CBE22"
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputRefToolCallerED5CBE22CCD2BE17"
    }
   },
   "ExportsOutputFnGetAttGatewayRetrieveOnlyF6191441TargetId9055F51C": {
