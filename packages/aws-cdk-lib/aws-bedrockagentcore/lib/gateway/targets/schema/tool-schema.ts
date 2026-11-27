@@ -72,6 +72,9 @@ export class SchemaDefinitionType {
 export interface SchemaDefinition {
   /**
    * The type of the schema definition. This field specifies the data type of the schema.
+   *
+   * This must be a `SchemaDefinitionType` member, such as `SchemaDefinitionType.OBJECT`, and not a
+   * raw string. Use `SchemaDefinitionType.of()` for a type that the class does not define yet.
    */
   readonly type: SchemaDefinitionType;
 
@@ -151,8 +154,12 @@ export abstract class ToolSchema extends TargetSchema {
   }
 
   /**
-   * Creates a Tool Schema from an inline string.
-   * @param schema - the JSON or YAML payload defining the OpenAPI schema for the action group
+   * Creates a Tool Schema from an inline list of tool definitions.
+   *
+   * The `type` of every `SchemaDefinition` must be a `SchemaDefinitionType` member, such as
+   * `SchemaDefinitionType.OBJECT`, and not a raw string.
+   *
+   * @param schema - the tool definitions describing the tools that the target exposes
    */
   public static fromInline(schema: ToolDefinition[]): InlineToolSchema {
     return new InlineToolSchema(schema);
