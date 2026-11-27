@@ -40,6 +40,11 @@ rule SQS_NO_WORLD_ACCESSIBLE_INLINE when %sqs_queue_inline_policies !empty {
                             <<##ERROR:SQS queue inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
                     }
                 }
+                # IAM supports NotPrincipal only with Deny, so an Allow statement with NotPrincipal fails whatever it lists
+                when NotPrincipal exists {
+                    NotPrincipal not exists
+                        <<##ERROR:SQS queue inline policy must not be world-accessible. Replace NotPrincipal with a Principal that names specific accounts or roles.##>>
+                }
             }
         }
     }

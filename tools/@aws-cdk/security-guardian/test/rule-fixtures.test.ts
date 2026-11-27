@@ -38,7 +38,7 @@ function findFiles(dir: string, extension = ''): string[] {
 
 const ruleIds = findFiles(rulesDir, '.guard').map(file => path.relative(rulesDir, file).replace(/\.guard$/, ''));
 
-// The world access rules check the Principal of each Allow statement in a resource policy.
+// The world access rules check the Principal or NotPrincipal of each Allow statement in a resource policy.
 // Beyond its fixture pair, each rule runs on one-resource templates, one per statement
 // shape, so that each shape is shown to fire, pass or skip on its own.
 interface WorldAccessRule {
@@ -46,9 +46,9 @@ interface WorldAccessRule {
   readonly type: string;
   readonly properties: Record<string, unknown>;
   readonly resource: string;
-  /** Actions to grant each Principal shape; the S3 rules check string and list Actions separately */
+  /** The Action of each Principal and NotPrincipal shape's statement; the S3 rules check string and list Actions separately */
   readonly actions: unknown[];
-  /** Actions the rule checks, and actions it ignores, when granted to { AWS: "*" } */
+  /** Actions the rule checks, and actions it ignores, in an Allow statement with Principal { AWS: "*" } or with NotPrincipal */
   readonly matchingActions?: unknown[];
   readonly otherActions?: unknown[];
 }
@@ -123,11 +123,22 @@ const worldAccessRules: Record<string, WorldAccessRule> = {
   },
 };
 
+/** A resource type and the property of it that holds the policy document */
+interface PolicyResource {
+  readonly type: string;
+  readonly properties: Record<string, unknown>;
+  readonly policyProperty: string;
+}
+
 interface PolicyShape {
   readonly title: string;
   readonly statement: Record<string, unknown>;
   /** The rule's status in each scan, where "fail" means the rule fires */
   readonly status: Record<string, string>;
+  /** The resource that holds the statement, when it is not the rule's own resource */
+  readonly resource?: PolicyResource;
+  /** The resource's Metadata, such as Metadata.guard.SuppressedRules */
+  readonly metadata?: Record<string, unknown>;
 }
 
 const fires = { static: 'fail', resolved: 'fail' };
@@ -136,13 +147,34 @@ const skips = { static: 'skip', resolved: 'skip' };
 const outcomes: Record<string, string> = { fail: 'fires on', pass: 'evaluates and passes on', skip: 'skips' };
 
 const roleArn = 'arn:aws:iam::123456789012:role/Example';
+const rootArn = 'arn:aws:iam::123456789012:root';
 // CDK writes ARNs as intrinsic functions, which only the resolved scan turns into strings
 const roleArnJoin = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/Example']] };
 
+// A rule skips a resource whose Metadata.guard.SuppressedRules lists the rule's name, and still checks
+// a resource that suppresses only other rules
+const anotherRuleName = 'EC2_NO_OPEN_SECURITY_GROUPS';
+function suppressionShapes(ruleName: string, shape: PolicyShape): PolicyShape[] {
+  return [
+    {
+      ...shape,
+      title: `${shape.title} with the rule suppressed`,
+      metadata: { guard: { SuppressedRules: [anotherRuleName, ruleName] } },
+      status: skips,
+    },
+    { ...shape, title: `${shape.title} with another rule suppressed`, metadata: { guard: { SuppressedRules: [anotherRuleName] } } },
+  ];
+}
+
 function principalShapes(rule: WorldAccessRule, action: unknown): PolicyShape[] {
   const grant = (Effect: string, Principal: unknown, Condition?: unknown) => ({ Effect, Principal, Action: action, Resource: rule.resource, Condition });
+  // IAM supports NotPrincipal only with Deny, so the rules fire on an Allow with NotPrincipal whatever it lists
+  const withNotPrincipal = (Effect: string, NotPrincipal: unknown, Condition?: unknown) =>
+    ({ Effect, NotPrincipal, Action: action, Resource: rule.resource, Condition });
+  const worldGrant: PolicyShape = { title: 'Principal "*"', statement: grant('Allow', '*'), status: fires };
   const shapes: PolicyShape[] = [
-    { title: 'Principal "*"', statement: grant('Allow', '*'), status: fires },
+    worldGrant,
+    ...suppressionShapes(rule.ruleName, worldGrant),
     {
       title: 'Principal { AWS: "*" } with an aws:PrincipalOrgID Condition',
       statement: grant('Allow', { AWS: '*' }, { StringEquals: { 'aws:PrincipalOrgID': 'o-exampleorgid' } }),
@@ -161,6 +193,17 @@ function principalShapes(rule: WorldAccessRule, action: unknown): PolicyShape[] 
     },
     { title: 'Principal { Service }', statement: grant('Allow', { Service: 'sns.amazonaws.com' }), status: skips },
     { title: 'a Deny of Principal { AWS: "*" }', statement: grant('Deny', { AWS: '*' }), status: skips },
+    { title: 'NotPrincipal "*"', statement: withNotPrincipal('Allow', '*'), status: fires },
+    { title: 'NotPrincipal { AWS: role ARN }', statement: withNotPrincipal('Allow', { AWS: roleArn }), status: fires },
+    { title: 'NotPrincipal { AWS: [role ARN, account ID] }', statement: withNotPrincipal('Allow', { AWS: [roleArn, '123456789012'] }), status: fires },
+    { title: 'NotPrincipal { AWS: Fn::Join }', statement: withNotPrincipal('Allow', { AWS: roleArnJoin }), status: fires },
+    { title: 'NotPrincipal { Service }', statement: withNotPrincipal('Allow', { Service: 'sns.amazonaws.com' }), status: fires },
+    {
+      title: 'NotPrincipal { AWS: role ARN } with an aws:PrincipalOrgID Condition',
+      statement: withNotPrincipal('Allow', { AWS: roleArn }, { StringEquals: { 'aws:PrincipalOrgID': 'o-exampleorgid' } }),
+      status: fires,
+    },
+    { title: 'a Deny of NotPrincipal { AWS: role ARN }', statement: withNotPrincipal('Deny', { AWS: roleArn }), status: skips },
   ];
   // Of these policy types, only bucket policies accept CanonicalUser principals
   if (rule.type === 'AWS::S3::BucketPolicy') {
@@ -173,13 +216,151 @@ function principalShapes(rule: WorldAccessRule, action: unknown): PolicyShape[] 
   return shapes.map(shape => ({ ...shape, title: `${shape.title} for Action ${JSON.stringify(action)}` }));
 }
 
+// Principal and NotPrincipal elements the S3 rules check the same way for each Action
+const actionElements = [
+  { title: 'Principal { AWS: "*" }', element: { Principal: { AWS: '*' } } },
+  { title: 'NotPrincipal { AWS: account ID }', element: { NotPrincipal: { AWS: '123456789012' } } },
+];
+
 function actionShapes(rule: WorldAccessRule, actions: unknown[], status: Record<string, string>): PolicyShape[] {
-  return actions.map(action => ({
-    title: `Principal { AWS: "*" } for Action ${JSON.stringify(action)}`,
-    statement: { Effect: 'Allow', Principal: { AWS: '*' }, Action: action, Resource: rule.resource },
+  return actionElements.flatMap(({ title, element }) => actions.map(action => ({
+    title: `${title} for Action ${JSON.stringify(action)}`,
+    statement: { Effect: 'Allow', ...element, Action: action, Resource: rule.resource },
     status,
-  }));
+  })));
 }
+
+function worldAccessShapes(rule: WorldAccessRule): PolicyShape[] {
+  return [
+    ...rule.actions.flatMap(action => principalShapes(rule, action)),
+    ...actionShapes(rule, rule.matchingActions ?? [], fires),
+    ...actionShapes(rule, rule.otherActions ?? [], skips),
+  ];
+}
+
+// Two more rules judge the principals of a resource policy. Each also fires on an Allow statement
+// with NotPrincipal, whatever it lists and whatever its Condition, since IAM supports NotPrincipal only with Deny.
+interface PolicyTarget {
+  readonly resource: PolicyResource;
+  readonly action: string;
+  readonly arn: string;
+}
+
+const bucketPolicyTarget: PolicyTarget = {
+  resource: { type: 'AWS::S3::BucketPolicy', properties: { Bucket: 'example-bucket' }, policyProperty: 'PolicyDocument' },
+  action: 's3:GetObject',
+  arn: 'arn:aws:s3:::example-bucket/*',
+};
+
+const notPrincipalValues: Array<[string, unknown]> = [
+  ['{ AWS: account root ARN }', { AWS: rootArn }],
+  ['{ AWS: role ARN }', { AWS: roleArn }],
+  ['{ AWS: [role ARN, account ID] }', { AWS: [roleArn, '123456789012'] }],
+  ['{ AWS: Fn::Join }', { AWS: roleArnJoin }],
+  ['{ Service }', { Service: 'logging.s3.amazonaws.com' }],
+  ['"*"', '*'],
+];
+
+/**
+ * Shapes for a rule that checks a Principal and its Condition: `principal` with each of `conditions`
+ * passes, an Allow with the `ignored` Principal skips, and an Allow with NotPrincipal fires with or
+ * without those conditions
+ */
+function notPrincipalShapes(
+  ruleName: string,
+  target: PolicyTarget,
+  principal: [string, unknown],
+  conditions: Array<[string, unknown]>,
+  ignored: [string, unknown],
+): PolicyShape[] {
+  const statement = (Effect: string, element: Record<string, unknown>, Condition?: unknown) =>
+    ({ Effect, ...element, Action: target.action, Resource: target.arn, Condition });
+  const [principalTitle, principalValue] = principal;
+  const [ignoredTitle, ignoredValue] = ignored;
+  const valueShapes = notPrincipalValues.map(([title, value]): PolicyShape =>
+    ({ title: `NotPrincipal ${title}`, statement: statement('Allow', { NotPrincipal: value }), status: fires }));
+  const shapes: PolicyShape[] = [
+    ...conditions.map(([title, condition]): PolicyShape =>
+      ({ title: `Principal ${principalTitle} with ${title}`, statement: statement('Allow', { Principal: principalValue }, condition), status: passes })),
+    { title: `Principal ${ignoredTitle}`, statement: statement('Allow', { Principal: ignoredValue }), status: skips },
+    ...valueShapes,
+    ...conditions.map(([title, condition]): PolicyShape =>
+      ({ title: `NotPrincipal ${principalTitle} with ${title}`, statement: statement('Allow', { NotPrincipal: principalValue }, condition), status: fires })),
+    { title: `a Deny of NotPrincipal ${principalTitle}`, statement: statement('Deny', { NotPrincipal: principalValue }), status: skips },
+    ...suppressionShapes(ruleName, valueShapes[0]),
+  ];
+  return shapes.map(shape => ({ ...shape, resource: target.resource }));
+}
+
+// RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS reads each of these properties on every resource type it does not exclude
+const rootPrincipalTargets: PolicyTarget[] = [
+  bucketPolicyTarget,
+  {
+    resource: { type: 'AWS::Events::EventBus', properties: { Name: 'example-bus' }, policyProperty: 'Policy' },
+    action: 'events:PutEvents',
+    arn: 'arn:aws:events:us-west-2:123456789012:event-bus/example-bus',
+  },
+  {
+    resource: {
+      type: 'AWS::SecretsManager::ResourcePolicy',
+      properties: { SecretId: 'arn:aws:secretsmanager:us-west-2:123456789012:secret:example' },
+      policyProperty: 'ResourcePolicy',
+    },
+    action: 'secretsmanager:GetSecretValue',
+    arn: '*',
+  },
+];
+
+function rootPrincipalShapes(ruleName: string): PolicyShape[] {
+  const conditions: Array<[string, unknown]> = [
+    ['an ArnEquals Condition', { ArnEquals: { 'aws:PrincipalArn': roleArn } }],
+    ['a StringEquals Condition', { StringEquals: { 'aws:PrincipalOrgID': 'o-exampleorgid' } }],
+  ];
+  return [
+    ...rootPrincipalTargets.flatMap(target => notPrincipalShapes(
+      ruleName, target, ['{ AWS: account root ARN }', { AWS: rootArn }], conditions, ['{ Service }', { Service: 'logging.s3.amazonaws.com' }],
+    ).map(shape => ({ ...shape, title: `${shape.title} in ${target.resource.type} ${target.resource.policyProperty}` }))),
+    // AWS::KMS::Key holds its policy in KeyPolicy, which the rule does not read. The statement sits under
+    // PolicyDocument instead, so that only the excluded type keeps the rule from firing.
+    {
+      title: 'NotPrincipal { AWS: account root ARN } in the excluded type AWS::KMS::Key',
+      resource: { type: 'AWS::KMS::Key', properties: {}, policyProperty: 'PolicyDocument' },
+      statement: { Effect: 'Allow', NotPrincipal: { AWS: rootArn }, Action: 'kms:Decrypt', Resource: '*' },
+      status: skips,
+    },
+  ];
+}
+
+/** One policy-shape suite: the rule, the resource that holds each statement unless a shape names its own, and the shapes */
+interface ShapeSuite {
+  readonly ruleName: string;
+  readonly resource: PolicyResource;
+  readonly shapes: PolicyShape[];
+}
+
+const shapeSuites: Record<string, ShapeSuite> = {
+  ...Object.fromEntries(Object.entries(worldAccessRules).map(([ruleId, rule]): [string, ShapeSuite] => [ruleId, {
+    ruleName: rule.ruleName,
+    resource: { type: rule.type, properties: rule.properties, policyProperty: 'PolicyDocument' },
+    shapes: worldAccessShapes(rule),
+  }])),
+  'resource-policies/resource-policy-root-principal-needs-conditions': {
+    ruleName: 'RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS',
+    resource: bucketPolicyTarget.resource,
+    shapes: rootPrincipalShapes('RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS'),
+  },
+  's3/s3-no-confused-deputy': {
+    ruleName: 'S3_NO_CONFUSED_DEPUTY',
+    resource: bucketPolicyTarget.resource,
+    shapes: notPrincipalShapes(
+      'S3_NO_CONFUSED_DEPUTY',
+      bucketPolicyTarget,
+      ['{ Service }', { Service: 'logging.s3.amazonaws.com' }],
+      [['an aws:SourceAccount Condition', { StringEquals: { 'aws:SourceAccount': '123456789012' } }]],
+      ['{ AWS: role ARN }', { AWS: roleArn }],
+    ),
+  },
+};
 
 describe('Guard Rule Fixtures', () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'security-guardian-rule-fixtures-'));
@@ -265,24 +446,22 @@ describe('Guard Rule Fixtures', () => {
     }
   });
 
-  describe.each(Object.keys(worldAccessRules))('rules/%s.guard policy shapes', (ruleId) => {
-    const rule = worldAccessRules[ruleId];
+  describe.each(Object.keys(shapeSuites))('rules/%s.guard policy shapes', (ruleId) => {
+    const rule = shapeSuites[ruleId];
     const ruleFile = path.join(rulesDir, `${ruleId}.guard`);
     const shapesDir = path.join(outputDir, 'policy-shapes', ruleId);
-    const shapes = [
-      ...rule.actions.flatMap(action => principalShapes(rule, action)),
-      ...actionShapes(rule, rule.matchingActions ?? [], fires),
-      ...actionShapes(rule, rule.otherActions ?? [], skips),
-    ];
+    const shapes = rule.shapes;
 
     beforeAll(() => {
       fs.mkdirSync(path.join(shapesDir, 'static'), { recursive: true });
       shapes.forEach((shape, index) => {
+        const resource = shape.resource ?? rule.resource;
         const template = {
           Resources: {
             Policy: {
-              Type: rule.type,
-              Properties: { ...rule.properties, PolicyDocument: { Version: '2012-10-17', Statement: [shape.statement] } },
+              Type: resource.type,
+              ...(shape.metadata ? { Metadata: shape.metadata } : {}),
+              Properties: { ...resource.properties, [resource.policyProperty]: { Version: '2012-10-17', Statement: [shape.statement] } },
             },
           },
         };

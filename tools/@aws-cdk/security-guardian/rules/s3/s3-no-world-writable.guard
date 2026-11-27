@@ -41,6 +41,11 @@ rule S3_NO_WORLD_WRITABLE when %s3_bucket_policies !empty {
                                         <<##ERROR:S3 bucket policy must not grant world-writable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                 }
                             }
+                            # IAM supports NotPrincipal only with Deny, so an Allow statement with NotPrincipal fails whatever it lists
+                            when NotPrincipal exists {
+                                NotPrincipal not exists
+                                    <<##ERROR:S3 bucket policy must not grant world-writable access. Replace NotPrincipal with a Principal that names specific accounts or roles.##>>
+                            }
                         }
                     }
                     when Action is_list {
@@ -59,6 +64,11 @@ rule S3_NO_WORLD_WRITABLE when %s3_bucket_policies !empty {
                                     Principal.AWS[*][ this is_string ] != "*"
                                         <<##ERROR:S3 bucket policy must not grant world-writable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                 }
+                            }
+                            # IAM supports NotPrincipal only with Deny, so an Allow statement with NotPrincipal fails whatever it lists
+                            when NotPrincipal exists {
+                                NotPrincipal not exists
+                                    <<##ERROR:S3 bucket policy must not grant world-writable access. Replace NotPrincipal with a Principal that names specific accounts or roles.##>>
                             }
                         }
                     }
