@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39.template.json"
+    }
+  ],
   "/aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

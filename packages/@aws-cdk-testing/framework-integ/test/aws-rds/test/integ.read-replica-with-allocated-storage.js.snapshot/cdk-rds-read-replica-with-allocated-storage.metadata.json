@@ -1,4 +1,24 @@
 {
+  "/cdk-rds-read-replica-with-allocated-storage": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at IntegTestBaseStack._silenceLiteralAzWarning (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica-with-allocated-storage.js:44:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-rds-read-replica-with-allocated-storage.template.json"
+    }
+  ],
   "/cdk-rds-read-replica-with-allocated-storage/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -88,7 +108,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -124,7 +147,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
