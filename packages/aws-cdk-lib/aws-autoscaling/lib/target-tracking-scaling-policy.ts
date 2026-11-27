@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './autoscaling.generated';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import type { Duration } from '../../core';
-import { ValidationError } from '../../core';
+import { Annotations, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
@@ -29,6 +29,9 @@ export interface BaseTargetTrackingProps {
 
   /**
    * Period after a scaling completes before another scaling activity can start.
+   *
+   * `Cooldown` is valid only for simple scaling policies. It is ignored for
+   * target tracking policies, and setting it produces a warning during synthesis.
    *
    * @default - The default cooldown configured on the AutoScalingGroup.
    */
@@ -124,6 +127,12 @@ export class TargetTrackingScalingPolicy extends Construct {
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
       throw new ValidationError(lit`DirectMetricsSupportedTargetTracking`, 'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', this);
+    }
+
+    // Cooldown is honored only for SimpleScaling. Target tracking ignores it.
+    // Keep forwarding the value so existing templates do not change.
+    if (props.cooldown !== undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-autoscaling:cooldownOnTargetTracking', '\'Cooldown\' is valid only if the policy type is SimpleScaling. The value has no effect on target tracking policies.');
     }
 
     this.resource = new CfnScalingPolicy(this, 'Resource', {

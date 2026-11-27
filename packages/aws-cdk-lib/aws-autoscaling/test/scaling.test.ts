@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
@@ -190,6 +190,45 @@ describe('scaling', () => {
           TargetValue: 2,
         },
       });
+    });
+
+    test('warns when cooldown is set on a target tracking policy', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fixture = new ASGFixture(stack, 'Fixture');
+
+      // WHEN
+      fixture.asg.scaleOnCpuUtilization('ScaleCpu', {
+        targetUtilizationPercent: 50,
+        cooldown: cdk.Duration.minutes(5),
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Fixture/ASG/ScalingPolicyScaleCpu',
+        '\'Cooldown\' is valid only if the policy type is SimpleScaling. The value has no effect on target tracking policies. [ack: @aws-cdk/aws-autoscaling:cooldownOnTargetTracking]',
+      );
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+        PolicyType: 'TargetTrackingScaling',
+        Cooldown: '300',
+      });
+    });
+
+    test('does not warn when cooldown is omitted from a target tracking policy', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fixture = new ASGFixture(stack, 'Fixture');
+
+      // WHEN
+      fixture.asg.scaleOnCpuUtilization('ScaleCpu', {
+        targetUtilizationPercent: 50,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Default/Fixture/ASG/ScalingPolicyScaleCpu',
+        Match.stringLikeRegexp('cooldownOnTargetTracking'),
+      );
     });
   });
 
