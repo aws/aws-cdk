@@ -453,7 +453,7 @@ const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
 });
 
 const dataProtectionPolicy = new logs.DataProtectionPolicy({
-  name: 'data protection policy',
+  name: 'data-protection-policy',
   description: 'policy description',
   identifiers: [
     logs.DataIdentifier.DRIVERSLICENSE_US, // managed data identifier
