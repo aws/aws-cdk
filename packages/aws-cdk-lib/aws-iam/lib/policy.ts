@@ -178,7 +178,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     }
 
     const resource = new CfnPolicyConditional(this, 'Resource', {
-      policyDocument: this.document,
+      policyDocument: this.document._asIdentityPolicy(),
       policyName: this.physicalName,
       roles: Token.asList(this.roles.map(r => r.roleName)),
       users: Token.asList(this.users.map(u => u.userName)),

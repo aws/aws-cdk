@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "2a672fa80dc1f97586aa344bff7bf9930dbcb814a34741bafa4a2b0cc4e9dca9": {
+      "displayName": "aws-cdk-iam-policy-document-from-json-id Template",
+      "source": {
+        "path": "aws-cdk-iam-policy-document-from-json-id.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a67cf312": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2a672fa80dc1f97586aa344bff7bf9930dbcb814a34741bafa4a2b0cc4e9dca9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

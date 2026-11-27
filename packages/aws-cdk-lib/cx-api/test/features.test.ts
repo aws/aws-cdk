@@ -58,6 +58,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.BUCKET_DEPLOYMENT_MODERN_RESOURCE]: false,
     [feats.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: true,
     [feats.IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: false,
+    [feats.IAM_POLICY_DOCUMENT_FROM_JSON_KEEPS_ID]: false,
 
   });
 });

@@ -546,6 +546,39 @@ const newPolicy = new iam.Policy(this, 'MyNewPolicy', {
 });
 ```
 
+`PolicyDocument.fromJson` always renders `Version` as `2012-10-17`. By default, it also drops the
+policy `Id` element. When the `@aws-cdk/aws-iam:policyDocumentFromJsonKeepsId` feature flag is enabled,
+the `Id` from the input is kept in the synthesized template when the document is used as a
+resource-based policy, such as the `document` of a `BucketPolicy` or the policy document of an L1
+resource like `CfnQueuePolicy`. The `Id` element is not allowed in identity-based policies, so it is
+never rendered for a `Policy`, a `ManagedPolicy` or the `inlinePolicies` of a `Role`, even when the
+same document is also used as a resource-based policy.
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+// With the feature flag enabled, the bucket policy keeps 'Id: bucket-policy-1'
+new s3.BucketPolicy(this, 'MyBucketPolicy', {
+  bucket,
+  document: iam.PolicyDocument.fromJson({
+    Version: '2012-10-17',
+    Id: 'bucket-policy-1',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Principal: { AWS: 'arn:aws:iam::123456789012:root' },
+        Action: 's3:GetObject',
+        Resource: bucket.arnForObjects('*'),
+      },
+    ],
+  }),
+});
+```
+
+The `Id` is not kept where a construct re-renders the document with `toJSON()`. This happens when
+a grant adds a statement to the resource policy of an L1 queue, topic, key, log group or table (for
+example a `CfnKey` whose `keyPolicy` has an `Id`), and in `Key.fromCfnKey()`.
+
 ## Identity Policy Statement SID Validation
 
 The `Sid` (statement ID) element in IAM identity policies must be alphanumeric (A-Z, a-z, 0-9) according to AWS IAM requirements. CDK validates identity policy SIDs at synthesis time.

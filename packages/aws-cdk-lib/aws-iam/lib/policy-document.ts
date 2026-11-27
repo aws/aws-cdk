@@ -51,6 +51,14 @@ export class PolicyDocument implements cdk.IResolvable {
   /**
    * Creates a new PolicyDocument based on the object provided.
    * This will accept an object created from the `.toJSON()` call
+   *
+   * The `Statement` element is taken from the object. The `Version` element is
+   * always rendered as `2012-10-17`. The `Id` element is rendered when the
+   * document is resolved and the `@aws-cdk/aws-iam:policyDocumentFromJsonKeepsId`
+   * feature flag is enabled. `toJSON()` does not include it, and neither do
+   * identity-based policies (`Policy`, `ManagedPolicy` and the inline policies
+   * of a `Role`), where the `Id` element is not allowed.
+   *
    * @param obj the PolicyDocument in object form.
    */
   public static fromJson(obj: any): PolicyDocument {
@@ -60,6 +68,7 @@ export class PolicyDocument implements cdk.IResolvable {
       throw new cdk.UnscopedValidationError(lit`StatementMustBeArray`, 'Statement must be an array');
     }
     newPolicyDocument.addStatements(...obj.Statement.map((s: any) => PolicyStatement.fromJson(s)));
+    newPolicyDocument.id = obj.Id;
     return newPolicyDocument;
   }
 
@@ -67,6 +76,7 @@ export class PolicyDocument implements cdk.IResolvable {
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
   private readonly minimize?: boolean;
+  private id?: string;
 
   constructor(props: PolicyDocumentProps = {}) {
     this.autoAssignSids = !!props.assignSids;
@@ -90,7 +100,24 @@ export class PolicyDocument implements cdk.IResolvable {
     // merging is enabled.
     const sort = this.shouldMerge(context.scope);
     context.registerPostProcessor(new PostProcessPolicyDocument(this.autoAssignSids, sort));
-    return this.render();
+    return this.render(this.shouldRenderId(context.scope));
+  }
+
+  /**
+   * Return a token that renders this document as an identity-based policy.
+   *
+   * The `Id` element is not allowed in identity-based policies, so it is never
+   * rendered here, even when the `@aws-cdk/aws-iam:policyDocumentFromJsonKeepsId`
+   * feature flag is enabled. The token renders the document with its public
+   * `resolve()` method, so a subclass that overrides `resolve()` keeps its
+   * output, and only removes the `Id` element from a copy of the result. The
+   * document itself is not changed, so the same document can still render its
+   * `Id` where it is used as a resource-based policy.
+   *
+   * @internal
+   */
+  public _asIdentityPolicy(): cdk.IResolvable {
+    return new IdentityPolicyDocument(this);
   }
 
   /**
@@ -132,7 +159,9 @@ export class PolicyDocument implements cdk.IResolvable {
    * Used when JSON.stringify() is called
    */
   public toJSON() {
-    return this.render();
+    // There is no scope here to read the feature flag from, so the `Id` element
+    // is only rendered by `resolve()`.
+    return this.render(false);
   }
 
   /**
@@ -303,7 +332,7 @@ export class PolicyDocument implements cdk.IResolvable {
     }
   }
 
-  private render(): any {
+  private render(includeId: boolean): any {
     if (this.isEmpty) {
       return undefined;
     }
@@ -311,9 +340,14 @@ export class PolicyDocument implements cdk.IResolvable {
     const doc = {
       Statement: this.statements.map(s => s.toStatementJson()),
       Version: '2012-10-17',
+      ...(includeId && this.id !== undefined ? { Id: this.id } : {}),
     };
 
     return doc;
+  }
+
+  private shouldRenderId(scope: IConstruct): boolean {
+    return this.id !== undefined && keepsId(scope);
   }
 
   private shouldMerge(scope: IConstruct) {
@@ -327,5 +361,50 @@ export class PolicyDocument implements cdk.IResolvable {
     for (const statement of this.statements) {
       statement.freeze();
     }
+  }
+}
+
+function keepsId(scope: IConstruct): boolean {
+  return cdk.FeatureFlags.of(scope).isEnabled(cxapi.IAM_POLICY_DOCUMENT_FROM_JSON_KEEPS_ID) ?? false;
+}
+
+/**
+ * Renders a PolicyDocument as an identity-based policy, without the `Id` element
+ *
+ * With the `@aws-cdk/aws-iam:policyDocumentFromJsonKeepsId` feature flag unset
+ * or disabled, this returns exactly what the document's `resolve()` returns.
+ */
+class IdentityPolicyDocument implements cdk.IResolvable {
+  public readonly creationStack: string[];
+
+  constructor(private readonly document: cdk.IResolvable) {
+    this.creationStack = document.creationStack;
+  }
+
+  public resolve(context: cdk.IResolveContext): any {
+    const resolved = this.document.resolve(context);
+    if (!keepsId(context.scope)) {
+      return resolved;
+    }
+    if (cdk.Tokenization.isResolvable(resolved)) {
+      // The document resolved to another token. Remove the `Id` from what that token renders.
+      return new IdentityPolicyDocument(resolved);
+    }
+    if (resolved === null || typeof resolved !== 'object' || Array.isArray(resolved) || !('Id' in resolved)) {
+      return resolved;
+    }
+    // Copy the result so that a value shared with other consumers is not changed
+    const { Id: _id, ...withoutId } = resolved;
+    return withoutId;
+  }
+
+  public toString() {
+    return cdk.Token.asString(this, {
+      displayHint: 'PolicyDocument',
+    });
+  }
+
+  public toJSON() {
+    return (this.document as any).toJSON?.();
   }
 }
