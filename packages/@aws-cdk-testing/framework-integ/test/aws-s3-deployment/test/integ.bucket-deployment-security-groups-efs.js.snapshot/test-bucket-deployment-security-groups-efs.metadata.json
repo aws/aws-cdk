@@ -1,11 +1,23 @@
 {
   "/test-bucket-deployment-security-groups-efs": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at TestBucketDeploymentSecurityGroupsEfs._silenceLiteralAzWarning (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new TestBucketDeploymentSecurityGroupsEfs (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:52:21)",
+        "    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:96:18)",
+        "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "test-bucket-deployment-security-groups-efs.template.json"
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc": [
@@ -48,32 +60,33 @@
       "type": "aws:cdk:warning",
       "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
       "trace": [
-        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
-        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
-        "WrappedClass.addEgressRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:474:51)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:106:31",
-        "ReactiveList.forEachAndForever (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:105:51",
-        "ReactiveList.forEachAndForever (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:104:30)",
-        "WrappedClass.configureVpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1204:38)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:713:33)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
-        "Module.load (node:internal/modules/cjs/loader:1266:32)",
-        "Module._load (node:internal/modules/cjs/loader:1091:12)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
-        "node:internal/main/run_main_module:28:49"
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "PropertyInjectable.addEgressRule (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:515:51)",
+        "PropertyInjectable.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-ec2/lib/connections.js:106:31",
+        "ReactiveList.forEachAndForever (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-ec2/lib/connections.js:105:51",
+        "ReactiveList.forEachAndForever (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowTo (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-ec2/lib/connections.js:104:30)",
+        "PropertyInjectable.configureVpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-lambda/lib/function.js:1253:38)",
+        "new Function (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-lambda/lib/function.js:758:33)",
+        "new Function (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentTsSingletonFunction.ensureLambda (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentTsSingletonFunction (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-ts-provider.generated.js:42:9)",
+        "new BucketDeployment (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:217:29)",
+        "new BucketDeployment (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestBucketDeploymentSecurityGroupsEfs (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:80:9)",
+        "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:96:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1968:14)",
+        "Object..js (node:internal/modules/cjs/loader:2108:10)",
+        "Module.load (node:internal/modules/cjs/loader:1690:32)",
+        "Module._load (node:internal/modules/cjs/loader:1480:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     }
   ],
@@ -127,9 +140,8 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -168,9 +180,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -179,65 +189,25 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/test-bucket-deployment-security-groups-efs/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcE77CE678"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:19:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/IsolatedSubnet1": [
@@ -303,34 +273,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "SecurityGroupDD263621"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:35:31)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/Destination/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Destination920A3C57"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:40:35)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     },
     {
       "type": "aws:cdk:analytics:mixin",
@@ -357,48 +305,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
-        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
-        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
-        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
-        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
-        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
-        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
-        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
-        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
-      ]
-    }
-  ],
-  "/test-bucket-deployment-security-groups-efs/DeployWithEfsAndSecurityGroups/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
     }
   ],
   "/test-bucket-deployment-security-groups-efs/DeployWithEfsAndSecurityGroups/CustomResourceHandler": [
@@ -406,9 +318,8 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -456,20 +367,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketDeploymentEFSVPCc8608a2d6d0594dee62b7275392a155b2bd2f7fb32EC713380"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:575:30)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreateEfsFileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:421:53)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:131:41)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/BucketDeploymentEFS-VPC-c8608a2d6d0594dee62b7275392a155b2bd2f7fb32/EfsSecurityGroup": [
@@ -495,42 +392,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketDeploymentEFSVPCc8608a2d6d0594dee62b7275392a155b2bd2f7fb32EfsMountTargetIsolatedSubnet1ADF71AE0"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:639: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:639:4)",
-        "Array.forEach (:)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:637:33)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreateEfsFileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:421:53)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:131:41)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/BucketDeploymentEFS-VPC-c8608a2d6d0594dee62b7275392a155b2bd2f7fb32/EfsMountTarget-IsolatedSubnet2": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketDeploymentEFSVPCc8608a2d6d0594dee62b7275392a155b2bd2f7fb32EfsMountTargetIsolatedSubnet27F87D196"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:639: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:639:4)",
-        "Array.forEach (:)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:637:33)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreateEfsFileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:421:53)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:131:41)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/BucketDeploymentEFS-VPC-c8608a2d6d0594dee62b7275392a155b2bd2f7fb32/AccessPoint": [
@@ -622,186 +489,54 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8608a2d6d0594dee62b7275392a155b2bd2f7fb32c8887da3fc0b7914c1e7444459d4d784673693fec1BFE03C9F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/IsolatedSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcIsolatedSubnet1Subnet541B14FE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/IsolatedSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcIsolatedSubnet1RouteTable8109E0F7"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/IsolatedSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcIsolatedSubnet1RouteTableAssociation69023F0F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/IsolatedSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcIsolatedSubnet2Subnet3A7015F1"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/IsolatedSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcIsolatedSubnet2RouteTableF2751065"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/IsolatedSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcIsolatedSubnet2RouteTableAssociationBF1DF8E3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1057:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/TestVpc/S3Endpoint/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TestVpcS3Endpoint79A815C2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new GatewayVpcEndpoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.js:303:30)",
-        "new GatewayVpcEndpoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new GatewayVpcEndpoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addGatewayEndpoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:293:16)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:31:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/Destination/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "DestinationPolicy7982387E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
-        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:40:35)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     },
     {
       "type": "aws:cdk:analytics:mixin",
@@ -814,41 +549,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DestinationAutoDeleteObjectsCustomResource15E926BA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
-        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
-      ]
-    }
-  ],
-  "/test-bucket-deployment-security-groups-efs/DeployWithEfsAndSecurityGroups/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithEfsAndSecurityGroupsAwsCliLayer2D9EF399"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
-        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:157:26)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/DeployWithEfsAndSecurityGroups/Asset1/AssetBucket": [
@@ -861,102 +561,30 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DeployWithEfsAndSecurityGroupsCustomResourcec8608a2d6d0594dee62b7275392a155b2bd2f7fb32BF9BC33C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:207:23)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/BucketDeploymentEFS-VPC-c8608a2d6d0594dee62b7275392a155b2bd2f7fb32/EfsSecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketDeploymentEFSVPCc8608a2d6d0594dee62b7275392a155b2bd2f7fb32EfsSecurityGroup0D0E088F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:614:59)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new FileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.getOrCreateEfsFileSystem (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:421:53)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:131:41)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/BucketDeploymentEFS-VPC-c8608a2d6d0594dee62b7275392a155b2bd2f7fb32/EfsSecurityGroup/from testbucketdeploymentsecuritygroupsefsSecurityGroup8B11485C:2049": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketDeploymentEFSVPCc8608a2d6d0594dee62b7275392a155b2bd2f7fb32EfsSecurityGroupfromtestbucketdeploymentsecuritygroupsefsSecurityGroup8B11485C204944DD713D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addIngressRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
-        "WrappedClass.addIngressRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "Connections.allowTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:112:31)",
-        "WrappedClass.configureVpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1204:38)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/BucketDeploymentEFS-VPC-c8608a2d6d0594dee62b7275392a155b2bd2f7fb32/AccessPoint/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketDeploymentEFSVPCc8608a2d6d0594dee62b7275392a155b2bd2f7fb32AccessPoint37DCDD58"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new AccessPoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/access-point.js:143:30)",
-        "new AccessPoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addAccessPoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.js:695:20)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:135:42)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentSecurityGroupsEfs (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:47:9)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-security-groups-efs.js:63:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8608a2d6d0594dee62b7275392a155b2bd2f7fb32c8887da3fc0b7914c1e7444459d4d784673693fec1/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8608a2d6d0594dee62b7275392a155b2bd2f7fb32c8887da3fc0b7914c1e7444459d4d784673693fec1ServiceRole4BE7643F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
-        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/test-bucket-deployment-security-groups-efs/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8608a2d6d0594dee62b7275392a155b2bd2f7fb32c8887da3fc0b7914c1e7444459d4d784673693fec1/ServiceRole/DefaultPolicy": [
@@ -1019,31 +647,10 @@
       "data": "*"
     }
   ],
-  "/test-bucket-deployment-security-groups-efs/DeployWithEfsAndSecurityGroups/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
   "/test-bucket-deployment-security-groups-efs/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8608a2d6d0594dee62b7275392a155b2bd2f7fb32c8887da3fc0b7914c1e7444459d4d784673693fec1/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8608a2d6d0594dee62b7275392a155b2bd2f7fb32c8887da3fc0b7914c1e7444459d4d784673693fec1ServiceRoleDefaultPolicyC57FF150"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:625: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:625:3)",
-        "Array.forEach (:)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:624:37)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)"
-      ]
     }
   ]
 }

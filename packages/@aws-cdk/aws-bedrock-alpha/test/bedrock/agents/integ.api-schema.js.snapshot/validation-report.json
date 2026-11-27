@@ -4,12 +4,12 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
           "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
+          "description": "Resources: Resources section must exist and be non-empty",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Structure"
@@ -19,6 +19,25 @@
               "constructPath": "BedrockApiSchema/DefaultTest/DeployAssert",
               "constructFqn": "aws-cdk-lib.Stack",
               "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W3697",
+          "description": "Resource type 'AWS::Bedrock::Agent' is from a service in maintenance mode since 2026-06-30. Consider migrating to an alternative",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-bedrock-api-schema-1/ApiSchemaAgent/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrock.CfnAgent",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-bedrock-api-schema-1.template.json",
+                "logicalId": "ApiSchemaAgent8E965D9C"
+              }
             }
           ]
         }

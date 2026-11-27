@@ -10,6 +10,5 @@
       "assertionStackName": "integrationtestcodepipelinestartpipelineexecutionDefaultTestDeployAssert922B4892"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1145.0"
+  "enableLookups": true
 }

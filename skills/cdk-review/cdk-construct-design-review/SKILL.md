@@ -28,10 +28,9 @@ Work the changed surface in this order; adapt to what the diff touches.
    durable (see `cdk-review-principles` "Verify before you cite"). Then read
    [`design-rules.md`](references/design-rules.md): its rows are your checklist.
 
-2. **Check the diff against the rules.** Walk the changed surface family by family — **Feature placement**,
-   **Abstraction / L1 leak**, **Conformance**, **Footgun / ages-well** — judging the shape it produces. For
-   each rule check both directions: what is present and violating, and what the kind owes but the diff
-   omits. Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
+2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
+   check both directions: what is present and violating, and what the kind owes but the diff omits.
+   Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
    docs, and confirm the CDK framework doesn't already auto-wire it. Rate a missing affordance exactly as a
    declared defect.
 
@@ -39,14 +38,9 @@ Work the changed surface in this order; adapt to what the diff touches.
    `cdk-review-principles` ("Confidence is not severity"); rate a wrong abstraction, an L1 leak, or a
    footgun at that cost even when you are unsure it fires. When several defects share one code cause, give
    one finding with the `ruleId`, `category` and `severity` of its most severe defect, since each field
-   takes one value. Stop once you can name the defect and cite its rule — file + section — with the concrete
-   fix.
+   takes one value. Stop once you can name the defect and cite its rule — file + section.
 
 ## What not to flag
-
-Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
-no-nit-quota), stay silent on the following — not even as OPTIONAL — because none is a design defect in
-the changed surface. When a defect belongs to a different dimension, leave it — it's outside your scope.
 
 - **Correctness bugs** — missing implementations, logic errors, broken paths — outside your scope.
 - **Regression risk** — input/token/edge-case breakage of working code, and breaking changes to the
@@ -60,10 +54,10 @@ the changed surface. When a defect belongs to a different dimension, leave it �
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, concrete fix, and the guideline cited
-inline by file + section). This dimension's `category` is one of: Feature placement & abstraction,
-Design Guidelines conformance, Clarity/simplicity/consistency, Footgun-free & ages-well interface
-quality.
+`message` as the complete posted comment (observation, impact, a fix once you have checked one, and the
+guideline cited inline by file + section). This dimension's `category` is one of: Feature placement &
+abstraction, Design Guidelines conformance, Clarity/simplicity/consistency, Footgun-free & ages-well
+interface quality.
 
 ## Apply cdk-review-principles
 

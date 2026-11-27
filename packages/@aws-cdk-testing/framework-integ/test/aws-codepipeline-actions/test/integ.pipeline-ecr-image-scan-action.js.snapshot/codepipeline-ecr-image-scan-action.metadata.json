@@ -26,9 +26,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -56,9 +54,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -67,7 +63,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/codepipeline-ecr-image-scan-action/DeployBucket": [
@@ -187,21 +183,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/codepipeline-ecr-image-scan-action/BucketDeployment/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/codepipeline-ecr-image-scan-action/BucketDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -430,12 +418,6 @@
       "data": "SourceBucketAutoDeleteObjectsCustomResourceC68FC040"
     }
   ],
-  "/codepipeline-ecr-image-scan-action/BucketDeployment/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "BucketDeploymentAwsCliLayerB018DCE1"
-    }
-  ],
   "/codepipeline-ecr-image-scan-action/BucketDeployment/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -588,12 +570,6 @@
           {}
         ]
       }
-    }
-  ],
-  "/codepipeline-ecr-image-scan-action/BucketDeployment/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/codepipeline-ecr-image-scan-action/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
