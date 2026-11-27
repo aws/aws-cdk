@@ -1,12 +1,13 @@
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { App, CfnOutput, CfnParameter, Stack } from '../../core';
+import { App, CfnOutput, CfnParameter, Stack, Validations } from '../../core';
 import { CfnNetworkConnector } from '../lib/lambda.generated';
 import {
   NetworkConnector,
   NetworkConnectorComputeType,
   NetworkConnectorConfiguration,
+  NetworkConnectorElasticIpType,
   NetworkConnectorProtocol,
 } from '../lib/network-connector';
 
@@ -381,6 +382,276 @@ describe('NetworkConnector', () => {
       expect(() => new NetworkConnector(stack, 'Connector', {
         configuration: vpcEgress({ securityGroups }),
       })).toThrow(/securityGroups must contain between 1 and 5 items, got 6/);
+    });
+  });
+
+  describe('service-managed Elastic IP addresses', () => {
+    beforeEach(() => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3002',
+        reason: 'ElasticIpConfiguration is a newly launched property not yet in the bundled schema',
+      });
+    });
+
+    const elasticIpStatements = [
+      {
+        Action: 'ec2:AllocateAddress',
+        Effect: 'Allow',
+        Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-west-2:123456789012:elastic-ip/*']] },
+      },
+      {
+        Action: 'ec2:AssociateAddress',
+        Condition: { StringLike: { 'aws:ResourceTag/aws:lambda:networkConnectorId': 'nc-*' } },
+        Effect: 'Allow',
+        Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-west-2:123456789012:elastic-ip/*']] },
+      },
+      {
+        Action: ['ec2:AllocateAddress', 'ec2:AssociateAddress'],
+        Condition: { StringEquals: { 'ec2:ManagedResourceOperator': 'network-connectors.lambda.amazonaws.com' } },
+        Effect: 'Allow',
+        Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-west-2:123456789012:network-interface/*']] },
+      },
+    ];
+
+    test('renders the Elastic IP configuration', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED } }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', {
+        Configuration: {
+          VpcEgressConfiguration: {
+            ElasticIpConfiguration: { Type: 'ServiceManaged' },
+          },
+        },
+      });
+    });
+
+    test('renders None when set explicitly', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.NONE } }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', {
+        Configuration: {
+          VpcEgressConfiguration: {
+            ElasticIpConfiguration: { Type: 'None' },
+          },
+        },
+      });
+    });
+
+    test('omits the Elastic IP configuration by default', () => {
+      new NetworkConnector(stack, 'Connector', { configuration: vpcEgress() });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', {
+        Configuration: {
+          VpcEgressConfiguration: Match.objectLike({ ElasticIpConfiguration: Match.absent() }),
+        },
+      });
+    });
+
+    test('keeps the VPC\'s default subnet selection, and warns that it has no public subnets', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({
+          vpcSubnets: undefined,
+          elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED },
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', {
+        Configuration: {
+          VpcEgressConfiguration: Match.objectLike({
+            SubnetIds: [
+              { Ref: Match.stringLikeRegexp('^VpcIsolatedSubnet1') },
+              { Ref: Match.stringLikeRegexp('^VpcIsolatedSubnet2') },
+            ],
+          }),
+        },
+      });
+      Annotations.fromStack(stack).hasWarning('/Stack/Connector', Match.stringLikeRegexp(
+        'service-managed Elastic IP addresses, but none of the selected subnets is a public subnet'));
+    });
+
+    test('warns when isolated subnets are selected', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED } }),
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Stack/Connector',
+        Match.stringLikeRegexp('networkConnectorElasticIpSubnets'));
+    });
+
+    test('does not warn about subnets when public subnets are selected', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({
+          vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+          elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED },
+        }),
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('networkConnectorElasticIpSubnets'));
+    });
+
+    test('does not warn about subnets while the VPC lookup is pending', () => {
+      const lookedUp = ec2.Vpc.fromLookup(stack, 'LookedUpVpc', { isDefault: true });
+      new NetworkConnector(stack, 'Connector', {
+        configuration: NetworkConnectorConfiguration.vpcEgress({
+          computeType: NetworkConnectorComputeType.WEB_FUNCTION,
+          vpc: lookedUp,
+          securityGroups: [securityGroup],
+          elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED },
+        }),
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('networkConnectorElasticIpSubnets'));
+    });
+
+    test('does not warn about subnets without Elastic IP addresses', () => {
+      new NetworkConnector(stack, 'Connector', { configuration: vpcEgress() });
+
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('networkConnectorElasticIpSubnets'));
+    });
+
+    test('keeps the subnets that are selected explicitly', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED } }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', {
+        Configuration: {
+          VpcEgressConfiguration: Match.objectLike({
+            SubnetIds: [
+              { Ref: Match.stringLikeRegexp('^VpcIsolatedSubnet1') },
+              { Ref: Match.stringLikeRegexp('^VpcIsolatedSubnet2') },
+            ],
+          }),
+        },
+      });
+    });
+
+    test('waits for the internet gateway attachment', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({
+          vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+          elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED },
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResource('AWS::Lambda::NetworkConnector', {
+        DependsOn: Match.arrayWith([
+          Match.stringLikeRegexp('^VpcIGW'),
+          Match.stringLikeRegexp('^VpcPublicSubnet1DefaultRoute'),
+          Match.stringLikeRegexp('^VpcPublicSubnet2DefaultRoute'),
+        ]),
+      });
+      // The public subnets' default routes wait for the gateway attachment.
+      template.hasResource('AWS::EC2::Route', { DependsOn: [Match.stringLikeRegexp('^VpcVPCGW')] });
+    });
+
+    test('waits for the internet gateway attachment whichever subnets are selected', () => {
+      // Isolated subnets have no route to the gateway, so their own dependables don't order the
+      // connector after the attachment that the service checks.
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED } }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResource('AWS::Lambda::NetworkConnector', {
+        DependsOn: Match.arrayWith([
+          Match.stringLikeRegexp('^VpcIGW'),
+          Match.stringLikeRegexp('^VpcPublicSubnet1DefaultRoute'),
+          Match.stringLikeRegexp('^VpcPublicSubnet2DefaultRoute'),
+        ]),
+      });
+      // The public subnets' default routes wait for the gateway attachment.
+      template.hasResource('AWS::EC2::Route', { DependsOn: [Match.stringLikeRegexp('^VpcVPCGW')] });
+    });
+
+    test('adds no dependency for an imported VPC', () => {
+      const imported = ec2.Vpc.fromVpcAttributes(stack, 'ImportedVpc', {
+        vpcId: 'vpc-0123456789abcdef0',
+        availabilityZones: ['us-west-2a', 'us-west-2b'],
+        publicSubnetIds: ['subnet-0aaaaaaaaaaaaaaa1', 'subnet-0bbbbbbbbbbbbbbb2'],
+      });
+      new NetworkConnector(stack, 'Connector', {
+        configuration: NetworkConnectorConfiguration.vpcEgress({
+          computeType: NetworkConnectorComputeType.WEB_FUNCTION,
+          vpc: imported,
+          vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+          securityGroups: [securityGroup],
+          elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED },
+        }),
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::NetworkConnector', { DependsOn: Match.absent() });
+    });
+
+    test('does not wait for the internet gateway without Elastic IP addresses', () => {
+      new NetworkConnector(stack, 'Connector', { configuration: vpcEgress() });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::NetworkConnector', { DependsOn: Match.absent() });
+    });
+
+    test('adds the Elastic IP permissions inline to the role it creates', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED } }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Role', {
+        Policies: [{
+          PolicyName: 'ElasticIp',
+          PolicyDocument: { Statement: elasticIpStatements },
+        }],
+      });
+      template.resourceCountIs('AWS::IAM::Policy', 0);
+    });
+
+    test('adds no Elastic IP permissions when the connector does not use them', () => {
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.NONE } }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Role', { Policies: Match.absent() });
+      template.resourceCountIs('AWS::IAM::Policy', 0);
+    });
+
+    test('adds the Elastic IP permissions to a given role defined in the app, before the connector', () => {
+      const role = new iam.Role(stack, 'CustomRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED } }),
+        operatorRole: role,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: { Statement: elasticIpStatements },
+        Roles: [{ Ref: Match.stringLikeRegexp('^CustomRole') }],
+      });
+      const policyId = Object.keys(template.findResources('AWS::IAM::Policy'))[0];
+      template.hasResource('AWS::Lambda::NetworkConnector', { DependsOn: Match.arrayWith([policyId]) });
+    });
+
+    test('warns that an imported role needs the Elastic IP permissions', () => {
+      const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/operator');
+      new NetworkConnector(stack, 'Connector', {
+        configuration: vpcEgress({ elasticIpConfiguration: { type: NetworkConnectorElasticIpType.SERVICE_MANAGED } }),
+        operatorRole: role,
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Stack/Connector', Match.stringLikeRegexp(
+        'service-managed Elastic IP addresses.*ec2:AllocateAddress and ec2:AssociateAddress'));
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+    });
+
+    test('does not warn about Elastic IP permissions for an imported role when the connector does not use them', () => {
+      const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/operator');
+      new NetworkConnector(stack, 'Connector', { configuration: vpcEgress(), operatorRole: role });
+
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('networkConnectorOperatorRoleElasticIp'));
     });
   });
 });

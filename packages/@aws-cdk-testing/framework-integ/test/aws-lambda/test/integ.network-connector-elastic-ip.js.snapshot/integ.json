@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "NetworkConnectorElasticIpTest/DefaultTest": {
+      "stacks": [
+        "NetworkConnectorElasticIpStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "NetworkConnectorElasticIpTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NetworkConnectorElasticIpTestDefaultTestDeployAssert83FA29CA"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import { CfnNetworkConnector } from './lambda.generated';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -65,6 +65,35 @@ export enum NetworkConnectorProtocol {
 }
 
 /**
+ * Whether Lambda assigns an Elastic IP address to each of the connector's network interfaces.
+ */
+export enum NetworkConnectorElasticIpType {
+  /** Lambda doesn't assign Elastic IP addresses. */
+  NONE = 'None',
+
+  /**
+   * Lambda allocates a service-managed Elastic IP address in your account for each network
+   * interface and associates it with that interface.
+   *
+   * Outbound traffic to the internet then leaves from these addresses through the VPC's
+   * internet gateway, without going through a NAT gateway. The connector's subnets must route
+   * `0.0.0.0/0` to an internet gateway. Each address stays the same for the life of its network
+   * interface; a new connector version gets new interfaces and new addresses.
+   */
+  SERVICE_MANAGED = 'ServiceManaged',
+}
+
+/**
+ * How a connector's network interfaces get an Elastic IP address.
+ */
+export interface NetworkConnectorElasticIpConfiguration {
+  /**
+   * Whether Lambda assigns an Elastic IP address to each network interface.
+   */
+  readonly type: NetworkConnectorElasticIpType;
+}
+
+/**
  * Configuration for a connector that gives the compute egress into a VPC.
  */
 export interface VpcEgressConfiguration {
@@ -83,7 +112,9 @@ export interface VpcEgressConfiguration {
   /**
    * Which subnets of the VPC to create network interfaces in.
    *
-   * The selection must yield between 1 and 16 subnets.
+   * The selection must yield between 1 and 16 subnets. With a `SERVICE_MANAGED`
+   * `elasticIpConfiguration`, select subnets that route `0.0.0.0/0` to an internet gateway,
+   * such as public subnets.
    *
    * @default - the VPC's default selection: its private subnets, if it has any
    */
@@ -107,6 +138,19 @@ export interface VpcEgressConfiguration {
    * @default NetworkConnectorProtocol.IPV4
    */
   readonly networkProtocol?: NetworkConnectorProtocol;
+
+  /**
+   * How the connector's network interfaces get an Elastic IP address.
+   *
+   * With `NetworkConnectorElasticIpType.SERVICE_MANAGED`, the operator role needs
+   * `ec2:AllocateAddress` and `ec2:AssociateAddress`, which the
+   * `AWSLambdaNetworkConnectorOperatorPolicy` managed policy doesn't include. They are added to
+   * the operator role when it is created by or defined in this app. Changing this setting
+   * creates a new connector version.
+   *
+   * @default - no Elastic IP addresses are assigned
+   */
+  readonly elasticIpConfiguration?: NetworkConnectorElasticIpConfiguration;
 }
 
 /**
@@ -129,6 +173,24 @@ export abstract class NetworkConnectorConfiguration {
    * @internal
    */
   public abstract _render(scope: Construct): CfnNetworkConnector.ConfigProperty;
+
+  /**
+   * Whether the operator role needs the Elastic IP permissions.
+   *
+   * @internal
+   */
+  public get _usesServiceManagedElasticIps(): boolean {
+    return false;
+  }
+
+  /**
+   * What must exist before the connector is created, if anything.
+   *
+   * @internal
+   */
+  public get _creationDependencies(): IDependable[] {
+    return [];
+  }
 }
 
 class VpcEgressNetworkConnectorConfiguration extends NetworkConnectorConfiguration {
@@ -136,9 +198,43 @@ class VpcEgressNetworkConnectorConfiguration extends NetworkConnectorConfigurati
     super();
   }
 
+  public get _usesServiceManagedElasticIps(): boolean {
+    return this.config.elasticIpConfiguration?.type === NetworkConnectorElasticIpType.SERVICE_MANAGED;
+  }
+
+  public get _creationDependencies(): IDependable[] {
+    if (!this._usesServiceManagedElasticIps) {
+      return [];
+    }
+    // Wait for the internet gateway attachment, which the service checks at create time
+    // (InternetGatewayNotAttached). IVpc doesn't expose the attachment and
+    // vpc.internetConnectivityEstablished covers only the gateway, so also wait on the public
+    // subnets' routes, which depend on the attachment. A VPC with an internet gateway but no
+    // public subnets isn't covered; add a dependency on the attachment yourself in that case.
+    // An imported VPC exposes no dependables; its gateway is already attached, or the service
+    // reports that it isn't.
+    const { vpc } = this.config;
+    return [
+      vpc.internetConnectivityEstablished,
+      ...vpc.publicSubnets.map((subnet) => subnet.internetConnectivityEstablished),
+    ];
+  }
+
   public _render(scope: Construct): CfnNetworkConnector.ConfigProperty {
-    const { securityGroups } = this.config;
-    const { subnetIds } = this.config.vpc.selectSubnets(this.config.vpcSubnets);
+    const { securityGroups, elasticIpConfiguration } = this.config;
+    const selection = this.config.vpc.selectSubnets(this.config.vpcSubnets);
+    const { subnetIds } = selection;
+    // Elastic IP addresses only carry traffic from subnets that route to an internet gateway.
+    // Warn rather than fail: subnets passed explicitly or imported can route to one without
+    // being known as public subnets of the VPC.
+    if (this._usesServiceManagedElasticIps && !selection.hasPublic && !selection.isPendingLookup) {
+      Annotations.of(scope).addWarningV2(
+        '@aws-cdk/aws-lambda:networkConnectorElasticIpSubnets',
+        'The connector uses service-managed Elastic IP addresses, but none of the selected subnets is a public subnet of the VPC. ' +
+        'Traffic reaches the internet through the addresses only from subnets that route 0.0.0.0/0 to an internet gateway; ' +
+        'select such subnets with vpcSubnets (for example, subnetType: ec2.SubnetType.PUBLIC).',
+      );
+    }
     if (!Token.isUnresolved(subnetIds) && (subnetIds.length < 1 || subnetIds.length > 16)) {
       throw new ValidationError(lit`NetworkConnectorSubnetCount`,
         `vpcSubnets must select between 1 and 16 subnets, got ${subnetIds.length}`, scope);
@@ -158,6 +254,7 @@ class VpcEgressNetworkConnectorConfiguration extends NetworkConnectorConfigurati
         securityGroupIds: securityGroups.map((group) => group.securityGroupRef.securityGroupId),
         networkProtocol: this.config.networkProtocol ?? NetworkConnectorProtocol.IPV4,
         associatedComputeResourceTypes: [this.config.computeType],
+        elasticIpConfiguration: elasticIpConfiguration ? { type: elasticIpConfiguration.type } : undefined,
       },
     };
   }
@@ -238,6 +335,37 @@ const OPERATOR_MANAGED_POLICY = 'AWSLambdaNetworkConnectorOperatorPolicy';
 
 function isRoleWithManagedPolicies(role: iam.IRoleRef): role is iam.IRole {
   return typeof (role as Partial<iam.IRole>).addManagedPolicy === 'function';
+}
+
+/**
+ * The permissions the operator role needs for service-managed Elastic IP addresses, which the
+ * operator managed policy doesn't include.
+ *
+ * `AllocateAddress` on `elastic-ip/*` takes no condition, because the service's create-time
+ * check allocates before any tag exists. `AssociateAddress` is limited to addresses the service
+ * tagged for a connector, and both actions on network interfaces to the ones the service
+ * manages for network connectors.
+ */
+function elasticIpStatements(scope: Construct): iam.PolicyStatement[] {
+  const stack = Stack.of(scope);
+  const elasticIps = stack.formatArn({ service: 'ec2', resource: 'elastic-ip', resourceName: '*' });
+  const networkInterfaces = stack.formatArn({ service: 'ec2', resource: 'network-interface', resourceName: '*' });
+  return [
+    new iam.PolicyStatement({
+      actions: ['ec2:AllocateAddress'],
+      resources: [elasticIps],
+    }),
+    new iam.PolicyStatement({
+      actions: ['ec2:AssociateAddress'],
+      resources: [elasticIps],
+      conditions: { StringLike: { 'aws:ResourceTag/aws:lambda:networkConnectorId': 'nc-*' } },
+    }),
+    new iam.PolicyStatement({
+      actions: ['ec2:AllocateAddress', 'ec2:AssociateAddress'],
+      resources: [networkInterfaces],
+      conditions: { StringEquals: { 'ec2:ManagedResourceOperator': 'network-connectors.lambda.amazonaws.com' } },
+    }),
+  ];
 }
 
 /**
@@ -376,13 +504,19 @@ export class NetworkConnector extends NetworkConnectorBase {
     // NetworkConnectorOperatorRole". This matches the trust policy the LNC developer guide
     // instructs customers to create.
     const operatorPolicy = iam.ManagedPolicy.fromAwsManagedPolicyName(OPERATOR_MANAGED_POLICY);
+    const elasticIpPermissions = props.configuration._usesServiceManagedElasticIps ? elasticIpStatements(this) : [];
+    const policyDependencies: Array<IDependable> = [];
     if (props.operatorRole) {
       this.operatorRole = props.operatorRole;
-      this.attachOperatorPolicy(props.operatorRole, operatorPolicy);
+      this.attachOperatorPolicy(props.operatorRole, operatorPolicy, elasticIpPermissions, policyDependencies);
     } else {
+      // Inline on the role, so the connector, which references the role's ARN, is created after it.
       this.operatorRole = new iam.Role(this, 'OperatorRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
         managedPolicies: [operatorPolicy],
+        inlinePolicies: elasticIpPermissions.length > 0
+          ? { ElasticIp: new iam.PolicyDocument({ statements: elasticIpPermissions }) }
+          : undefined,
       });
     }
 
@@ -394,6 +528,12 @@ export class NetworkConnector extends NetworkConnectorBase {
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
     });
+    // Create the connector only after what the service checks at create time exists: an
+    // Elastic IP policy attached to a provided operator role, and with service-managed Elastic
+    // IP addresses, the VPC's internet gateway attachment.
+    for (const dependency of [...policyDependencies, ...props.configuration._creationDependencies]) {
+      this.resource.node.addDependency(dependency);
+    }
   }
 
   /**
@@ -403,11 +543,22 @@ export class NetworkConnector extends NetworkConnectorBase {
    * a no-op for an AWS managed policy and emits an IAM warning that does not say what the
    * connector needs, so it is not called; this construct warns instead.
    */
-  private attachOperatorPolicy(role: iam.IRoleRef, policy: iam.IManagedPolicy): void {
+  private attachOperatorPolicy(
+    role: iam.IRoleRef,
+    policy: iam.IManagedPolicy,
+    elasticIpPermissions: iam.PolicyStatement[],
+    policyDependencies: IDependable[],
+  ): void {
     const roleArn = role.roleRef.roleArn;
     const roleName = Token.isUnresolved(roleArn) ? `'${role.node.path}'` : `'${roleArn}' (${role.node.path})`;
     if (Resource.isOwnedResource(role) && isRoleWithManagedPolicies(role)) {
       role.addManagedPolicy(policy);
+      for (const statement of elasticIpPermissions) {
+        const { policyDependable } = role.addToPrincipalPolicy(statement);
+        if (policyDependable) {
+          policyDependencies.push(policyDependable);
+        }
+      }
       Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-lambda:networkConnectorOperatorRoleShared',
         `The ${OPERATOR_MANAGED_POLICY} managed policy was attached to the operator role ${roleName}. ` +
@@ -424,6 +575,14 @@ export class NetworkConnector extends NetworkConnectorBase {
       'and that it is dedicated to this connector, since the service assumes it without a source ' +
       'account or ARN.',
     );
+    if (elasticIpPermissions.length > 0) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-lambda:networkConnectorOperatorRoleElasticIp',
+        `The connector uses service-managed Elastic IP addresses, so the operator role ${roleName} also ` +
+        'needs ec2:AllocateAddress and ec2:AssociateAddress on Elastic IP addresses and on the connector\'s ' +
+        'network interfaces. These were not added because the role cannot be modified from this app.',
+      );
+    }
   }
 
   @memoizedGetter

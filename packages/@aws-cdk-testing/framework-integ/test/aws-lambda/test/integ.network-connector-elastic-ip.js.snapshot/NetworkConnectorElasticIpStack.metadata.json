@@ -1,0 +1,257 @@
+{
+  "/NetworkConnectorElasticIpStack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/aqoshi/gh/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/workplace/aqoshi/gh/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at availabilityZones (/workplace/aqoshi/gh/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/workplace/aqoshi/gh/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/aqoshi/gh/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector-elastic-ip.js:44:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "NetworkConnectorElasticIpStack.template.json"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Public"
+          }
+        ]
+      }
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/ConnectorSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "allowAllOutbound": true
+      }
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Connector": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/ConnectorArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorArn"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/ConnectorSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorSecurityGroup5AD7DC86"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Connector/OperatorRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ],
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Connector/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorC537A2FB"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1Subnet2BB74ED7"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1RouteTable15C15F8E"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1RouteTableAssociation4E83B6E4"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet1DefaultRouteB88F9E93"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2SubnetE34B022A"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2RouteTableC5A6DF77"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2RouteTableAssociationCCE257FF"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/publicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcpublicSubnet2DefaultRoute732F0BEB"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    }
+  ],
+  "/NetworkConnectorElasticIpStack/Connector/OperatorRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorOperatorRoleC4EE1CDE"
+    }
+  ]
+}
