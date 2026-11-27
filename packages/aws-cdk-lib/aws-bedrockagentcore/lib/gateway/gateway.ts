@@ -30,6 +30,13 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { validateStringFieldLength, validateFieldPattern } from '../common/validation-helpers';
 
 /**
+ * Host name pattern for `DomainOverride` domains, from the AgentCore control plane API reference.
+ * @see https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_DomainOverride.html
+ */
+const DOMAIN_OVERRIDE_DOMAIN_PATTERN =
+  /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)(?:\.(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?))+$/;
+
+/**
  * The enforcement mode for a policy engine associated with a gateway.
  *
  */
@@ -294,6 +301,37 @@ export interface GatewayPolicyEngineConfig {
 }
 
 /**
+ * Public domain names for a gateway that clients reach through your own proxy or custom domain.
+ *
+ * When set, the gateway advertises these domains instead of the inbound `Host` header in the
+ * URLs that it returns for OAuth discovery, such as the protected resource metadata and the
+ * `WWW-Authenticate` challenge.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_DomainOverride.html
+ */
+export interface GatewayDomainOverride {
+  /**
+   * The default public domain name for the gateway.
+   *
+   * The gateway advertises this domain when a request doesn't select a specific domain.
+   * Must be a host name with at least two labels (for example `mcp.example.com`),
+   * 1 to 253 characters long.
+   */
+  readonly defaultDomain: string;
+
+  /**
+   * Additional public domain names for the gateway, up to 10.
+   *
+   * A request selects one of these domains, or the default domain, with the
+   * `x-amzn-bedrock-agentcore-gateway-domain` header. The list must not repeat
+   * `defaultDomain` or contain the same domain more than once.
+   *
+   * @default - No alternate domains
+   */
+  readonly alternateDomains?: string[];
+}
+
+/**
  * Properties for defining a Gateway
  */
 export interface GatewayProps {
@@ -378,6 +416,18 @@ export interface GatewayProps {
    * @default - No policy engine (requests are not subject to Cedar policy authorization)
    */
   readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
+
+  /**
+   * Public domain names that the gateway advertises in its OAuth discovery URLs
+   * instead of the inbound `Host` header.
+   *
+   * Use this when clients reach the gateway through your own proxy or custom domain,
+   * for example Amazon CloudFront or an Application Load Balancer.
+   *
+   * @default - No domain override. The gateway advertises the inbound `Host` header.
+   * @see https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_CreateGateway.html#bedrockagentcorecontrol-CreateGateway-request-domainOverride
+   */
+  readonly domainOverride?: GatewayDomainOverride;
 }
 
 /**
@@ -572,6 +622,11 @@ export class Gateway extends GatewayBase {
   public readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
 
   /**
+   * The public domain names that the gateway advertises in its OAuth discovery URLs.
+   */
+  public readonly domainOverride?: GatewayDomainOverride;
+
+  /**
    * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
    */
   public userPoolDomain?: cognito.IUserPoolDomain;
@@ -658,6 +713,11 @@ export class Gateway extends GatewayBase {
 
     this.policyEngineConfiguration = props.policyEngineConfiguration;
 
+    this.domainOverride = props.domainOverride;
+    if (this.domainOverride) {
+      this.validateDomainOverride(this.domainOverride);
+    }
+
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
@@ -665,6 +725,12 @@ export class Gateway extends GatewayBase {
       authorizerConfiguration: this.authorizerConfiguration._render(),
       authorizerType: this.authorizerConfiguration.authorizerType,
       description: this.description,
+      domainOverride: this.domainOverride
+        ? {
+          defaultDomain: this.domainOverride.defaultDomain,
+          alternateDomains: this.domainOverride.alternateDomains,
+        }
+        : undefined,
       exceptionLevel: this.exceptionLevel?.value,
       interceptorConfigurations: Lazy.any({ produce: () => this.renderInterceptorConfigurations() }),
       kmsKeyArn: this.kmsKey?.keyArn,
@@ -945,6 +1011,72 @@ export class Gateway extends GatewayBase {
 
     if (errors.length > 0) {
       throw new ValidationError(lit`GatewayDescriptionInvalid`, errors.join('\n'), this);
+    }
+  }
+
+  /**
+   * Validates the domain override.
+   *
+   * Follows the DomainOverride API reference: each domain is 1 to 253 characters and
+   * matches the host name pattern; `alternateDomains` has 1 to 10 entries, doesn't list a
+   * domain more than once and doesn't repeat the default domain. Tokens are skipped.
+   * @see https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_DomainOverride.html
+   * @internal
+   */
+  private validateDomainOverride(domainOverride: GatewayDomainOverride): void {
+    const domainErrors = (value: string, fieldName: string): string[] => [
+      ...validateStringFieldLength({ value, minLength: 1, maxLength: 253, fieldName }),
+      ...validateFieldPattern(
+        value,
+        fieldName,
+        DOMAIN_OVERRIDE_DOMAIN_PATTERN,
+        `${fieldName} "${value}" must be a host name with at least two labels separated by dots, for example "mcp.example.com". Each label can contain only alphanumeric characters and hyphens, and can't start or end with a hyphen`,
+      ),
+    ];
+
+    const defaultDomain = domainOverride.defaultDomain;
+    const defaultErrors = domainErrors(defaultDomain, 'domainOverride.defaultDomain');
+    if (defaultErrors.length > 0) {
+      throw new ValidationError(lit`GatewayDomainOverrideDefaultDomainInvalid`, defaultErrors.join('\n'), this);
+    }
+
+    const alternateDomains = domainOverride.alternateDomains;
+    if (alternateDomains === undefined || Token.isUnresolved(alternateDomains)) {
+      return;
+    }
+
+    if (alternateDomains.length < 1 || alternateDomains.length > 10) {
+      throw new ValidationError(
+        lit`GatewayDomainOverrideAlternateDomainsCountInvalid`,
+        `domainOverride.alternateDomains must contain between 1 and 10 domains, got ${alternateDomains.length}. Omit it if there are no alternate domains`,
+        this,
+      );
+    }
+
+    const seen = new Set<string>();
+    for (const domain of alternateDomains) {
+      if (Token.isUnresolved(domain)) {
+        continue;
+      }
+      const errors = domainErrors(domain, 'domainOverride.alternateDomains entry');
+      if (errors.length > 0) {
+        throw new ValidationError(lit`GatewayDomainOverrideAlternateDomainInvalid`, errors.join('\n'), this);
+      }
+      if (!Token.isUnresolved(defaultDomain) && domain === defaultDomain) {
+        throw new ValidationError(
+          lit`GatewayDomainOverrideAlternateDomainRepeatsDefault`,
+          `domainOverride.alternateDomains must not repeat the default domain "${domain}"`,
+          this,
+        );
+      }
+      if (seen.has(domain)) {
+        throw new ValidationError(
+          lit`GatewayDomainOverrideAlternateDomainDuplicate`,
+          `domainOverride.alternateDomains lists "${domain}" more than once`,
+          this,
+        );
+      }
+      seen.add(domain);
     }
   }
 

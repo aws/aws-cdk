@@ -1,0 +1,20 @@
+{
+  "/GatewayDomainOverrideIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "GatewayDomainOverrideIntegTestDefaultTestDeployAssertB83D496A.template.json"
+    }
+  ],
+  "/GatewayDomainOverrideIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/GatewayDomainOverrideIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
