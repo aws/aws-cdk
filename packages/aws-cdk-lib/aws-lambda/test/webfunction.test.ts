@@ -746,7 +746,7 @@ describe('WebFunction template', () => {
     template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
       BuildConfig: {
         RuntimeConfig: {
-          Runtime: 'nodejs24.x',
+          Runtime: 'nodejs26.x',
         },
       },
     });

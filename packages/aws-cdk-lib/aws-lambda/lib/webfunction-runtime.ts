@@ -17,12 +17,12 @@ export class WebFunctionRuntime {
    * available in YOUR region).
    *
    * This value changes as new Node.js runtimes become available; it currently resolves to
-   * Node.js 24.x. The runtime is part of a revision's build configuration, so when an
+   * Node.js 26.x. The runtime is part of a revision's build configuration, so when an
    * upgrade of the CDK library moves this to a newer runtime, the next deployment creates a
    * new revision on it and shifts the endpoint's traffic there — without any change to your
-   * code. Use a specific version such as `NODEJS_24_X` to control when that happens.
+   * code. Use a specific version such as `NODEJS_26_X` to control when that happens.
    */
-  public static readonly NODEJS_LATEST = new WebFunctionRuntime('nodejs24.x');
+  public static readonly NODEJS_LATEST = new WebFunctionRuntime('nodejs26.x');
 
   /**
    * Use a custom runtime string not yet supported by the CDK.
