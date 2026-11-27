@@ -1,0 +1,76 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "cdk-agentcore-gateway-target-certificate/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-094cbf39": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "41032118a4cce5b7656122986b98a49951c0720173cae3248226c934aabec146": {
+      "displayName": "PrivateCaGenerator/Code",
+      "source": {
+        "path": "asset.41032118a4cce5b7656122986b98a49951c0720173cae3248226c934aabec146",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-6dabc8b2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "41032118a4cce5b7656122986b98a49951c0720173cae3248226c934aabec146.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e": {
+      "displayName": "PrivateCaProvider/framework-onEvent/Code",
+      "source": {
+        "path": "asset.775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-790bc5ee": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "a18edcc96245c3c68b058f05c1aaf0136199697c3970b19b1ad8151cd5ce61da": {
+      "displayName": "GatewayTargetGetter/Code",
+      "source": {
+        "path": "asset.a18edcc96245c3c68b058f05c1aaf0136199697c3970b19b1ad8151cd5ce61da",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-dc76a919": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a18edcc96245c3c68b058f05c1aaf0136199697c3970b19b1ad8151cd5ce61da.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "a9a87653774d1df9daf03ee008035043e5ff3c1edea16a0e7079b7e093165851": {
+      "displayName": "cdk-agentcore-gateway-target-certificate Template",
+      "source": {
+        "path": "cdk-agentcore-gateway-target-certificate.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-af12f5d8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a9a87653774d1df9daf03ee008035043e5ff3c1edea16a0e7079b7e093165851.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -71,6 +71,8 @@ export * from './gateway/outbound-auth/oauth';
 export * from './gateway/targets/target-base';
 export * from './gateway/targets/target';
 export * from './gateway/targets/target-configuration';
+export * from './gateway/targets/certificate';
+export * from './gateway/targets/private-endpoint';
 
 // ===================================
 // Gateway - Schemas
