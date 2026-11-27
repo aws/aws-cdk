@@ -1,0 +1,90 @@
+{
+  "/DSQLEncryptionKeyStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:71 (:)"
+      ]
+    }
+  ],
+  "/DSQLEncryptionKeyStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/DSQLEncryptionKeyStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/DSQLEncryptionKeyStack/DSQLKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DSQLKeyE8231F4D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:670:30)",
+        "[eval]:14: ([eval]:14:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:71 (:)"
+      ]
+    }
+  ],
+  "/DSQLEncryptionKeyStack/DSQLCluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DSQLCluster9991E741"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Cluster (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk/aws-dsql-alpha/lib/cluster.js:159:28)",
+        "[eval]:18 (:)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:71 (:)"
+      ]
+    }
+  ]
+}
