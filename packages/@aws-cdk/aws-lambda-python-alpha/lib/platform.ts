@@ -21,7 +21,9 @@ export function runtimeToPythonVersion(runtime: Runtime): string {
 }
 
 export function runtimeToAbiTag(runtime: Runtime): string {
-  return `cp${runtimeToPythonVersion(runtime).replace('.', '')}`;
+  const abi = `cp${runtimeToPythonVersion(runtime).replace('.', '')}`;
+  // Python 3.8 dropped the pymalloc ABI flag.
+  return parsePythonMinor(runtime) < 8 ? `${abi}m` : abi;
 }
 
 export function validateArchitecture(architecture: Architecture): void {

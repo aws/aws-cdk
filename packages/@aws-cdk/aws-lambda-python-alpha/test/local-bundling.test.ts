@@ -195,7 +195,7 @@ describe('parametrized sweeps', () => {
   });
 
   test.each([
-    [Runtime.PYTHON_3_7, '3.7', 'cp37'],
+    [Runtime.PYTHON_3_7, '3.7', 'cp37m'],
     [Runtime.PYTHON_3_11, '3.11', 'cp311'],
     [Runtime.PYTHON_3_12, '3.12', 'cp312'],
     [Runtime.PYTHON_3_13, '3.13', 'cp313'],

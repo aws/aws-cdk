@@ -28,6 +28,9 @@ describe('runtimeToPythonVersion', () => {
 
 describe('runtimeToAbiTag', () => {
   test.each([
+    [Runtime.PYTHON_3_6, 'cp36m'],
+    [Runtime.PYTHON_3_7, 'cp37m'],
+    [Runtime.PYTHON_3_8, 'cp38'],
     [Runtime.PYTHON_3_9, 'cp39'],
     [Runtime.PYTHON_3_11, 'cp311'],
     [Runtime.PYTHON_3_12, 'cp312'],
