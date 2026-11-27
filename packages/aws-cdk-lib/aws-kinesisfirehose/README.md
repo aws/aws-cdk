@@ -81,7 +81,7 @@ Data must be provided via "direct put", ie., by using a `PutRecord` or
 
 Amazon Data Firehose supports multiple AWS and third-party services as destinations, including Amazon S3, Amazon Redshift, and more. You can find the full list of supported destination [here](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html).
 
-Currently in the AWS CDK, S3, HTTP endpoint, and Datadog are implemented as L2 construct destinations. Other destinations can still be configured using L1 constructs.
+Currently in the AWS CDK, S3, HTTP endpoint, Datadog, and Amazon Redshift are implemented as L2 construct destinations. Other destinations can still be configured using L1 constructs.
 
 ### HTTP
 
@@ -148,6 +148,66 @@ const s3Destination = new firehose.S3Bucket(bucket, {
   fileExtension: '.json.gz',
 });
 ```
+
+### Redshift
+
+Amazon Data Firehose delivers data to an Amazon Redshift cluster in two stages: it first
+stages the incoming records in an intermediate S3 bucket, and then issues an Amazon Redshift
+`COPY` command to load the data from that bucket into a table in the cluster. Because of this,
+a `RedshiftDestination` always requires an intermediate S3 bucket.
+
+The recommended way to supply the cluster credentials is through AWS Secrets Manager. The
+secret must contain the `username` and `password` for a Redshift user that has `INSERT`
+privileges on the target table. Firehose retrieves the credentials at runtime rather than
+rendering them into the CloudFormation template:
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const intermediateBucket: s3.Bucket;
+declare const secret: secretsmanager.ISecret;
+
+const redshiftDestination = new firehose.RedshiftDestination(intermediateBucket, {
+  clusterJdbcUrl: 'jdbc:redshift://cluster.abc123.us-east-1.redshift.amazonaws.com:5439/dev',
+  copyCommand: {
+    tableName: 'firehose_test_table',
+  },
+  secret,
+});
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: redshiftDestination,
+});
+```
+
+Alternatively, you can provide the credentials inline. The password is a `SecretValue` and is
+rendered into the template, so prefer `secret` where possible:
+
+```ts
+import { SecretValue } from 'aws-cdk-lib';
+
+declare const intermediateBucket: s3.Bucket;
+
+const redshiftDestination = new firehose.RedshiftDestination(intermediateBucket, {
+  clusterJdbcUrl: 'jdbc:redshift://cluster.abc123.us-east-1.redshift.amazonaws.com:5439/dev',
+  copyCommand: {
+    tableName: 'firehose_test_table',
+    // optional: restrict the columns and pass COPY options
+    columns: ['col1', 'col2'],
+    copyOptions: "json 'auto'",
+  },
+  user: {
+    username: 'firehose',
+    password: SecretValue.secretsManager('my-redshift-secret', { jsonField: 'password' }),
+  },
+});
+```
+
+The `COPY` command's target `tableName` must already exist in the cluster. The `SNAPPY` and
+`ZIP` compression formats are not supported for the intermediate S3 bucket because the Amazon
+Redshift `COPY` command cannot read them. Retry behavior, S3 backup (`BackupMode.ALL` only),
+CloudWatch logging, data processing, and a custom IAM role are configured the same way as the
+other destinations.
 
 ## Data Format Conversion
 

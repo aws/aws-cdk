@@ -1,0 +1,238 @@
+{
+  "/aws-cdk-firehose-delivery-stream-redshift/IntermediateBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/RedshiftSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawskinesisfirehoseCidrBlocks"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/IntermediateBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntermediateBucketC22DE796"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/IntermediateBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/IntermediateBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/RedshiftSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RedshiftSecret5FEA192D"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/Redshift Destination Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/BackupBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStream58CF96DB"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/IntermediateBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntermediateBucketPolicyA81D9892"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/IntermediateBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntermediateBucketAutoDeleteObjectsCustomResource0C6A0B91"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/Redshift Destination Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamRedshiftDestinationRoleA1EA86B4"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/Redshift Destination Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamLogGroupA92E8EA0"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/LogGroup/RedshiftDestination": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/LogGroup/S3Backup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/BackupBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamBackupBucket48C8465F"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/Redshift Destination Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamRedshiftDestinationRoleDefaultPolicy9761EE9D"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/LogGroup/RedshiftDestination/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamLogGroupRedshiftDestination0009E5B2"
+    }
+  ],
+  "/aws-cdk-firehose-delivery-stream-redshift/DeliveryStream/LogGroup/S3Backup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamLogGroupS3BackupD848C05F"
+    }
+  ]
+}
