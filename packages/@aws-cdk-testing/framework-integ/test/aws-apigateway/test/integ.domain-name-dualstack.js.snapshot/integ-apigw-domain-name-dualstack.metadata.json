@@ -1,0 +1,164 @@
+{
+  "/integ-apigw-domain-name-dualstack/IntegApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/DualstackDomain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "certificate": "*",
+        "mapping": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBasePathMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/DualstackDomainRecord": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackDomainRecord"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi3BAA7F96"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApiEndpoint93724527"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/DualstackDomain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackDomain29972AF5"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/DualstackDomain/Map:--=>integapigwdomainnamedualstackIntegApi6813D622": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "restApi": "*",
+        "basePath": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/Exports/Output{\"Ref\":\"DualstackDomain29972AF5\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDualstackDomain29972AF5493E8213"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApiDeployment8A677AAE3f8eef85e21e440def6262aabdaadd42"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApiDeploymentStageprod8A6EDE49"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/DualstackDomain/Map:--=>integapigwdomainnamedualstackIntegApi6813D622/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackDomainMapintegapigwdomainnamedualstackIntegApi6813D622F57260B3"
+    }
+  ],
+  "/integ-apigw-domain-name-dualstack/IntegApi/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApiGETF18D674D"
+    }
+  ]
+}
