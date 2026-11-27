@@ -36,6 +36,16 @@ const webFunction = new WebFunction(stack, 'MinimalBucket', {
 
 cdk.Tags.of(webFunction).add('App', 'integ-test');
 
+new WebFunction(stack, 'NodeJs26', {
+  code: WebFunctionCode.fromBucket(
+    codeBucket,
+    cdk.Fn.select(0, deployment.objectKeys),
+    cdk.Fn.select(0, deployment.objectVersionIds),
+  ),
+  runtime: WebFunctionRuntime.NODEJS_26_X,
+  defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+});
+
 const testCase = new integ.IntegTest(app, 'WebFunctionMinimalTest', {
   testCases: [stack],
   diffAssets: false,

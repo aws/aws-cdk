@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "integ-test-bucket-deployment-security-groups-single/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "integtestbucketdeploymentsecuritygroupssingleDefaultTestDeployAssertF71119E8"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "enableLookups": true
 }
