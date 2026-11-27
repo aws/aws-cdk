@@ -264,3 +264,35 @@ target.scaleToTrackMetric('SageMakerVariantProvisionedConcurrencyUtilization', {
   predefinedMetric: appscaling.PredefinedMetric.SAGEMAKER_VARIANT_PROVISIONED_CONCURRENCY_UTILIZATION,
 });
 ```
+
+### ECS service high-resolution (20-second) auto scaling
+
+ECS supports high-resolution (20-second) metrics for faster auto scaling. Use
+the `*HighResolution` predefined metrics along with the service-level
+`MonitoringConfiguration` (available in L1 once `@aws-cdk/aws-service-spec`
+>= 0.1.190 ships) to enable 20-second metric reporting.
+
+```ts
+const target = new appscaling.ScalableTarget(this, 'ECSScalableTarget', {
+  serviceNamespace: appscaling.ServiceNamespace.ECS,
+  scalableDimension: 'ecs:service:DesiredCount',
+  minCapacity: 1,
+  maxCapacity: 20,
+  resourceId: 'service/MyCluster/MyService',
+});
+
+target.scaleToTrackMetric('CpuHighResolution', {
+  targetValue: 60,
+  predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_CPU_UTILIZATION_HIGH_RESOLUTION,
+});
+
+target.scaleToTrackMetric('MemoryHighResolution', {
+  targetValue: 60,
+  predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION_HIGH_RESOLUTION,
+});
+```
+
+> **Note:** For existing services, you must first update the service's monitoring
+> configuration (which triggers a deployment), and only after tasks emit
+> 20-second metrics can you attach the high-resolution scaling policy.
+> A new service can set both at creation.
