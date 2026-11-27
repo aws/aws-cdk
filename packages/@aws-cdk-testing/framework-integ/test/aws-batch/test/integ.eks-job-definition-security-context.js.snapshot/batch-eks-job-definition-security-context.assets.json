@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "f523fc44beac5dd14ef400afd96ed4a4ec034f5cc8b151bc2cbab995df32d4f8": {
+      "displayName": "batch-eks-job-definition-security-context Template",
+      "source": {
+        "path": "batch-eks-job-definition-security-context.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-abca7651": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f523fc44beac5dd14ef400afd96ed4a4ec034f5cc8b151bc2cbab995df32d4f8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
