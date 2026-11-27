@@ -389,7 +389,12 @@ export interface IDatabaseProxy extends cdk.IResource, aws_rds.IDBProxyRef {
   readonly endpoint: string;
 
   /**
-   * Grant the given identity connection access to the proxy.
+   * Grant the given identity IAM permission to connect to the proxy.
+   *
+   * This does not configure network access. Use
+   * `proxy.connections.allowFrom(client, port)` to allow a client to reach
+   * the proxy through its security groups. The client must also have network
+   * connectivity to the proxy VPC.
    *
    * @param grantee the Principal to grant the permissions to
    * @param dbUser the name of the database user to allow connecting as to the proxy
