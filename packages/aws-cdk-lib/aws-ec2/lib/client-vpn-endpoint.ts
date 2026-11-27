@@ -3,6 +3,7 @@ import { DependencyGroup } from 'constructs';
 import type { ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
 import { ClientVpnAuthorizationRule } from './client-vpn-authorization-rule';
 import type {
+  ClientVpnEndpointIpAddressType,
   IClientVpnConnectionHandler,
   IClientVpnEndpoint,
   TransportProtocol,
@@ -218,6 +219,24 @@ export interface ClientVpnEndpointOptions {
    * @default undefined - AWS Client VPN default setting is disable client route enforcement
    */
   readonly clientRouteEnforcementOptions?: ClientRouteEnforcementOptions;
+
+  /**
+   * The IP address type for the Client VPN endpoint.
+   *
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/ipv6-considerations.html
+   *
+   * @default - the service default (ipv4)
+   */
+  readonly endpointIpAddressType?: ClientVpnEndpointIpAddressType;
+
+  /**
+   * The IP address type for traffic within the Client VPN tunnel.
+   *
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/ipv6-considerations.html
+   *
+   * @default - the service default (ipv4)
+   */
+  readonly trafficIpAddressType?: ClientVpnEndpointIpAddressType;
 }
 
 /**
@@ -436,6 +455,8 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
           bannerText: props.clientLoginBanner,
         }
         : undefined,
+      endpointIpAddressType: props.endpointIpAddressType,
+      trafficIpAddressType: props.trafficIpAddressType,
     });
 
     this.endpointId = endpoint.ref;
