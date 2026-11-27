@@ -17,7 +17,7 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
       const response = await onUpdate(event);
       return { PhysicalResourceId: response.PhysicalResourceId };
     case 'Delete':
-      return onDelete(event.ResourceProperties?.BucketName);
+      return onDelete(event.ResourceProperties?.BucketName, event.ServiceToken);
   }
 }
 
@@ -39,8 +39,11 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
  * Set a write deny policy to prevent new object creation while we're emptying the bucket.
  *
  * @param bucketName the bucket name
+ * @param serviceToken this handler's own Lambda ARN, used to derive the partition for the deny policy
  */
-async function denyWrites(bucketName: string) {
+async function denyWrites(bucketName: string, serviceToken: string) {
+  // ServiceToken is this Lambda's ARN — same partition as the bucket.
+  const partition = serviceToken.split(':')[1];
   try {
     const prevPolicyJson = (await s3.getBucketPolicy({ Bucket: bucketName }))?.Policy ?? S3_POLICY_STUB;
     const policy = JSON.parse(prevPolicyJson);
@@ -50,9 +53,7 @@ async function denyWrites(bucketName: string) {
         Principal: '*',
         Effect: 'Deny',
         Action: ['s3:PutObject'],
-        // TODO: this is probably an error of some sort
-        // eslint-disable-next-line @cdklabs/no-literal-partition
-        Resource: [`arn:aws:s3:::${bucketName}/*`],
+        Resource: [`arn:${partition}:s3:::${bucketName}/*`],
       },
     );
 
@@ -89,7 +90,7 @@ async function emptyBucket(bucketName: string) {
   } while (listedObjects?.IsTruncated);
 }
 
-async function onDelete(bucketName?: string) {
+async function onDelete(bucketName: string | undefined, serviceToken: string) {
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }
@@ -98,7 +99,7 @@ async function onDelete(bucketName?: string) {
       console.log(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.`);
       return;
     }
-    await denyWrites(bucketName);
+    await denyWrites(bucketName, serviceToken);
     await emptyBucket(bucketName);
   } catch (error: any) {
     // Bucket doesn't exist, all is well
