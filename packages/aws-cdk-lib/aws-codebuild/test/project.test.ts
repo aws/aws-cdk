@@ -1449,6 +1449,86 @@ describe('Environment', () => {
 });
 
 describe('EnvironmentVariables', () => {
+  test('can add environment variables after construction and grants access to referenced values', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const project = new codebuild.PipelineProject(stack, 'Project', {
+      environmentVariables: {
+        EXISTING: { value: 'existing-value' },
+      },
+    });
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+
+    // WHEN
+    project.addEnvironmentVariable('PARAMETER', {
+      type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE,
+      value: '/my/parameter',
+    });
+    project.addEnvironmentVariable('SECRET', {
+      type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+      value: secret.secretArn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: {
+        EnvironmentVariables: [
+          { Name: 'EXISTING', Type: 'PLAINTEXT', Value: 'existing-value' },
+          { Name: 'PARAMETER', Type: 'PARAMETER_STORE', Value: '/my/parameter' },
+          { Name: 'SECRET', Type: 'SECRETS_MANAGER', Value: { Ref: 'SecretA720EF05' } },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'ssm:GetParameters',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ssm:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':parameter/my/parameter',
+                ],
+              ],
+            },
+          }),
+          Match.objectLike({
+            Action: 'secretsmanager:GetSecretValue',
+            Resource: { Ref: 'SecretA720EF05' },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('an added environment variable replaces an existing variable with the same name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const project = new codebuild.PipelineProject(stack, 'Project', {
+      environmentVariables: {
+        EXISTING: { value: 'old-value' },
+      },
+    });
+
+    // WHEN
+    project.addEnvironmentVariable('EXISTING', { value: 'new-value' });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: {
+        EnvironmentVariables: [{ Name: 'EXISTING', Type: 'PLAINTEXT', Value: 'new-value' }],
+      },
+    });
+  });
+
   describe('from SSM', () => {
     test('can use environment variables', () => {
       // GIVEN

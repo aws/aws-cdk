@@ -1,0 +1,20 @@
+{
+  "/integ-test-codebuild-add-environment-variable/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestcodebuildaddenvironmentvariableDefaultTestDeployAssert5A91487A.template.json"
+    }
+  ],
+  "/integ-test-codebuild-add-environment-variable/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-test-codebuild-add-environment-variable/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
