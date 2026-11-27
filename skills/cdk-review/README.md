@@ -4,7 +4,7 @@ Skills for reviewing changes to AWS CDK code, locally or on a pull request, with
 
 | Skill | Reviews |
 |---|---|
-| [`cdk-review-principles`](./cdk-review-principles/SKILL.md) | The shared base the other five apply: severity, evidence and finding format |
+| [`cdk-review-principles`](./cdk-review-principles/SKILL.md) | The shared base the other five apply: severity, the finding conditions, module stability, verification, the suggested fix, the finding format and the guides |
 | [`cdk-regression-review`](./cdk-regression-review/SKILL.md) | Regressions and breaking changes |
 | [`cdk-construct-design-review`](./cdk-construct-design-review/SKILL.md) | Construct and API design |
 | [`cdk-security-review`](./cdk-security-review/SKILL.md) | Security exposure: IAM, network access, secrets and secure defaults |

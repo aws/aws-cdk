@@ -1,82 +1,59 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default` JSDoc tags, migration notes, README usage examples, `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be true and complete against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect."
+description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe or a guide line requires: a `@default` that misstates the code; a README or JSDoc statement or example that a user who relies on it turns into code that fails to synthesize or deploy, or into a resource that behaves other than the text says; a missing or stale README example; a mixin merge with L1 properties that the PR adds or changes and the JSDoc does not describe; and a missing migration note."
 ---
 
 # AWS CDK Documentation Review
 
-You review whether the documentation a PR ships is true and complete against the CDK design guidelines. CDK
-docs carry the standing of code: a doc must be **true** — match the code it describes, so a `@default` that
-lies misleads every consumer — and **complete** — present wherever a guideline requires it. A wrong
-`@default` is a defect with the standing of a code defect.
+You review the README and JSDoc a PR adds or changes and raise the cases the rules below describe or a
+guide line requires. Apply `cdk-review-principles`. For a wrong statement, correct the wrong words or
+remove the claim. When one location has more than one doc defect, describe them in one finding with the
+`ruleId`, `category` and `severity` of the most severe one, since each field takes one value.
 
-**Scope gate — review only the docs this PR adds or changes.** Flag a doc defect the PR creates in them.
+## README examples
 
-**You own documentation content, not the design or breaking-change decisions the docs describe.** Judge
-whether the docs match the code and the guidelines. Three doc surfaces overlap another dimension's
-concern; on each, own the documentation question:
+**[DOC-README-STALE-SNIPPET] (RECOMMENDED)** — A public API changed (prop/method/construct
+added/renamed, signature changed) but the module README not updated to match. See
+[`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes).
 
-- **A new L2's README usage example.** You own whether the example *exists* and *demonstrates the feature
-  the PR adds*. Whether the API is well-designed — right abstraction, prop shape, placement —
-  is outside your scope.
-- **A JSDoc `@default` tag.** You own whether a `@default` states the *real* default. Whether that
-  default *behavior* is the right *design* is outside your scope.
-- **A `@deprecated` or breaking API's migration note.** You own whether a note *points at the replacement*.
-  Whether the break itself is *allowed* (stable vs experimental, callout present) is
-  outside your scope.
+**[DOC-EXAMPLE-COMPILES-NO-DEMO] (RECOMMENDED)** — A snippet that compiles but never sets the prop the
+PR adds, or hides the feature in a fixture, so it documents nothing the PR introduced. See
+[`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes)
+(the simple-example-per-use-case requirement; use `nofixture` to surface setup in the doc).
 
-## The review process
+## `@default` accuracy
 
-Work the changed docs in this order. Adapt to what the diff touches.
+**[DOC-DEFAULT-WRONG] (BLOCKING)** — A `@default` whose stated value or behavior contradicts what the
+code actually does when the prop is omitted (e.g. `@default false` on a prop the constructor defaults to
+`true`). See
+[`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design) for the
+`@default` format rule and
+[`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior)
+for the default behavior the tag documents.
 
-1. **Inventory the doc surfaces, and load your rules.** From the diff, enumerate every doc surface the
-   PR touches: every exported public class / method / prop it adds or renames; every
-   `@default` it adds or changes; every `@deprecated` tag and breaking API change; and every fenced
-   ` ```ts ` block and `*.ts-fixture` it adds or edits. Then read
-   [`documentation-rules.md`](references/documentation-rules.md) — its rows are your checklist. Before
-   flagging a `@default` wrong, confirm it against the code that sets the default; before flagging an
-   example or convention violated, search and read the authoritative
-   aws/aws-cdk docs on `main` available to you, and confirm the fact against those docs, not from memory
-   (see `cdk-review-principles` "Verify before you cite").
+## Statement accuracy
 
-2. **Check the inventory against the rules.** Walk the changed docs family by family — **README
-   examples**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For each
-   rule check both directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
-   inventory, check each doc a surface of that kind owes and flag the absent. For a `@default`, read the
-   constructor / `??` handling in the same diff and compare what the code applies when the prop is
-   omitted against the tag.
+**[DOC-STATEMENT-WRONG] (RECOMMENDED)** — A statement or example in a README or JSDoc that the PR adds or
+changes, other than a `@default` tag, that a user who relies on it turns into code that fails to synthesize
+or deploy, or into a resource that behaves other than the text says; a true statement that leaves something
+out is not this rule.
 
-3. **Rate by harm and stop.** Rate every finding by the harm the defect does — misled consumer, a feature
-   shipped without the usage docs a guide requires — per `cdk-review-principles` (its
-   BLOCKING/RECOMMENDED/OPTIONAL scale, "Confidence is not severity"); rate a real defect at that harm
-   even when you are unsure a reader reaches the line. When one
-   location has more than one doc defect, describe them in one finding with the `ruleId`, `category` and
-   `severity` of the most severe one, since each field takes one value. Stop once you can name the defect
-   and cite its rule and guideline section.
+## Public-API doc completeness
 
-## What not to flag
+**[DOC-README-MISSING-EXAMPLE] (BLOCKING)** — A new L2 construct with no README usage example, or a new
+mixin with no `## Mixins` README entry. See
+[`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes) and, for the
+`## Mixins` section,
+[`AGENTS_CONSTRUCT_DESIGN.md § Documentation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#documentation).
+- **Tier:** RECOMMENDED for a construct whose README has a usage example but does not mention a new prop or
+  show one of the construct's use cases.
 
-- **Prose wording is not a `@default` defect** — a misspelled word, an awkward sentence, a comment that
-  "reads a little off", capitalization, Oxford-comma preferences break no build and misstate no behavior.
-  A misspelled word in a JSDoc comment breaks nothing; a `@default false` that is actually `true` misleads
-  every consumer — only the second is a finding.
-- **Comment-density or style opinions** — whether a block "needs more comments", inline-comment placement,
-  docstring formatting idioms.
-- **Code correctness** — whether the code the docs describe is itself buggy is a code-correctness question,
-  not a documentation defect — outside your scope; you judge whether the docs match the code.
-- **Test concerns** — unit/integration coverage, snapshot correctness, and test-title strings are test
-  concerns, not documentation defects — outside your scope.
+**[DOC-MIXIN-MERGE-UNDOCUMENTED] (RECOMMENDED)** — A mixin the PR adds, or an existing mixin whose way of
+writing L1 properties the PR changes, with no JSDoc saying how it merges with L1 properties already set. See
+[`AGENTS_CONSTRUCT_DESIGN.md § L1 Property Merge Strategy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#l1-property-merge-strategy).
 
-## Output
+## Migration notes
 
-Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
-cited inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
-Public-API doc completeness, Migration notes. A `suggestedFix` (folded into `message`) shows the doc or
-snippet as written and its corrected form.
-
-## Apply cdk-review-principles
-
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED/OPTIONAL scale, the
-evidence/citation authority order, the `file:line` discipline, the finding format, and the bar a
-finding must meet.
+**[DOC-MIGRATION-NOTE-MISSING] (RECOMMENDED)** — A `@deprecated` tag (or a breaking change to an
+experimental module) with no migration note pointing at the replacement API. See
+[`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
