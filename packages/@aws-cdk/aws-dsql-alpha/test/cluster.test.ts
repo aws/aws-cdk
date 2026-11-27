@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Cluster } from '../lib';
+import { Cluster, MetricGroup } from '../lib';
 
 describe('Aurora DSQL Cluster', () => {
   test('cluster with all attributes', () => {
@@ -102,6 +102,63 @@ describe('Aurora DSQL Cluster', () => {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
     });
+  });
+});
+
+describe('Aurora DSQL Cluster - Metric groups', () => {
+  test('metric groups are not configured by default', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new Cluster(stack, 'Cluster');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DSQL::Cluster', {
+      MetricGroups: Match.absent(),
+    });
+  });
+
+  test('can enable statement statistics', () => {
+    // GIVEN
+    const stack = testStack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'MetricGroups is a newly launched property not yet in the bundled schema' });
+
+    // WHEN
+    new Cluster(stack, 'Cluster', {
+      metricGroups: [MetricGroup.STATEMENT_STATISTICS],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DSQL::Cluster', {
+      MetricGroups: [{ MetricGroup: 'STATEMENT_STATISTICS' }],
+    });
+  });
+
+  test('empty metric groups disables all metric groups explicitly', () => {
+    // GIVEN
+    const stack = testStack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'MetricGroups is a newly launched property not yet in the bundled schema' });
+
+    // WHEN
+    new Cluster(stack, 'Cluster', {
+      metricGroups: [],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DSQL::Cluster', {
+      MetricGroups: [],
+    });
+  });
+
+  test('fails when metric groups contain duplicates', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN / THEN
+    expect(() => new Cluster(stack, 'Cluster', {
+      metricGroups: [MetricGroup.STATEMENT_STATISTICS, MetricGroup.STATEMENT_STATISTICS],
+    })).toThrow('metricGroups must not contain duplicates, got ["STATEMENT_STATISTICS","STATEMENT_STATISTICS"], remove the duplicated ["STATEMENT_STATISTICS"]');
   });
 });
 

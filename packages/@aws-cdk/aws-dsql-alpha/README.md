@@ -47,3 +47,25 @@ cluster.grantConnect(role); // Grant the role dsql:DbConnect
 cluster.grantConnectAdmin(role); // Grant the role dsql:DbConnectAdmin
 cluster.grant(role, 'dsql:DbConnect'); // Grant the role the specified actions to the cluster
 ```
+
+## Statement Statistics
+
+Aurora DSQL can record aggregated statistics for each SQL statement that the cluster runs,
+such as call counts, planning and execution time, rows, and distributed processing units (DPUs).
+The statistics are published to Amazon CloudWatch, and you can view them in
+CloudWatch Database Insights.
+
+Statement statistics are off by default. To turn them on, add the `STATEMENT_STATISTICS`
+metric group to the cluster:
+
+```ts
+const cluster = new dsql.Cluster(this, 'Cluster', {
+  metricGroups: [dsql.MetricGroup.STATEMENT_STATISTICS],
+});
+```
+
+`metricGroups` is the complete set of metric groups for the cluster. To turn off
+statement statistics on a cluster where they were turned on, specify an empty list.
+
+> Statement statistics incur additional Amazon CloudWatch and Amazon CloudWatch Logs charges.
+> For more information, see [Monitoring SQL statements with Aurora DSQL statement statistics](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/dsql-statement-statistics.html).
