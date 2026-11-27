@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_apigatewayv2_authorizers"
+    },
+    "ruby": {
+      "module": "AWSCDK::APIGatewayv2Authorizers"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.custom_resources"
+    },
+    "ruby": {
+      "module": "AWSCDK::CustomResources"
     }
   }
 }
