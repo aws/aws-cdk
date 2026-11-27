@@ -5,6 +5,32 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Email receiving
 
+Before receiving email, verify your domain with Amazon SES and publish an MX record
+in the domain's DNS configuration that points to the SES email receiving endpoint
+for the AWS Region where you configure your receipt rules. `ReceiptRuleSet` does
+not create this DNS record.
+
+For example, if Route 53 hosts your domain and your receipt rules are in
+`us-east-1`, create the receiving MX record as follows:
+
+```ts
+declare const zone: route53.IHostedZone;
+
+new route53.MxRecord(this, 'ReceivingMxRecord', {
+  zone,
+  values: [{
+    priority: 10,
+    hostName: 'inbound-smtp.us-east-1.amazonaws.com',
+  }],
+});
+```
+
+Use the receiving endpoint for your Region; SES email receiving is not available
+in every Region. This record routes incoming email to SES and is separate from
+the MX record used for a custom MAIL FROM domain when sending email. See
+[Publishing an MX record for Amazon SES email receiving](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-mx-record.html)
+for DNS configuration instructions and receiving endpoints.
+
 Create a receipt rule set with rules and actions (actions can be found in the
 `aws-cdk-lib/aws-ses-actions` package):
 
