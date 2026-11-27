@@ -379,6 +379,7 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
     };
 
     this.__resource = new CfnApiKeyCredentialProvider(this, 'Resource', cfnProps);
+    this.node.defaultChild = this.__resource;
 
     this.credentialProviderArn = this.__resource.attrCredentialProviderArn;
     this.createdTime = this.__resource.attrCreatedTime;
