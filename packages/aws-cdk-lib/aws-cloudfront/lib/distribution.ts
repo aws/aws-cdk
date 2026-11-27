@@ -690,6 +690,19 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   /**
+   * Adds an origin to this distribution without associating it with a behavior.
+   *
+   * This is useful when you want to register an origin for use in an origin group
+   * or other advanced configurations without tying it to a specific path pattern.
+   *
+   * @param origin the origin to add to this distribution
+   */
+  @MethodMetadata()
+  public addOrigin(origin: IOrigin): void {
+    this._addOrigin(origin);
+  }
+
+  /**
    * Adds a new behavior to this distribution for the given pathPattern.
    *
    * @param pathPattern the path pattern (e.g., 'images/*') that specifies which requests to apply the behavior to.
@@ -763,7 +776,7 @@ export class Distribution extends Resource implements IDistribution {
     }
   }
 
-  private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
+  private _addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
     const ORIGIN_ID_MAX_LENGTH = 128;
 
     const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
@@ -790,7 +803,7 @@ export class Distribution extends Resource implements IDistribution {
         const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
         this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
 
-        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
+        const failoverOriginId = this._addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
         this.addOriginGroup(
           originGroupId,
           originBindConfig.failoverConfig.statusCodes,
