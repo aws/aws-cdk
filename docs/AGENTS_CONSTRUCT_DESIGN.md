@@ -214,7 +214,7 @@ Common facade types — see [AGENTS_CONSTRUCT_IMPLEMENTATION.md](./AGENTS_CONSTR
 - Resources with an ARN MUST have `fromFooArn`
 - Resources with multiple independent attributes MUST have `fromFooAttributes(scope, id, attrs: FooAttributes)`
 - Imported constructs MUST only set properties meaningful for the imported resource — no placeholder objects for unavailable properties
-- `from*` methods MUST NOT transform or validate identifiers (they are pass-through)
+- `from*` methods MUST pass the identifier they are given through unchanged; one that parses it follows [AGENTS_CONSTRUCT_IMPLEMENTATION.md § Import Method Implementation](./AGENTS_CONSTRUCT_IMPLEMENTATION.md#import-method-implementation) and lets a malformed value fail fast ([AGENTS.md § Error Handling](../AGENTS.md#error-handling))
 - When `fromAttributes` receives multiple identifying attributes, prefer the most specific one (ARN) over throwing
 
 ### `fromLookup` Methods
@@ -246,7 +246,7 @@ These are design decisions about what interfaces and props every L2 construct MU
 
 ### IAM Role Integration
 
-- You MUST expose an optional `role: iam.IRole` prop and a readonly `role?: iam.IRole` property on the interface (undefined for imported constructs)
+- You MUST expose an optional `role?: iam.IRoleRef & iam.IGrantable` prop and a readonly `role?: iam.IRoleRef` property on the interface (undefined for imported constructs)
 - You MUST extend `iam.IGrantable` and provide `addToRolePolicy(statement)` on the interface
 
 ### IAM Resource Policy Integration
@@ -337,7 +337,7 @@ Tags.of(myDashboard).add('Environment', 'prod'); // traverses and tags all L1s u
 
 ## Backward Compatibility & Deprecation
 
-- You MUST NOT change any public-facing code that breaks backward compatibility (APIs, method signatures, validations, enum members, prop contracts, making required properties optional)
+- You MUST NOT change any public-facing code in a stable module in a way that breaks backward compatibility (APIs, method signatures, validations, enum members, prop contracts, making a required property optional on a type users read (a return type or a class property)); see [CONTRIBUTING.md § API surface changes](../CONTRIBUTING.md#api-surface-changes)
 - When fixing defects or extending constructs for new modes, deprecate the old version and introduce a corrected replacement (e.g., `FooV2`) rather than modifying the original
 - You MUST NOT include `@deprecated` properties in newly introduced interfaces
 - You SHOULD keep implementation-detail types unexported (marked `@internal`) to minimize backward-compatibility obligations and public API surface
