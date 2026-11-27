@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
-import { EventBus, IncludeDetail, Level } from '../lib';
+import { EventBus, EventBusPolicy, IncludeDetail, Level } from '../lib';
 
 describe('event bus', () => {
   test('default event bus', () => {
@@ -675,6 +675,76 @@ describe('event bus', () => {
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:PutEvents'],
     }))).toThrow('Event Bus policy statements must have a sid');
+  });
+
+  test('EventBusPolicy accepts a PolicyStatement with principals', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const bus = new EventBus(stack, 'Bus');
+
+    // WHEN
+    new EventBusPolicy(stack, 'Policy', {
+      eventBus: bus,
+      statementId: 'my-statement',
+      statement: new iam.PolicyStatement({
+        principals: [new iam.AccountPrincipal('123456789012')],
+        actions: ['events:PutEvents'],
+        resources: [bus.eventBusArn],
+      }),
+    });
+
+    // THEN - should not fail with a circular-reference resolution error
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+      StatementId: 'my-statement',
+      Statement: {
+        Action: 'events:PutEvents',
+        Effect: 'Allow',
+        Principal: {
+          AWS: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::123456789012:root',
+              ],
+            ],
+          },
+        },
+        Resource: {
+          'Fn::GetAtt': ['BusEA82B648', 'Arn'],
+        },
+      },
+    });
+  });
+
+  test('EventBusPolicy accepts a plain JSON statement', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const bus = new EventBus(stack, 'Bus');
+
+    // WHEN
+    new EventBusPolicy(stack, 'Policy', {
+      eventBus: bus,
+      statementId: 'my-statement',
+      statement: {
+        Action: ['events:PutEvents'],
+        Effect: 'Allow',
+        Principal: { AWS: ['arn:aws:iam::123456789012:root'] },
+      } as any,
+    });
+
+    // THEN - plain JSON statements are passed through unchanged
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+      StatementId: 'my-statement',
+      Statement: {
+        Action: ['events:PutEvents'],
+        Effect: 'Allow',
+        Principal: { AWS: ['arn:aws:iam::123456789012:root'] },
+      },
+    });
   });
 
   test('set dead letter queue', () => {
