@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "TableV2GrantResourcePolicyIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dynamodb-v2-grant-resource-policy"
+      ],
+      "assertionStack": "TableV2GrantResourcePolicyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableV2GrantResourcePolicyIntegTestDefaultTestDeployAssert7DF57ABD"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

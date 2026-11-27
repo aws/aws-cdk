@@ -1436,6 +1436,104 @@ describe('grants', () => {
     });
   });
 
+  test('grant with AccountRootPrincipal uses wildcard resources in the resource policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    table.grant(new iam.AccountRootPrincipal(), 'dynamodb:GetItem');
+
+    // THEN - the statement must not reference the table itself, which would be a circular dependency
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetItem',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
+                      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+                    },
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        }),
+      ],
+    });
+  });
+
+  test.each([
+    ['an AccountPrincipal of another account', (_stack: Stack) => new iam.AccountPrincipal('111122223333')],
+    ['an ArnPrincipal of another account', (_stack: Stack) => new iam.ArnPrincipal('arn:aws:iam::111122223333:root')],
+    ['a role imported from another account', (stack: Stack) => iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::111122223333:role/MyRole')],
+  ])('grant to %s uses wildcard resources in the resource policy', (_name, principal) => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-east-1' } });
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    table.grant(principal(stack), 'dynamodb:GetItem');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [Match.objectLike({ Action: 'dynamodb:GetItem', Resource: '*' })],
+              Version: '2012-10-17',
+            },
+          },
+        }),
+      ],
+    });
+  });
+
+  test('grant to a role in the same stack keeps the table and index ARNs in the role policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+      globalSecondaryIndexes: [{ indexName: 'gsi', partitionKey: { name: 'gsiKey', type: AttributeType.STRING } }],
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+    // WHEN
+    table.grant(role, 'dynamodb:GetItem');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:GetItem',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['TableCD117FA1', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['TableCD117FA1', 'Arn'] }, '/index/*']] },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [Match.objectLike({ ResourcePolicy: Match.absent() })],
+    });
+  });
+
   test('grant* with ServicePrincipal throws error', () => {
     // GIVEN
     const stack = new Stack();
@@ -4446,6 +4544,36 @@ test('TableV2MultiAccountReplica throws when replicaSourceTable is missing', () 
   expect(() => {
     new TableV2MultiAccountReplica(replicaStack, 'Replica', {});
   }).toThrow('replicaSourceTable is required for TableV2MultiAccountReplica');
+});
+
+test('TableV2MultiAccountReplica grant uses wildcard resources in the resource policy', () => {
+  // GIVEN
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+  const replica = new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+  });
+
+  // WHEN
+  replica.grant(new iam.AccountPrincipal('333333333333'), 'dynamodb:GetItem');
+
+  // THEN - the replica policy also holds the statement for the replication service
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      Match.objectLike({
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: Match.arrayWith([Match.objectLike({ Action: 'dynamodb:GetItem', Resource: '*' })]),
+            Version: '2012-10-17',
+          },
+        },
+      }),
+    ],
+  });
 });
 
 test('TableV2MultiAccountReplica with custom encryption', () => {
