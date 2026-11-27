@@ -1,0 +1,20 @@
+{
+  "/BedrockAgentCoreMemoryRecordExpiration/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockAgentCoreMemoryRecordExpirationDefaultTestDeployAssert429C9129.template.json"
+    }
+  ],
+  "/BedrockAgentCoreMemoryRecordExpiration/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreMemoryRecordExpiration/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

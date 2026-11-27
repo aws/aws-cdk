@@ -1,0 +1,187 @@
+{
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-bedrock-agentcore-memory-record-expiration.template.json"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithBuiltInFormat": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithEpisodicReflection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithOverrides": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithBuiltInFormat/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithBuiltInFormat/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltInFormatMemory599CC5F6"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithEpisodicReflection/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithEpisodicReflection/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithEpisodicReflectionMemory29B5EAB8"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithOverrides/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithOverrides/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithOverridesMemoryEB87807A"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithBuiltInFormat/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltInFormatServiceRole768A9D4E"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithEpisodicReflection/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithEpisodicReflectionServiceRoleE877D2E1"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithOverrides/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithOverridesServiceRole066E2B90"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithOverrides/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-record-expiration/MemoryWithOverrides/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithOverridesServiceRoleDefaultPolicy12DBF95C"
+    }
+  ]
+}

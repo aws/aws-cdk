@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "457c05648dea7da6b21bd964b348db7dc543e11d5e6991fb3f05fe948a0b0c7e": {
+      "displayName": "aws-cdk-bedrock-agentcore-memory-record-expiration Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-memory-record-expiration.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-50c546eb": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "457c05648dea7da6b21bd964b348db7dc543e11d5e6991fb3f05fe948a0b0c7e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
