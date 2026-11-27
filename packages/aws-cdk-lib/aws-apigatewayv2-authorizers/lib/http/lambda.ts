@@ -90,7 +90,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   /**
    * Initialize a lambda authorizer to be bound with HTTP route.
    * @param id The id of the underlying construct
-   * @param pool The lambda function handler to use for authorization
+   * @param handler The lambda function handler to use for authorization
    * @param props Properties to configure the authorizer
    */
   constructor(
