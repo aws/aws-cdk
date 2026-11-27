@@ -2654,10 +2654,46 @@ describe('instance', () => {
 });
 
 test.each([
-  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain'],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', Match.absent()],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', Match.absent()],
-])('if Instance RemovalPolicy is \'%s\', the instance has DeletionPolicy \'%s\' and the DBSubnetGroup has \'%s\'', (instanceRemovalPolicy, instanceValue, subnetValue) => {
+  // [removalPolicy, instanceDeletionPolicy, subnetDeletionPolicy, instanceUpdateReplacePolicy, subnetUpdateReplacePolicy]
+  // RETAIN_ON_UPDATE_OR_DELETE: CDK core sets UpdateReplacePolicy=Retain, DeletionPolicy=RetainExceptOnCreate
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'RetainExceptOnCreate', 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', Match.absent(), 'Snapshot', Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', Match.absent(), 'Delete', Match.absent()],
+])('if Instance RemovalPolicy is \'%s\', the instance has DeletionPolicy \'%s\' and the DBSubnetGroup has \'%s\'',
+  (instanceRemovalPolicy, instanceDeletionPolicy, subnetDeletionPolicy, instanceUpdateReplacePolicy, subnetUpdateReplacePolicy) => {
+  // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      removalPolicy: instanceRemovalPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
+      DeletionPolicy: instanceDeletionPolicy,
+      UpdateReplacePolicy: instanceUpdateReplacePolicy,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: subnetDeletionPolicy,
+      UpdateReplacePolicy: subnetUpdateReplacePolicy,
+    });
+  });
+
+test.each([
+  [cdk.RemovalPolicy.RETAIN, true],
+  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, true],
+  [cdk.RemovalPolicy.SNAPSHOT, Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, Match.absent()],
+])('if Instance RemovalPolicy is \'%s\', DeletionProtection is auto-set to \'%s\'', (instanceRemovalPolicy, deletionProtection) => {
   // GIVEN
   stack = new cdk.Stack();
   vpc = new ec2.Vpc(stack, 'VPC');
@@ -2673,14 +2709,8 @@ test.each([
   });
 
   // THEN
-  Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
-    DeletionPolicy: instanceValue,
-    UpdateReplacePolicy: instanceValue,
-  });
-
-  Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
-    DeletionPolicy: subnetValue,
-    UpdateReplacePolicy: subnetValue,
+  Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+    DeletionProtection: deletionProtection,
   });
 });
 
