@@ -3751,6 +3751,198 @@ describe('Subnet', () => {
       Ipv4NetmaskLength: netmaskLength,
     });
   });
+
+  test('subnet without IPv6 settings renders no IPv6 IPAM properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Ipv6CidrBlock: Match.absent(),
+      Ipv6IpamPoolId: Match.absent(),
+      Ipv6NetmaskLength: Match.absent(),
+    });
+  });
+
+  test('subnet with ipv6IpamAllocation renders Ipv6IpamPoolId and Ipv6NetmaskLength instead of Ipv6CidrBlock', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6IpamAllocation: { ipamPool: pool, netmaskLength: 64 },
+      assignIpv6AddressOnCreation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      CidrBlock: '10.0.0.0/24',
+      Ipv6CidrBlock: Match.absent(),
+      Ipv6IpamPoolId: ipamPoolId,
+      Ipv6NetmaskLength: 64,
+      AssignIpv6AddressOnCreation: true,
+    });
+  });
+
+  test('subnet with ipv6IpamAllocation references an IPAM pool defined in the same stack', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new CfnIPAMPool(stack, 'Pool', { addressFamily: 'ipv6', ipamScopeId: 'ipam-scope-0123456789abcdef0' });
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6IpamAllocation: { ipamPool: pool, netmaskLength: 64 },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Ipv6IpamPoolId: stack.resolve(pool.ipamPoolRef.ipamPoolId),
+      Ipv6NetmaskLength: 64,
+    });
+  });
+
+  test('subnet can allocate both its IPv4 and IPv6 CIDR blocks from IPAM pools', () => {
+    // GIVEN
+    const stack = new Stack();
+    const ipv4Pool = CfnIPAMPool.fromIpamPoolId(stack, 'Ipv4Pool', ipamPoolId);
+    const ipv6Pool = CfnIPAMPool.fromIpamPoolId(stack, 'Ipv6Pool', 'ipam-pool-0fedcba9876543210');
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      ipv4IpamAllocation: { ipamPool: ipv4Pool, netmaskLength: 24 },
+      ipv6IpamAllocation: { ipamPool: ipv6Pool, netmaskLength: 64 },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      CidrBlock: Match.absent(),
+      Ipv4IpamPoolId: ipamPoolId,
+      Ipv4NetmaskLength: 24,
+      Ipv6CidrBlock: Match.absent(),
+      Ipv6IpamPoolId: 'ipam-pool-0fedcba9876543210',
+      Ipv6NetmaskLength: 64,
+    });
+  });
+
+  test('subnetIpv6CidrBlocks of a subnet with ipv6IpamAllocation is the Ipv6CidrBlocks attribute of the subnet', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    const subnet = new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6IpamAllocation: { ipamPool: pool, netmaskLength: 64 },
+    });
+
+    // THEN
+    expect(stack.resolve(subnet.subnetIpv6CidrBlocks)).toEqual({
+      'Fn::GetAtt': [stack.getLogicalId(subnet.node.defaultChild as CfnSubnet), 'Ipv6CidrBlocks'],
+    });
+  });
+
+  test('PublicSubnet and PrivateSubnet accept ipv6IpamAllocation', () => {
+    // GIVEN
+    const stack = new Stack();
+    const ipv6IpamAllocation = { ipamPool: CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId), netmaskLength: 64 };
+
+    // WHEN
+    new PublicSubnet(stack, 'Public', { vpcId: 'vpc-1234', availabilityZone: 'dummy1a', cidrBlock: '10.0.0.0/24', ipv6IpamAllocation });
+    new PrivateSubnet(stack, 'Private', { vpcId: 'vpc-1234', availabilityZone: 'dummy1a', cidrBlock: '10.0.1.0/24', ipv6IpamAllocation });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::EC2::Subnet', 2);
+    template.allResourcesProperties('AWS::EC2::Subnet', {
+      Ipv6IpamPoolId: ipamPoolId,
+      Ipv6NetmaskLength: 64,
+    });
+  });
+
+  test('a token ipv6IpamAllocation.netmaskLength is passed through without validation', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6IpamAllocation: { ipamPool: pool, netmaskLength: Lazy.number({ produce: () => 64 }) },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Ipv6NetmaskLength: 64,
+    });
+  });
+
+  test('fails when both ipv6CidrBlock and ipv6IpamAllocation are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // THEN
+    expect(() => new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6CidrBlock: '2001:db8:1234:1a00::/64',
+      ipv6IpamAllocation: { ipamPool: pool, netmaskLength: 64 },
+    })).toThrow(/Cannot specify both 'ipv6CidrBlock' and 'ipv6IpamAllocation'/);
+  });
+
+  test.each([40, 43, 46, 62, 65, 68])('fails for ipv6IpamAllocation.netmaskLength /%d outside the /44-/64 range or not a multiple of 4', (netmaskLength) => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // THEN
+    expect(() => new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6IpamAllocation: { ipamPool: pool, netmaskLength },
+    })).toThrow(/'ipv6IpamAllocation.netmaskLength' must be between 44 and 64 in increments of 4/);
+  });
+
+  test.each([44, 48, 52, 56, 60, 64])('accepts ipv6IpamAllocation.netmaskLength /%d', (netmaskLength) => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv6IpamAllocation: { ipamPool: pool, netmaskLength },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Ipv6NetmaskLength: netmaskLength,
+    });
+  });
 });
 
 function getTestStack(): Stack {
