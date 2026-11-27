@@ -4,6 +4,8 @@ on:
   schedule: # Runs every Monday at 12am PT
     - cron: '0 0 * * 1'
 
+cache-mode: read
+
 jobs:
   update-l2-enums:
     if: github.repository == 'aws/aws-cdk'

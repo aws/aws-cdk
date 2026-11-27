@@ -1,7 +1,7 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('amis', () => {
   test.each([

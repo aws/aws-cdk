@@ -122,7 +122,8 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
-| [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | V2NEXT | fix |
+| [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | 2.278.0 | fix |
+| [@aws-cdk/aws-s3-deployment:modernResource](#aws-cdkaws-s3-deploymentmodernresource) | Use the new BucketDeployment resource | V2NEXT | temporary |
 
 <!-- END table -->
 
@@ -198,6 +199,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-patterns:useDistribution": true,
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
+    "@aws-cdk/aws-s3-deployment:modernResource": true,
     "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
@@ -2687,7 +2689,28 @@ that stack is deployed too.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
+| 2.278.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-s3-deployment:modernResource
+
+*Use the new BucketDeployment resource*
+
+Flag type: Temporary flag
+
+When this flag is enabled, bucket deployments use the modern resource implementation.
+
+The modern resource implementation is smaller and faster. Once it has been proven
+in practice, the old implementation will be removed and all users will be automatically
+switched over to the new implementation.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this flag to use the legacy bucket deployment resource.
 
 
 <!-- END details -->

@@ -117,7 +117,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -146,18 +146,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "DeployWithLargeFilesAwsCliLayer2B9E5351": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployWithLargeFilesCustomResourceB9F4A04D": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -176,7 +164,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "3e4eb503ce9a1d02a5a02e24d87bdc056708d4c3fae52f10c85a08a292b82ff1.zip",
+     "676db8d9e79867dd7030b0efed5c50293e559480570d5a72249b08fed25bfd08.zip",
      "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip"
     ],
     "DestinationBucketName": {
@@ -325,7 +313,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a429549ac40e3ec3e6335de0a56794665ab2c4602d6e60ec7b31ea303b149a4.zip"
+     "S3Key": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip"
     },
     "Environment": {
      "Variables": {
@@ -333,11 +321,6 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "DeployWithLargeFilesAwsCliLayer2B9E5351"
-     }
-    ],
     "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
@@ -345,7 +328,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [

@@ -4,18 +4,23 @@
       "type": "aws:cdk:warning",
       "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
       "trace": [
-        "Annotations.addMessage (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "resolveValue (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/refs.js:204:54)",
-        "resolveReferences (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
-        "prepareApp (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
-        "synthesize (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
-        "App.synth (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
-        "App.synth (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/app.js:216:27)",
-        "process.<anonymous> (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/app.js:163:51)",
-        "Object.onceWrapper (node:events:631:26)",
-        "process.emit (node:events:509:28)"
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "process.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/app.js:181:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:20)"
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LambdaS3ObjectStorageModeDefaultTestDeployAssert1436D810.template.json"
     }
   ],
   "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/BootstrapVersion": [

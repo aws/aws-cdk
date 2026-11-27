@@ -6,6 +6,8 @@ on:
   schedule:
   - cron: "0 */4 * * *"
 
+cache-mode: read
+
 jobs:
   cleanup:
     # this workflow will always fail in forks; bail if this isn't running in the upstream

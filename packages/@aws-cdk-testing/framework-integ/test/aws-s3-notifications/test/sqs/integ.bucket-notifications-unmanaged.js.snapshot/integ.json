@@ -17,6 +17,5 @@
       "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

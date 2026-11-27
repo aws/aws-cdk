@@ -146,18 +146,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "DeployWithDeployedBucketAwsCliLayer44B2D41A": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployWithDeployedBucketCustomResourceF972C614": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -327,7 +315,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
+     "S3Key": "5b173203f4cd67c083f590a614194b0cee64697e1208ea43f70519d0f3d2857a.zip"
     },
     "Environment": {
      "Variables": {
@@ -335,11 +323,6 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "DeployWithDeployedBucketAwsCliLayer44B2D41A"
-     }
-    ],
     "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
@@ -347,7 +330,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [
