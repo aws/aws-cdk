@@ -1,0 +1,194 @@
+{
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FleetImageIdIntegTestDefaultTestDeployAssertF1F283E4.template.json"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuilda2384512d915dc788889526c0037f819/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2cWaitForRole42D20651"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2cWaitFor66820EBA"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuilda2384512d915dc788889526c0037f819/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildstartBuilda2384512d915dc788889526c0037f819"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76WaitForRole2F3C2216"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76WaitForD69BDEFA"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2cWaitForIsCompleteProviderInvokeEDEF127A"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2c/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetFleetsf01b8d3fbb2f40c1cde6f26b900a9e2cWaitForTimeoutProviderInvoke38FE7A61"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76WaitForIsCompleteProviderInvoke6C4F069A"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsc16bccc60e465d3a6072b8264f41ef76WaitForTimeoutProviderInvoke473DFECE"
+    }
+  ]
+}

@@ -1,16 +1,30 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "aeb69d7bf9c07ae422396a1c7658c5146780ffc186fc0336023c8f9f959e7aae": {
+    "c56ac0efa74faf3860a6ae520c7c77aafc5252480c00537377a48f430c4084b2": {
+      "displayName": "CustomInstanceTypeComputeFleetIntegStack2/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.c56ac0efa74faf3860a6ae520c7c77aafc5252480c00537377a48f430c4084b2",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9049ef93": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c56ac0efa74faf3860a6ae520c7c77aafc5252480c00537377a48f430c4084b2.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2ca875d7ea5c758b1d5bd243bef41ef3e8635ad62cb7624af860716e0f963f37": {
       "displayName": "CustomInstanceTypeComputeFleetIntegStack2 Template",
       "source": {
         "path": "CustomInstanceTypeComputeFleetIntegStack2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2a7f0d80": {
+        "current_account-current_region-2c5553f3": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "aeb69d7bf9c07ae422396a1c7658c5146780ffc186fc0336023c8f9f959e7aae.json",
+          "objectKey": "2ca875d7ea5c758b1d5bd243bef41ef3e8635ad62cb7624af860716e0f963f37.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

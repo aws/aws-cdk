@@ -1,0 +1,167 @@
+{
+  "/aws-cdk-project-fleet-proxy": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-project-fleet-proxy.template.json"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyFleet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "baseCapacity": "*",
+        "computeType": "BUILD_GENERAL1_SMALL",
+        "environmentType": "LINUX_CONTAINER"
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "fleet": "*",
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_SMALL",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          }
+        }
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyFleet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyFleet3E15779D"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyProject5B8B5EB9"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/Exports/Output{\"Fn::GetAtt\":[\"ProxyFleet3E15779D\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttProxyFleet3E15779DArnFEFD1EF9"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/Exports/Output{\"Ref\":\"ProxyProject5B8B5EB9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefProxyProject5B8B5EB9FE18D5B4"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyProjectRole1CCB77AE"
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-proxy/ProxyProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyProjectRoleDefaultPolicy638D0770"
+    }
+  ]
+}

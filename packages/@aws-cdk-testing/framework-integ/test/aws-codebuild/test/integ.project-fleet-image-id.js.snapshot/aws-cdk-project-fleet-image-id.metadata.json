@@ -1,0 +1,251 @@
+{
+  "/aws-cdk-project-fleet-image-id": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-project-fleet-image-id.template.json"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiFleet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "baseCapacity": "*",
+        "computeType": "BUILD_GENERAL1_SMALL",
+        "environmentType": "LINUX_EC2"
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_SMALL",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          },
+          "computeType": "BUILD_GENERAL1_SMALL"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiFleet/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiFleet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAmiFleetEEDFB120"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAmiProject63223E3E"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/Exports/Output{\"Fn::GetAtt\":[\"CustomAmiFleetEEDFB120\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttCustomAmiFleetEEDFB120Arn9C07717B"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/Exports/Output{\"Ref\":\"CustomAmiProject63223E3E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCustomAmiProject63223E3EDC5BFC3C"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiFleet/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAmiFleetRoleFE717169"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiFleet/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAmiProjectRole354D17B7"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiFleet/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAmiFleetRoleDefaultPolicyC26009B7"
+    }
+  ],
+  "/aws-cdk-project-fleet-image-id/CustomAmiProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAmiProjectRoleDefaultPolicyEF29E09B"
+    }
+  ]
+}
