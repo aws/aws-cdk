@@ -619,6 +619,9 @@
      "Ref": "ManagedInstancesClusterDC139296"
     },
     "ManagedInstancesProvider": {
+     "InfrastructureOptimization": {
+      "ScaleInAfter": 300
+     },
      "InfrastructureRoleArn": {
       "Fn::GetAtt": [
        "ManagedInstancesCapacityProviderManagedInstancesCapacityProviderRoleDFF8AC23",
