@@ -47,6 +47,13 @@ export enum OriginIpAddressType {
  * returned in `OriginBindConfig.failoverConfig`.
  */
 export interface OriginFailoverConfig {
+  /**
+   * A unique identifier for an origin group within the distribution.
+   *
+   * @default - an origin group ID is generated
+   */
+  readonly originGroupId?: string;
+
   /** The origin to use as the fallback origin. */
   readonly failoverOrigin: IOrigin;
 
