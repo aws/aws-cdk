@@ -33,7 +33,7 @@ import { ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
-import type * as kms from '../../aws-kms';
+import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import type * as sns from '../../aws-sns';
@@ -41,7 +41,7 @@ import * as sqs from '../../aws-sqs';
 import type { IAspect, RemovalPolicy, Size } from '../../core';
 import {
   Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn,
-  Names, Stack, Token,
+  Names, Resource, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
@@ -1186,7 +1186,7 @@ export class Function extends FunctionBase {
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       tenancyConfig: props.tenancyConfig?.tenancyConfigProperty,
-      durableConfig: props.durableConfig ? this.renderDurableConfig(props.durableConfig) : undefined,
+      durableConfig: props.durableConfig ? this.configureDurableConfig(props.durableConfig) : undefined,
       acceleratorConfig,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
@@ -1741,7 +1741,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
   }
 
-  private renderDurableConfig(config: DurableConfig): CfnFunction.DurableConfigProperty {
+  private configureDurableConfig(config: DurableConfig): CfnFunction.DurableConfigProperty {
     Annotations.of(this).addInfoV2('aws-lambda:Function.DurableConfig', 'Modifying an existing lambda to use durability will trigger a resource replacement');
     if (!config.executionTimeout.isUnresolved() && (config.executionTimeout.toSeconds() < 1 || config.executionTimeout.toSeconds() > 31622400)) {
       throw new ValidationError(lit`ExecutionTimeoutSeconds`, `executionTimeout must be between 1 and 31622400 seconds, got ${config.executionTimeout.toSeconds()}`, this);
@@ -1755,10 +1755,82 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       retentionDays = config.retentionPeriod.toDays();
     }
 
+    if (config.kmsKey) {
+      this.grantDurableExecutionKeyAccess(config.kmsKey);
+    }
+
     return {
       executionTimeout: config.executionTimeout.toSeconds(),
       retentionPeriodInDays: retentionDays,
+      kmsKeyArn: config.kmsKey?.keyRef.keyArn,
     };
+  }
+
+  /**
+   * Grants the execution role and the Lambda service principal the durable encryption permissions on the key.
+   */
+  private grantDurableExecutionKeyAccess(key: kms.IKeyRef) {
+    // An alias ARN never matches the key in a policy Resource, and the alias can be repointed to a key without these grants.
+    const keyArn = key.keyRef.keyArn;
+    if ('aliasName' in key || (!Token.isUnresolved(keyArn) && !keyArn.includes(':key/'))) {
+      throw new ValidationError(lit`DurableConfigKmsKeyIsAlias`, `durableConfig.kmsKey must be a KMS key, not an alias (${JSON.stringify(key.node.path)}); pass the key itself`, this);
+    }
+
+    const stack = Stack.of(this);
+    // Build the function ARN from the name: referencing the function would create a Key -> Function -> Key cycle.
+    const isWildcardFunctionArn = Token.isUnresolved(this.physicalName);
+    const functionArn = stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      resourceName: isWildcardFunctionArn ? '*' : this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    if (isWildcardFunctionArn) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyWildcardFunctionArn',
+        'durableConfig.kmsKey statements match every Lambda function in this account and Region. ' +
+        'Set functionName to a literal string to scope them to this function.');
+    }
+    const encryptionContext = { 'kms:EncryptionContext:aws:lambda:FunctionArn': functionArn };
+    const viaService = { 'kms:ViaService': `lambda.${stack.region}.amazonaws.com` };
+
+    iam.Grant.addToPrincipal({
+      grantee: this,
+      actions: ['kms:Decrypt'],
+      resourceArns: [keyArn],
+      conditions: isWildcardFunctionArn
+        ? { StringEquals: viaService, StringLike: encryptionContext }
+        : { StringEquals: { ...viaService, ...encryptionContext } },
+    });
+
+    // A CfnKey without a key policy would lose its default root statement, so only a JSON object policy is edited.
+    const isEditableCfnKey = kms.CfnKey.isCfnKey(key) && key.keyPolicy !== null && typeof key.keyPolicy === 'object'
+      && !Token.isUnresolved(key.keyPolicy);
+    // Key.fromCfnKey returns a child of the CfnKey, so look at the scope too.
+    const isEditableKey = isEditableCfnKey || (iam.ResourceWithPolicies.of(key) !== undefined
+      && (Resource.isOwnedResource(key) || kms.CfnKey.isCfnKey(key.node.scope)));
+    if (isEditableKey) {
+      kms.KeyGrants.fromKey(key).actions(
+        new iam.ServicePrincipal('lambda.amazonaws.com')
+          .withConditions({ StringEquals: { 'aws:SourceAccount': stack.account } })
+          .withConditions(isWildcardFunctionArn
+            ? { ArnLike: { 'aws:SourceArn': functionArn }, StringLike: encryptionContext }
+            : { StringEquals: { 'aws:SourceArn': functionArn, ...encryptionContext } }),
+        'kms:Decrypt',
+        'kms:GenerateDataKey',
+      );
+    }
+    if (!isEditableKey) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyPolicyNotEditable',
+        'CDK cannot edit the durableConfig.kmsKey key policy. Add the Lambda service principal statement to it. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html.');
+    }
+    // IAM policies in the function's account cannot grant access to a key in another account on their own.
+    if (!Token.isUnresolved(key.env.account) && !Token.isUnresolved(stack.account) && key.env.account !== stack.account) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyCrossAccount',
+        `durableConfig.kmsKey is in account ${key.env.account}. Its key policy must also allow the execution role, the identity ` +
+        'that deploys the function, and durable execution operators. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html.');
+    }
   }
 
   private validateAndRenderAcceleratorConfig(config: AcceleratorConfig, props: FunctionProps): CfnFunction.AcceleratorConfigProperty {
