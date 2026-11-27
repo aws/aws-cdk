@@ -1,0 +1,6 @@
+{
+  "/": "We call this _package.json so nx doesn't get confused. If you need to regenerate the lockfile, temporarily rename this file to package.json",
+  "dependencies": {
+    "axios": "catalog:"
+  }
+}
