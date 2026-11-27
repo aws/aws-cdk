@@ -693,6 +693,82 @@ table.addLocalSecondaryIndex({
 });
 ```
 
+## Vector Indexes
+
+Vector indexes enable similarity search over an embedding attribute stored on a
+table. A vector index defines the embedding attribute to search
+(`vectorAttribute`), the number of `dimensions` of each vector, the
+`distanceFunction` used to compare vectors, and an optional `searchSchema` that
+partitions the index (`HASH`) and declares additional inline filters
+(`INLINE_FILTER`).
+
+Vector indexes can only be used with tables in `PAY_PER_REQUEST` (on-demand)
+billing mode (the default for `TableV2`), and are inherited by all replica
+tables, so every replica region must support vector indexes. You can provide
+them as a `vectorIndexes` property or with the `addVectorIndex` method:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+table.addVectorIndex({
+  indexName: 'SimilarItems',
+  vectorAttribute: 'embedding',
+  dimensions: 128,
+  distanceFunction: dynamodb.VectorDistanceFunction.COSINE,
+  searchSchema: [
+    { attribute: { name: 'category', type: dynamodb.AttributeType.STRING }, type: dynamodb.SearchSchemaElementType.HASH },
+    { attribute: { name: 'year', type: dynamodb.AttributeType.NUMBER }, type: dynamodb.SearchSchemaElementType.INLINE_FILTER },
+  ],
+  projectionType: dynamodb.ProjectionType.ALL,
+});
+```
+
+The attribute referenced by `vectorAttribute` has an implicit type of List and
+does not need to be declared in the table's attribute definitions. Attributes
+referenced by the `searchSchema` are added to the table's attribute definitions
+automatically. Index names must be unique across all global secondary indexes,
+local secondary indexes, and vector indexes on the table.
+
+A `searchSchema` may contain at most one `HASH` element and at most 18
+`INLINE_FILTER` elements. When a `HASH` element is declared, queries against
+the vector index must provide a search condition expression targeting it.
+
+You cannot change a vector index after you create it, because CloudFormation
+does not support updates to vector index properties. To change a vector index,
+add a new vector index with a different `indexName` and deploy. When your
+application searches the new index, remove the old vector index in a later
+deployment. A single stack update can add or remove only one index, either a
+global secondary index or a vector index.
+
+Searching a vector index requires the `dynamodb:SearchVectors` permission on
+the index resource. Fine-grained access control condition keys (such as
+`dynamodb:LeadingKeys`) have no effect on `SearchVectors`, so `grantReadData`
+does not include `SearchVectors`. Grant it with `grants.vectorSearch()`, which
+grants it on all indexes of the table (`index/*`). The grantee can search every
+item in those indexes and read every attribute they project. A statement that
+allows `SearchVectors` with one of those conditions does not match the request,
+so DynamoDB denies the request. For this reason `grants.vectorSearch()` grants
+`SearchVectors` in a separate statement:
+
+```ts
+declare const table: dynamodb.TableV2;
+declare const grantee: iam.IGrantable;
+
+table.grants.vectorSearch(grantee);
+```
+
+`grants.vectorSearch()` throws when the grantee's conditions name
+`dynamodb:LeadingKeys`, `dynamodb:Attributes` or `dynamodb:Select`, for example
+a principal from `withConditions()`, because those keys cannot scope the grant.
+
+On a `TableV2`, `grants.vectorSearch()` grants `SearchVectors` on the indexes of
+the primary table and of each replica in the `replicas` property. It does not
+cover replicas added later with `addReplica()`, and it grants on the primary
+table's `encryptionKey` only. To grant on one replica and its replica key, use
+`table.replica(region).grants.vectorSearch(grantee)`.
+
 ## Streams
 
 Each DynamoDB table produces an independent stream based on all its writes, regardless of the origination point for those writes. DynamoDB supports two stream types:

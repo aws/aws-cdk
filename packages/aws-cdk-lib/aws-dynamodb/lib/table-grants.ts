@@ -2,7 +2,7 @@ import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
-import { isUnsupportedServicePrincipal } from './private/principal-utils';
+import { findFgacConditionKey, isUnsupportedServicePrincipal } from './private/principal-utils';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -64,6 +64,7 @@ export class TableGrants {
 
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
+  private readonly indexArns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
@@ -96,6 +97,13 @@ export class TableGrants {
       ...(props.regions ?? []).map(formatRegionalTableArn),
       arnForIndex(table.tableRef.tableArn),
       ...(props.regions ?? []).map(region => arnForIndex(formatRegionalTableArn(region))),
+    ];
+
+    // SearchVectors targets the index resource, so these ARNs are not gated on
+    // hasIndex: calling vectorSearch() implies the table carries a vector index.
+    this.indexArns = [
+      `${table.tableRef.tableArn}/index/*`,
+      ...(props.regions ?? []).map(region => `${formatRegionalTableArn(region)}/index/*`),
     ];
   }
 
@@ -155,6 +163,63 @@ export class TableGrants {
       actions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
       resourceArns: this.arns,
     }));
+  }
+
+  /**
+   * Permits an IAM principal to search the table's vector indexes:
+   * SearchVectors on the index resources in the table's region and in each
+   * region of `regions`.
+   *
+   * Fine-grained access control condition keys (such as `dynamodb:LeadingKeys`)
+   * have no effect on SearchVectors, so SearchVectors is not part of `readData`.
+   * The grant covers all indexes of the table (`index/*`), and the grantee can
+   * search every item in those indexes and read every attribute they project.
+   * A statement that allows SearchVectors with one of those conditions does not
+   * match the request, so DynamoDB denies the request. For this reason this
+   * method grants SearchVectors in a separate statement. It also rejects a
+   * grantee whose conditions name `dynamodb:LeadingKeys`, `dynamodb:Attributes`
+   * or `dynamodb:Select`, such as a `PrincipalWithConditions`. Those keys are not
+   * in the SearchVectors request context, so they cannot scope the grant, and
+   * in an identity policy CDK does not add a grantee's conditions at all.
+   *
+   * Appropriate grants will also be added to the customer-managed KMS key
+   * if one was configured.
+   *
+   * @param grantee The principal to grant access to
+   */
+  public vectorSearch(grantee: iam.IGrantable): iam.Grant {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
+      throw new ValidationError(
+        lit`ServicePrincipalGrantNotSupported`,
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this.table,
+      );
+    }
+
+    const fgacKey = findFgacConditionKey(grantee.grantPrincipal);
+    if (fgacKey !== undefined) {
+      throw new ValidationError(
+        lit`VectorSearchFgacConditionNotSupported`,
+        `vectorSearch() does not support a grantee with the condition key ${JSON.stringify(fgacKey)}, because fine-grained access control keys are not in the SearchVectors request context (grant to the principal without this condition)`,
+        this.table,
+      );
+    }
+
+    this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS);
+
+    return this.policyResource ? iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: [perms.SEARCH_VECTORS_ACTION],
+      resourceArns: this.indexArns,
+      resource: this.policyResource,
+      resourceSelfArns: ['*'],
+    }) : iam.Grant.addToPrincipal({
+      grantee,
+      actions: [perms.SEARCH_VECTORS_ACTION],
+      resourceArns: this.indexArns,
+    });
   }
 
   /**

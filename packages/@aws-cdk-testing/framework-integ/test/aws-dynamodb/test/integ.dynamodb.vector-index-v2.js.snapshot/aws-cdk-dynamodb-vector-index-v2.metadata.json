@@ -1,0 +1,350 @@
+{
+  "/aws-cdk-dynamodb-vector-index-v2": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-dynamodb-vector-index-v2.template.json"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "tableName": "*",
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "VectorTableB2143AA2"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "timeout": "*",
+        "environment": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/PolicySearcherRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/PolicySearcher": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "timeout": "*",
+        "environment": "*",
+        "role": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/MutableRolePolicySearcherRoleRef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/PolicySearcherRoleRef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VectorTableB2143AA2"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VectorSearcherD42D38E8"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/PolicySearcherRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicySearcherRole60825F05"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/PolicySearcher/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicySearcher8ACA2A46"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/PolicySearcher/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/Exports/Output{\"Ref\":\"VectorSearcherD42D38E8\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVectorSearcherD42D38E880020600"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/Exports/Output{\"Ref\":\"PolicySearcher8ACA2A46\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPolicySearcher8ACA2A46C31D075B"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VectorSearcherServiceRole2C251AF3"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VectorSearcherLogGroupBD832822"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/PolicySearcher/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicySearcherLogGroupD4A78BB2"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorSearcher/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VectorSearcherServiceRoleDefaultPolicy57486747"
+    }
+  ]
+}

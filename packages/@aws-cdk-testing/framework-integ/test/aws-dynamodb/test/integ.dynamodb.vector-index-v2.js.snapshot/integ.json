@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "dynamodb-vector-index-v2-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dynamodb-vector-index-v2"
+      ],
+      "assertionStack": "dynamodb-vector-index-v2-test/DefaultTest/DeployAssert",
+      "assertionStackName": "dynamodbvectorindexv2testDefaultTestDeployAssertA865E555"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

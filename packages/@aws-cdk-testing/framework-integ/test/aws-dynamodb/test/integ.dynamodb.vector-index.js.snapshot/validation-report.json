@@ -1,0 +1,40 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [],
+      "suppressedViolations": [
+        {
+          "ruleName": "E3039",
+          "description": "Properties: AttributeDefinitions does not match KeySchema attributes. unused definitions: [category, year]",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Resource"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-dynamodb-vector-index/VectorTable/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-dynamodb-vector-index.template.json",
+                "logicalId": "VectorTableB2143AA2",
+                "propertyPaths": [
+                  "Properties"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::E3039",
+          "reason": "Vector index search schema attributes must be declared in AttributeDefinitions even though no key schema references them",
+          "acknowledgedAt": "aws-cdk-dynamodb-vector-index/VectorTable",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/workplace/lhnng/aws-cdk-pr38577/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at PropertyInjectable.acknowledgeSearchSchemaAttributeDefinitions (/workplace/lhnng/aws-cdk-pr38577/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1466:43)\n    at PropertyInjectable.addVectorIndex (/workplace/lhnng/aws-cdk-pr38577/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1225:22)\n    at PropertyInjectable.<anonymous> (/workplace/lhnng/aws-cdk-pr38577/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)\n    at new TestStack (/workplace/lhnng/aws-cdk-pr38577/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.dynamodb.vector-index.js:55:15)\n    at <anonymous> (/workplace/lhnng/aws-cdk-pr38577/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.dynamodb.vector-index.js:106:15)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}
