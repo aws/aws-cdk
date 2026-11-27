@@ -255,7 +255,37 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     });
   });
 
-  test('throws if desiredTaskCount is 0', () => {
+  test('sets DesiredCount to 0 when desiredCount is 0', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: 0,
+    });
+  });
+
+  test.each([-1, -1024])('fails if desiredCount is %d', (desiredCount: number) => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
@@ -277,9 +307,9 @@ describe('ApplicationLoadBalancedEc2Service', () => {
         taskImageOptions: {
           image: ecs.ContainerImage.fromRegistry('test'),
         },
-        desiredCount: 0,
+        desiredCount,
       }),
-    ).toThrow(/You must specify a desiredCount greater than 0/);
+    ).toThrow(`desiredCount must be greater than or equal to 0, got ${desiredCount}`);
   });
 
   test('having *HealthyPercent properties', () => {
@@ -655,7 +685,67 @@ describe('NetworkLoadBalancedEc2Service', () => {
     });
   });
 
-  test('NLB - throws if desiredTaskCount is 0', () => {
+  test('NLB - sets DesiredCount to 0 when desiredCount is 0', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: 0,
+    });
+  });
+
+  test('NLB - passes a tokenized desiredCount through to the service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: new cdk.CfnParameter(stack, 'DesiredCount', { type: 'Number' }).valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: { Ref: 'DesiredCount' },
+    });
+  });
+
+  test.each([-1, -1024])('NLB - fails if desiredCount is %d', (desiredCount: number) => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
@@ -677,9 +767,9 @@ describe('NetworkLoadBalancedEc2Service', () => {
         taskImageOptions: {
           image: ecs.ContainerImage.fromRegistry('test'),
         },
-        desiredCount: 0,
+        desiredCount,
       }),
-    ).toThrow(/You must specify a desiredCount greater than 0/);
+    ).toThrow(`desiredCount must be greater than or equal to 0, got ${desiredCount}`);
   });
 
   test('having *HealthyPercent properties', () => {
