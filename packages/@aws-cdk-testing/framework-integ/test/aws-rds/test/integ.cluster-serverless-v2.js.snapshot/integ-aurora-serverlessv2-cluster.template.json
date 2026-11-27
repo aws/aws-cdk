@@ -537,7 +537,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
+     "S3Key": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -633,12 +633,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBClusterParameterGroupName": "default.aurora-mysql8.4",
     "DBSubnetGroupName": {
      "Ref": "integauroraserverlessv20IntegClusterSubnets2462DA9D"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "EngineVersion": "8.4.mysql_aurora.8.4.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -818,12 +818,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBClusterParameterGroupName": "default.aurora-mysql8.4",
     "DBSubnetGroupName": {
      "Ref": "integauroraserverlessv21IntegClusterSubnetsAEE71920"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "EngineVersion": "8.4.mysql_aurora.8.4.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1043,12 +1043,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBClusterParameterGroupName": "default.aurora-mysql8.4",
     "DBSubnetGroupName": {
      "Ref": "integauroraserverlessv22IntegClusterSubnets241DB50C"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "EngineVersion": "8.4.mysql_aurora.8.4.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

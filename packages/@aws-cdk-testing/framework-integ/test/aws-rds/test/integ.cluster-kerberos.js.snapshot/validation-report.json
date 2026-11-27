@@ -1,0 +1,50 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W2501",
+          "description": "Password: Property 'Password' should not be a hardcoded string - use a parameter with NoEcho or a dynamic reference",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "cluster-kerberos/AD",
+              "constructFqn": "aws-cdk-lib.aws_directoryservice.CfnMicrosoftAD",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "cluster-kerberos.template.json",
+                "logicalId": "AD",
+                "propertyPaths": [
+                  "Properties.Password"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-cluster-kerberos/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
