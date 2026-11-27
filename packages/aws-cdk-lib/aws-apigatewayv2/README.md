@@ -484,6 +484,15 @@ new apigwv2.WebSocketApi(this, 'WebSocketApi', {
 });
 ```
 
+By default, clients can invoke the WebSocket API through the default `execute-api` endpoint.
+To require clients to use a custom domain name instead, set `disableExecuteApiEndpoint` to true.
+
+```ts
+new apigwv2.WebSocketApi(this, 'api', {
+  disableExecuteApiEndpoint: true,
+});
+```
+
 ### Manage Connections Permission
 
 Grant permission to use API Gateway Management API of a WebSocket API by calling the `grantManageConnections` API.
