@@ -62,15 +62,8 @@ where a skill relies on them.
 
 - **Read every fact** a sentence states in its source (the guide, the linter's code, the package) before
   you write it.
-- **Run** from the repository root, in bash, `node scripts/check-skills.js` (0 errors and 0 warnings) and
-  this, which prints each rule ID the skills mention whose row is missing:
-
-  ```bash
-  defined=$(grep -rhoE '\*\*\[[A-Z]+(-[A-Z0-9]+)+\] \(' skills | grep -oE '[A-Z]+(-[A-Z0-9]+)+' | sort -u)
-  prefixes=$(cut -d- -f1 <<< "$defined" | sort -u | paste -sd'|' -)
-  grep -rhoE "\b($prefixes)(-[A-Z0-9]+)+(-\*)?" skills | grep -v '\*$' | sort -u | comm -13 <(echo "$defined") -
-  ```
-
+- **Run** `node scripts/check-skills.js` from the repository root (0 errors and 0 warnings), and confirm that
+  each rule ID the skills mention has a row.
 - **Test the change** with an independent read, then with reviews of real pull requests. On pull requests
   the wording was tuned on, a difference is evidence where the reviewer's own text shows the rule deciding,
   and is run-to-run variation elsewhere; confirm the result on pull requests new to the wording, against the
