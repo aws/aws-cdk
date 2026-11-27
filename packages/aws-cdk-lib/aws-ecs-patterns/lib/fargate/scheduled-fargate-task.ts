@@ -118,6 +118,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       securityGroups: props.securityGroups,
       propagateTags: props.propagateTags,
       tags: props.tags,
+      role: props.role,
     });
 
     this.addTaskAsTarget(this.task);

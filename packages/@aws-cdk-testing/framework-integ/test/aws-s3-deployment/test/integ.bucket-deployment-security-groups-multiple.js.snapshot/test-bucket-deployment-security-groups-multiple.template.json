@@ -318,7 +318,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -345,28 +345,6 @@
    },
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
-  "DeployWithMultipleSecurityGroupsAwsCliLayer78DA2223": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   },
-   "DependsOn": [
-    "TestVpcIsolatedSubnet1RouteTable8109E0F7",
-    "TestVpcIsolatedSubnet1RouteTableAssociation69023F0F",
-    "TestVpcIsolatedSubnet1Subnet541B14FE",
-    "TestVpcIsolatedSubnet2RouteTableF2751065",
-    "TestVpcIsolatedSubnet2RouteTableAssociationBF1DF8E3",
-    "TestVpcIsolatedSubnet2Subnet3A7015F1",
-    "TestVpcE77CE678",
-    "TestVpcS3Endpoint79A815C2"
    ]
   },
   "DeployWithMultipleSecurityGroupsCustomResourcec87a409b7d9dd2258720adf509b7727165810e0611DDD6FB1C": {
@@ -563,7 +541,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip"
     },
     "Environment": {
      "Variables": {
@@ -571,18 +549,14 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "DeployWithMultipleSecurityGroupsAwsCliLayer78DA2223"
-     }
-    ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457cServiceRole9E14E303",
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -607,8 +581,7 @@
        "Ref": "TestVpcIsolatedSubnet2Subnet3A7015F1"
       }
      ]
-    },
-    "MemorySize": 1024
+    }
    },
    "DependsOn": [
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457cServiceRoleDefaultPolicyC65E9706",
