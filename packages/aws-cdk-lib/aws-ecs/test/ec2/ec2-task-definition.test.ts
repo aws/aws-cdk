@@ -1140,6 +1140,37 @@ describe('ec2 task definition', () => {
       });
     });
 
+    test('correctly sets s3FilesVolumeConfiguration', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const volume = {
+        name: 'scratch',
+        s3FilesVolumeConfiguration: {
+          fileSystemArn: 'arn:aws:s3files:us-east-1:012345678901:file-system/fs-12345678',
+        },
+      };
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        volumes: [volume],
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        Volumes: [{
+          Name: 'scratch',
+          S3FilesVolumeConfiguration: {
+            FileSystemArn: 'arn:aws:s3files:us-east-1:012345678901:file-system/fs-12345678',
+          },
+        }],
+      });
+    });
+
     test('correctly sets env variables when using EC2 capacity provider with AWSVPC mode - with no other user-defined env variables', () => {
       // GIVEN AWS-VPC network mode
       const stack = new cdk.Stack();
