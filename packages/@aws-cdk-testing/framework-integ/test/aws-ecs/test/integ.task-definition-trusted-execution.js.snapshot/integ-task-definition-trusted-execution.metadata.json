@@ -1,0 +1,53 @@
+{
+  "/integ-task-definition-trusted-execution": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-task-definition-trusted-execution.template.json"
+    }
+  ],
+  "/integ-task-definition-trusted-execution/IsolatedSandboxTaskDef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-task-definition-trusted-execution/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-task-definition-trusted-execution/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-task-definition-trusted-execution/IsolatedSandboxTaskDef/TaskRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/integ-task-definition-trusted-execution/IsolatedSandboxTaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsolatedSandboxTaskDefB3E6B0F0"
+    }
+  ],
+  "/integ-task-definition-trusted-execution/IsolatedSandboxTaskDef/TaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsolatedSandboxTaskDefTaskRole319D6094"
+    }
+  ]
+}

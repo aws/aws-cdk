@@ -1953,6 +1953,46 @@ const cfnService = service.node.defaultChild as ecs.CfnService;
 cfnService.launchType = 'FARGATE'; // or 'FARGATE_SPOT' depending on your capacity provider
 ```
 
+#### Trusted execution (Nitro Sandboxes)
+
+Tasks that run on Managed Instances can run in an [AWS Nitro Sandbox](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/isolated-confidential-tasks.html),
+where the Nitro Hypervisor isolates each task from the other tasks on the instance. Set `trustedExecutionConfiguration` on the task definition:
+
+```ts
+const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
+  compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  cpu: '1024',
+  memoryMiB: '2048',
+  trustedExecutionConfiguration: {
+    isolationMode: ecs.IsolationMode.ISOLATED_SANDBOX,
+  },
+});
+```
+
+With `IsolationMode.CONFIDENTIAL_SANDBOX`, Amazon ECS also verifies the workload against an attestation policy before the task runs.
+`attestationPolicy` is the base64-encoded policy envelope:
+
+```ts
+declare const attestationPolicy: string; // base64-encoded policy envelope
+
+const taskDefinition = new ecs.TaskDefinition(this, 'ConfidentialTaskDef', {
+  compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  cpu: '1024',
+  memoryMiB: '2048',
+  trustedExecutionConfiguration: {
+    isolationMode: ecs.IsolationMode.CONFIDENTIAL_SANDBOX,
+    attestationPolicy,
+  },
+});
+```
+
+- The task definition's compatibility must include Managed Instances, and the capacity provider must enable Nitro Enclaves on its instances.
+- `ISOLATED_SANDBOX` and `CONFIDENTIAL_SANDBOX` require the `AWS_VPC` network mode. The `HOST` network mode is not supported.
+- `attestationPolicy` is required with `CONFIDENTIAL_SANDBOX` and can't be set with the other modes.
+- When `trustedExecutionConfiguration` is not set, Amazon ECS uses the `SHARED` isolation mode.
+
 ### Cluster Default Provider Strategy
 
 A capacity provider strategy determines whether ECS tasks are launched on EC2 instances or Fargate/Fargate Spot. It can be specified at the cluster, service, or task level, and consists of one or more capacity providers. You can specify an optional base and weight value for finer control of how tasks are launched. The `base` specifies a minimum number of tasks on one capacity provider, and the `weight`s of each capacity provider determine how tasks are distributed after `base` is satisfied.
