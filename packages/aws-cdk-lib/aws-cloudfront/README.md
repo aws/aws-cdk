@@ -1608,32 +1608,71 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
 });
 ```
 
-When using a CloudFront PublicKey, only the `comment` field can be updated after creation. Fields such as `encodedKey` and `publicKeyName` are immutable, as outlined in the [API Reference](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdatePublicKey.html). Attempting to modify these fields will result in an error:
-```
-Resource handler returned message: "Invalid request provided: AWS::CloudFront::PublicKey"
-```
-
-To update the `encodedKey`, you must change the ID of the public key resource in your template. This causes CloudFormation to create a new `cloudfront.PublicKey` resource and delete the old one during the next deployment.
-
-Example:
-
-```ts
-// Step 1: Original deployment
-const originalKey = new cloudfront.PublicKey(this, 'MyPublicKeyV1', {
-  encodedKey: '...', // contents of original public_key.pem file
-});
-```
-
-Regenerate a new key and change the construct id in the code:
-```ts
-// Step 2: In a subsequent deployment, create a new key with a different ID
-const updatedKey = new cloudfront.PublicKey(this, 'MyPublicKeyV2', {
-  encodedKey: '...', // contents of new public_key.pem file
-});
-```
-
-
 See:
 
 - <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html>
 - <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html>
+
+### Rotating a public key
+
+After a `PublicKey` is created, only its `comment` can be changed. CloudFront does not allow changing
+the `encodedKey` or `publicKeyName` of an existing public key (see
+[UpdatePublicKey](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdatePublicKey.html)).
+If you change either of them, the deployment fails with:
+
+```text
+Resource handler returned message: "Invalid request provided: AWS::CloudFront::PublicKey"
+```
+
+To rotate a key, add a new `PublicKey` under a new construct id instead of changing the existing one.
+The steps below follow CloudFront's
+[Rotating key pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-rotating-key-pairs)
+guidance.
+
+If you set `publicKeyName`, give the new key a new name as well. Public key names must be unique in the
+account, and the old key still exists when the new key is created, so reusing the name fails with
+`PublicKeyAlreadyExists` (see
+[CreatePublicKey errors](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_CreatePublicKey.html#API_CreatePublicKey_Errors)).
+
+First, add the new key next to the old one, put both in the key group, and deploy:
+
+```ts
+declare const oldPublicKeyPem: string; // contents of the old public_key.pem file
+declare const newPublicKeyPem: string; // contents of the new public_key.pem file
+
+const oldKey = new cloudfront.PublicKey(this, 'MyPublicKey', {
+  encodedKey: oldPublicKeyPem,
+});
+
+// The new key uses a new construct id
+const newKey = new cloudfront.PublicKey(this, 'MyPublicKeyV2', {
+  encodedKey: newPublicKeyPem,
+});
+
+new cloudfront.KeyGroup(this, 'MyKeyGroup', {
+  items: [oldKey, newKey],
+});
+```
+
+Then switch your signers to the new private key and the new key's ID (`newKey.publicKeyId`, used as
+`Key-Pair-Id`), confirm that URLs and cookies signed with the new key work, and wait until URLs and
+cookies signed with the old key have expired. CloudFront accepts
+URLs and cookies signed with any key in the key group, so both keep working in the meantime.
+
+Finally, remove the old `PublicKey` from your code and from the key group, and deploy again:
+
+```ts
+declare const newPublicKeyPem: string; // contents of the new public_key.pem file
+
+const newKey = new cloudfront.PublicKey(this, 'MyPublicKeyV2', {
+  encodedKey: newPublicKeyPem,
+});
+
+new cloudfront.KeyGroup(this, 'MyKeyGroup', {
+  items: [newKey],
+});
+```
+
+CloudFormation updates the key group in place and then deletes the old public key, so distributions
+that use the key group do not need to change. If no signed URLs or cookies need to keep working during
+the rotation, you can make both changes in a single deployment.
