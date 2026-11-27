@@ -2,6 +2,8 @@ import type { SpawnSyncOptions } from 'child_process';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { parse, printParseErrorCode } from 'jsonc-parser';
+import type { ParseError } from 'jsonc-parser';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
@@ -261,8 +263,13 @@ export function getTsconfigCompilerOptionsArray(tsconfigPath: string): string[] 
 }
 
 function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);
+  const errors: ParseError[] = [];
+  const config = parse(fs.readFileSync(tsconfigPath, 'utf8').replace(/^\uFEFF/, ''), errors, { allowTrailingComma: true });
+  if (errors.length > 0) {
+    const details = errors.map(error => `${printParseErrorCode(error.error)} at offset ${error.offset}`).join(', ');
+    throw new UnscopedValidationError(lit`InvalidTsconfigJson`, `Cannot parse tsconfig '${tsconfigPath}': ${details}`);
+  }
+  const { extends: extendedConfig, compilerOptions } = config;
   const updatedCompilerOptions = {
     ...compilerOptions,
     ...(previousCompilerOptions ?? {}),
