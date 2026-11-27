@@ -58,27 +58,19 @@ const integ = new IntegTest(app, 'FunctionUrlOriginIpAddressTypeTest', {
   testCases: [stack],
 });
 
-// Assert that distributions are created with expected IP address type settings
-integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
-  Id: distributionIPv4.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(true));
+// Assert that each distribution's origin uses the configured IP address type.
+// `ipAddressType` sets the origin's `CustomOriginConfig.IpAddressType`; it does not
+// affect the distribution-level `IsIPV6Enabled` setting.
+const originIpAddressTypePath = 'Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType';
 
 integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
   Id: distributionIPv4.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(false));
+}).assertAtPath(originIpAddressTypePath, ExpectedResult.exact(OriginIpAddressType.IPV4));
 
 integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
   Id: distributionIPv6.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(false));
-
-integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
-  Id: distributionIPv6.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(true));
+}).assertAtPath(originIpAddressTypePath, ExpectedResult.exact(OriginIpAddressType.IPV6));
 
 integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
   Id: distributionDualstack.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(true));
-
-integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
-  Id: distributionDualstack.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(true));
+}).assertAtPath(originIpAddressTypePath, ExpectedResult.exact(OriginIpAddressType.DUALSTACK));

@@ -237,6 +237,56 @@ describe('AssertionHandler', () => {
     });
   });
 
+  describe('exact', () => {
+    test('pass', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: 'foo',
+        expected: ExpectedResult.exact('foo').result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(response.assertion).toEqual('{"status":"success"}');
+    });
+
+    test('pass with an object', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: { stringParam: 'foo', numberParam: 3 },
+        expected: ExpectedResult.exact({ stringParam: 'foo', numberParam: 3 }).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(response.assertion).toEqual('{"status":"success"}');
+    });
+
+    test('fail', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: { stringParam: 'foo', extraParam: 'baz' },
+        expected: ExpectedResult.exact({ stringParam: 'foo' }).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(JSON.parse(response.assertion)).toEqual({
+        status: 'fail',
+        message: expect.stringMatching(/Unexpected key extraParam/),
+      });
+    });
+  });
+
   describe('not using Match', () => {
     test('pass', async () => {
       // GIVEN
