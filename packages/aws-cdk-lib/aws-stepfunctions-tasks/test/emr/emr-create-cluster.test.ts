@@ -2286,3 +2286,49 @@ describe('EMR Instance Fleet Priority Feature', () => {
     expect(() => stack.resolve(task.toStateJson())).toThrow(/PRIORITIZED requires at least one instance type config to have a priority value set/);
   });
 });
+
+test('EBS root volume settings can be set dynamically through JsonPath', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    ebsRootVolumeSize: cdk.Size.gibibytes(sfn.JsonPath.numberAt('$.size')),
+    ebsRootVolumeIops: sfn.JsonPath.numberAt('$.iops'),
+    ebsRootVolumeThroughput: sfn.JsonPath.numberAt('$.throughput'),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      'EbsRootVolumeSize.$': '$.size',
+      'EbsRootVolumeIops.$': '$.iops',
+      'EbsRootVolumeThroughput.$': '$.throughput',
+    },
+  });
+});
+
+test('EBS root volume IOPS and throughput can be set with an unresolved release label', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: sfn.JsonPath.stringAt('$.releaseLabel'),
+    ebsRootVolumeIops: 4567,
+    ebsRootVolumeThroughput: 222,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Parameters: {
+      'ReleaseLabel.$': '$.releaseLabel',
+      'EbsRootVolumeIops': 4567,
+      'EbsRootVolumeThroughput': 222,
+    },
+  });
+});
