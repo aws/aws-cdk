@@ -396,7 +396,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -424,18 +424,6 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  },
-  "DeployLambdaCodeAwsCliLayer8743C498": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
   },
   "DeployLambdaCodeCustomResource0564AA4B": {
    "Type": "Custom::CDKBucketDeployment",
@@ -616,7 +604,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5e81a73f81885fea64662dbdb24dc7ab2983658d50f1e697f8befbdd51000b65.zip"
+     "S3Key": "a99a19974707f69ec1fcc8c3de916795ee4cf5b9d411eafa6690c09ccef25dec.zip"
     },
     "Environment": {
      "Variables": {
@@ -624,11 +612,6 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "DeployLambdaCodeAwsCliLayer8743C498"
-     }
-    ],
     "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
@@ -636,7 +619,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -705,7 +688,6 @@
    },
    "DependsOn": [
     "CodeObjectVersionCustomResourcePolicy30CE9329",
-    "DeployLambdaCodeAwsCliLayer8743C498",
     "DeployLambdaCodeCustomResource0564AA4B"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -766,7 +748,6 @@
     ]
    },
    "DependsOn": [
-    "DeployLambdaCodeAwsCliLayer8743C498",
     "DeployLambdaCodeCustomResource0564AA4B"
    ]
   },
@@ -808,7 +789,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125.zip"
+     "S3Key": "107fad8963264825cc449bcfac9d72effef186dd868b2c29670e8eb13ddcaee0.zip"
     },
     "Handler": "index.handler",
     "Role": {

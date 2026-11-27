@@ -26,9 +26,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -56,9 +54,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -67,7 +63,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/test-bucket-deployment-object-versions/ExportDeployedObjectKey": [
@@ -132,21 +128,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/test-bucket-deployment-object-versions/DeployZip/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployment-object-versions/DeployZip/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -282,12 +270,6 @@
       "data": "DestinationAutoDeleteObjectsCustomResource15E926BA"
     }
   ],
-  "/test-bucket-deployment-object-versions/DeployZip/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployZipAwsCliLayerBB3D0420"
-    }
-  ],
   "/test-bucket-deployment-object-versions/DeployZip/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -354,12 +336,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
-    }
-  ],
-  "/test-bucket-deployment-object-versions/DeployZip/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/test-bucket-deployment-object-versions/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [

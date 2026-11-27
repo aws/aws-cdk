@@ -16,6 +16,5 @@
       "assertionStackName": "appconfigconfigurationDefaultTestDeployAssert6752CD38"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1145.0"
+  "enableLookups": true
 }
