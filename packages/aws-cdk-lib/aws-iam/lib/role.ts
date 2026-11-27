@@ -28,6 +28,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import type {
   Duration,
   RemovalPolicy,
+  RemovalPolicyOptions,
 } from '../../core';
 import {
   Annotations,
@@ -768,12 +769,13 @@ export class Role extends Resource implements IRole {
    * Because in this case, this construct does not have a CfnResource in the tree.
    * @override
    * @param policy RemovalPolicy
+   * @param options RemovalPolicyOptions
    */
   @MethodMetadata()
-  public applyRemovalPolicy(policy: RemovalPolicy): void {
+  public applyRemovalPolicy(policy: RemovalPolicy, options?: RemovalPolicyOptions): void {
     const config = this.getPrecreatedRoleConfig();
     if (!config.preventSynthesis) {
-      super.applyRemovalPolicy(policy);
+      super.applyRemovalPolicy(policy, options);
     }
   }
 
