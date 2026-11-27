@@ -319,6 +319,29 @@ test.each([true, false])('activeTracing can be set to %s', (activeTracing: boole
   });
 });
 
+test.each([true, false])('activeTracing can be set to %s for Java runtime', (activeTracing: boolean) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+    test: synthetics.Test.custom({
+      handler: 'canarypackage.ExampleCanary::canaryCode',
+      code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+    }),
+    activeTracing,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RuntimeVersion: 'syn-java-1.0',
+    RunConfig: {
+      ActiveTracing: activeTracing,
+    },
+  });
+});
+
 test.each([true, false])('specify provisioned resource cleanup', (provisionedResourceCleanup: boolean) => {
   // GIVEN
   const stack = new Stack();
@@ -1001,7 +1024,7 @@ describe('handler validation', () => {
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
-    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName'/);
+    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName', received/);
 
     expect(() => {
       new synthetics.Canary(stack, 'Canary1', {
@@ -1022,6 +1045,74 @@ describe('handler validation', () => {
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
     }).not.toThrow();
+
+    // Java handler with :: separator should work
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary3', {
+        test: synthetics.Test.custom({
+          handler: 'canarypackage.ExampleCanary::canaryCode',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+      });
+    }).not.toThrow();
+  });
+
+  test('invalid handler for Java runtime', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'invalid_java_handler',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+      });
+    }).toThrow(/Canary Handler must be specified as 'fully.qualified.ClassName::method' for Java runtimes/);
+  });
+
+  test.each([
+    'canarypackage.ExampleCanary.canaryCode',
+    'ExampleCanary::',
+    '::canaryCode',
+    'canarypackage.ExampleCanary::canary.Code',
+  ])('rejects malformed Java handler %s', (handler: string) => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler,
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+      });
+    }).toThrow(/for Java runtimes/);
+  });
+
+  test('Java style handler is rejected for Node.js runtimes', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'canarypackage.ExampleCanary::canaryCode',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
+      });
+    }).toThrow(/Canary Handler must be specified either as/);
+  });
+
+  test('invalid handler for Python runtime', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'invalid_handler',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
+      });
+    }).toThrow(/for Python runtimes/);
   });
 
   test('handler length', () => {
