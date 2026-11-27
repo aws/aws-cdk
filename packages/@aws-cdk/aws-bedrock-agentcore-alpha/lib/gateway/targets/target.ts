@@ -17,7 +17,7 @@ import { GatewayTargetBase, GatewayTargetProtocolType, McpTargetType } from './t
 import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfiguration } from './target-configuration';
 import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
-import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
+import { CredentialProviderType, GatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
@@ -549,6 +549,10 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       props.credentialProviderConfigurations,
     );
 
+    // Reject credential providers that the target type does not support, so that
+    // unsupported configurations fail at synthesis instead of at deployment.
+    this.validateCredentialProvidersForTargetType();
+
     // Bind the target configuration
     // This sets up permissions and dependencies
     this.targetConfiguration.bind(this, this.gateway);
@@ -660,6 +664,34 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    */
   private _renderCredentialProviderConfigurations(): any {
     return this.credentialProviderConfigurations?.map(provider => provider._render());
+  }
+
+  /**
+   * Validates that the configured credential providers are supported by the target type.
+   *
+   * AgentCore Gateway only supports IAM role authentication for Lambda targets. Any other
+   * credential provider type is rejected by the service at deploy time, so we fail fast at
+   * synthesis with a clear message instead.
+   *
+   * @internal
+   */
+  private validateCredentialProvidersForTargetType(): void {
+    if (this.targetType !== McpTargetType.LAMBDA || !this.credentialProviderConfigurations) {
+      return;
+    }
+
+    const unsupported = this.credentialProviderConfigurations
+      .map(provider => provider.credentialProviderType)
+      .filter(type => type !== CredentialProviderType.GATEWAY_IAM_ROLE);
+
+    if (unsupported.length > 0) {
+      throw new ValidationError(
+        lit`LambdaTargetUnsupportedCredentialProvider`,
+        `Lambda targets only support the ${CredentialProviderType.GATEWAY_IAM_ROLE} credential provider, but received: ${unsupported.join(', ')}. ` +
+        'Use GatewayCredentialProvider.fromIamRole(), or omit credentialProviderConfigurations to use the default IAM role, for Lambda targets.',
+        this,
+      );
+    }
   }
 
   /**
