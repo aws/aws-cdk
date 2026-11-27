@@ -1,0 +1,598 @@
+{
+ "Resources": {
+  "SecondaryVpc6FF7511A": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc"
+     }
+    ]
+   }
+  },
+  "SecondaryVpcPublicSubnet1Subnet048A77AF": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPublicSubnet1RouteTable7E2E514C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPublicSubnet1RouteTableAssociationCF2330EF": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPublicSubnet1RouteTable7E2E514C"
+    },
+    "SubnetId": {
+     "Ref": "SecondaryVpcPublicSubnet1Subnet048A77AF"
+    }
+   }
+  },
+  "SecondaryVpcPublicSubnet1DefaultRouteE9F0681C": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "SecondaryVpcIGW222E41BE"
+    },
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPublicSubnet1RouteTable7E2E514C"
+    }
+   },
+   "DependsOn": [
+    "SecondaryVpcVPCGW58623510"
+   ]
+  },
+  "SecondaryVpcPublicSubnet1EIPC42A0381": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "SecondaryVpcPublicSubnet1NATGatewayB5A91E9E": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "SecondaryVpcPublicSubnet1EIPC42A0381",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SecondaryVpcPublicSubnet1Subnet048A77AF"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "SecondaryVpcPublicSubnet1DefaultRouteE9F0681C",
+    "SecondaryVpcPublicSubnet1RouteTableAssociationCF2330EF"
+   ]
+  },
+  "SecondaryVpcPublicSubnet2Subnet448AC073": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPublicSubnet2RouteTableC1F54C6B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPublicSubnet2RouteTableAssociationAB09412E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPublicSubnet2RouteTableC1F54C6B"
+    },
+    "SubnetId": {
+     "Ref": "SecondaryVpcPublicSubnet2Subnet448AC073"
+    }
+   }
+  },
+  "SecondaryVpcPublicSubnet2DefaultRoute05FF937A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "SecondaryVpcIGW222E41BE"
+    },
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPublicSubnet2RouteTableC1F54C6B"
+    }
+   },
+   "DependsOn": [
+    "SecondaryVpcVPCGW58623510"
+   ]
+  },
+  "SecondaryVpcPublicSubnet2EIP66B5F736": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "SecondaryVpcPublicSubnet2NATGatewayECB42898": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "SecondaryVpcPublicSubnet2EIP66B5F736",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SecondaryVpcPublicSubnet2Subnet448AC073"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "SecondaryVpcPublicSubnet2DefaultRoute05FF937A",
+    "SecondaryVpcPublicSubnet2RouteTableAssociationAB09412E"
+   ]
+  },
+  "SecondaryVpcPrivateSubnet1Subnet065B69F5": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPrivateSubnet1RouteTableEF9E0760": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPrivateSubnet1RouteTableAssociation7D2B1483": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPrivateSubnet1RouteTableEF9E0760"
+    },
+    "SubnetId": {
+     "Ref": "SecondaryVpcPrivateSubnet1Subnet065B69F5"
+    }
+   }
+  },
+  "SecondaryVpcPrivateSubnet1DefaultRouteE6C6FBBB": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "SecondaryVpcPublicSubnet1NATGatewayB5A91E9E"
+    },
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPrivateSubnet1RouteTableEF9E0760"
+    }
+   }
+  },
+  "SecondaryVpcPrivateSubnet2SubnetA8E94D41": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPrivateSubnet2RouteTable97E97236": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryVpcPrivateSubnet2RouteTableAssociation18CE32EC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPrivateSubnet2RouteTable97E97236"
+    },
+    "SubnetId": {
+     "Ref": "SecondaryVpcPrivateSubnet2SubnetA8E94D41"
+    }
+   }
+  },
+  "SecondaryVpcPrivateSubnet2DefaultRoute5008045B": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "SecondaryVpcPublicSubnet2NATGatewayECB42898"
+    },
+    "RouteTableId": {
+     "Ref": "SecondaryVpcPrivateSubnet2RouteTable97E97236"
+    }
+   }
+  },
+  "SecondaryVpcIGW222E41BE": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-neptune-global-cluster-secondary-integ/SecondaryVpc"
+     }
+    ]
+   }
+  },
+  "SecondaryVpcVPCGW58623510": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "SecondaryVpcIGW222E41BE"
+    },
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryClusterSubnetsAFBF5E17": {
+   "Type": "AWS::Neptune::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for SecondaryCluster database",
+    "SubnetIds": [
+     {
+      "Ref": "SecondaryVpcPrivateSubnet1Subnet065B69F5"
+     },
+     {
+      "Ref": "SecondaryVpcPrivateSubnet2SubnetA8E94D41"
+     }
+    ]
+   }
+  },
+  "SecondaryClusterSecurityGroup9C3C6F9A": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Neptune security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "SecondaryVpc6FF7511A"
+    }
+   }
+  },
+  "SecondaryClusterAF0232D7": {
+   "Type": "AWS::Neptune::DBCluster",
+   "Properties": {
+    "DBSubnetGroupName": {
+     "Ref": "SecondaryClusterSubnetsAFBF5E17"
+    },
+    "GlobalClusterIdentifier": {
+     "Fn::GetAtt": [
+      "ExportsReader8B249524",
+      "/cdk/exports/aws-cdk-neptune-global-cluster-secondary-integ/awscdkneptuneglobalclusterinteguseast1RefGlobalClusterD272DED1B2A0D931"
+     ]
+    },
+    "StorageEncrypted": true,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "SecondaryClusterSecurityGroup9C3C6F9A",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SecondaryClusterInstance18710E440": {
+   "Type": "AWS::Neptune::DBInstance",
+   "Properties": {
+    "AutoMinorVersionUpgrade": false,
+    "DBClusterIdentifier": {
+     "Ref": "SecondaryClusterAF0232D7"
+    },
+    "DBInstanceClass": "db.r5.large"
+   },
+   "DependsOn": [
+    "SecondaryVpcPrivateSubnet1DefaultRouteE6C6FBBB",
+    "SecondaryVpcPrivateSubnet1RouteTableAssociation7D2B1483",
+    "SecondaryVpcPrivateSubnet2DefaultRoute5008045B",
+    "SecondaryVpcPrivateSubnet2RouteTableAssociation18CE32EC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ExportsReader8B249524": {
+   "Type": "Custom::CrossRegionExportReader",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68",
+      "Arn"
+     ]
+    },
+    "ReaderProps": {
+     "region": "us-east-2",
+     "prefix": "aws-cdk-neptune-global-cluster-secondary-integ",
+     "imports": {
+      "/cdk/exports/aws-cdk-neptune-global-cluster-secondary-integ/awscdkneptuneglobalclusterinteguseast1RefGlobalClusterD272DED1B2A0D931": "{{resolve:ssm:/cdk/exports/aws-cdk-neptune-global-cluster-secondary-integ/awscdkneptuneglobalclusterinteguseast1RefGlobalClusterD272DED1B2A0D931}}"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ssm:us-east-2:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/cdk/exports/aws-cdk-neptune-global-cluster-secondary-integ/*"
+           ]
+          ]
+         },
+         "Action": [
+          "ssm:AddTagsToResource",
+          "ssm:RemoveTagsFromResource",
+          "ssm:GetParameters"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
+     },
+     "S3Key": "28b62d4777a8bdb7a0cd3e372e619d17eca8b963320fa0c3c9960ecd4eb72f54.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
