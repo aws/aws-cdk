@@ -1,0 +1,717 @@
+{
+  "/aws-ecs-integ-alb-fg-cloudfront": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.application-load-balanced-fargate-service-cloudfront.js:45:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-ecs-integ-alb-fg-cloudfront.template.json"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Cluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Distribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "viewerProtocolPolicy": "redirect-to-https",
+            "allowedMethods": "*",
+            "cachePolicy": "*",
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "The load balancer stays directly reachable: with the default open listener its security group allows 0.0.0.0/0 on the listener port, so traffic can bypass the CloudFront distribution. Set openListener to false and allow ingress only from the com.amazonaws.global.cloudfront.origin-facing managed prefix list, and/or require a secret origin header that a listener rule checks. [ack: @aws-cdk/aws-ecs-patterns:cloudFrontOpenListener]",
+      "trace": [
+        "Annotations.addMessage (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "new ApplicationLoadBalancedServiceBase (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.js:184:47)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/fargate/application-load-balanced-fargate-service.js:138:13)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.application-load-balanced-fargate-service-cloudfront.js:53:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Cluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterEB0386A7"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Distribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distribution830FAC52"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LoadBalancerDNS": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceLoadBalancerDNS0137F965"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/ServiceURL": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceServiceURLB5DB8049"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/Service": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "trace": [
+        "Annotations.addMessage (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "new BaseService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:520:47)",
+        "new BaseService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:209:13)",
+        "new FargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/fargate/application-load-balanced-fargate-service.js:203:28)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.application-load-balanced-fargate-service-cloudfront.js:53:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+      "trace": [
+        "Annotations.addMessage (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "new BaseService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:545:47)",
+        "new BaseService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:209:13)",
+        "new FargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/fargate/application-load-balanced-fargate-service.js:203:28)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.application-load-balanced-fargate-service-cloudfront.js:53:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Exports/Output{\"Fn::GetAtt\":[\"Distribution830FAC52\",\"DomainName\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDistribution830FAC52DomainNameBEB09E30"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2EIP3C605A87"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2NATGateway9182C01D"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceLB88037298"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": false
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {},
+          "*",
+          false
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEgressRule": [
+          "*",
+          {},
+          "*",
+          true
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB/PublicListener": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/TaskRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceTaskDefD9C4E60B"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/Service/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontService999E3ECB"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/Service/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          "*",
+          {},
+          "*",
+          false
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceLBSecurityGroupA6D4FF8C"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB/SecurityGroup/to awsecsintegalbfgcloudfrontCloudFrontServiceSecurityGroup2AAAF228:80": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceLBSecurityGrouptoawsecsintegalbfgcloudfrontCloudFrontServiceSecurityGroup2AAAF22880B6000459"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB/PublicListener/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceLBPublicListener756DC9E2"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/TaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceTaskDefTaskRoleFD33B61C"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/web/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "retention": "*"
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceTaskDefExecutionRoleAD224C04"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/Service/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceSecurityGroupD8A72D5F"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/Service/SecurityGroup/from awsecsintegalbfgcloudfrontCloudFrontServiceLBSecurityGroup83882E9E:80": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceSecurityGroupfromawsecsintegalbfgcloudfrontCloudFrontServiceLBSecurityGroup83882E9E800DD13E05"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/LB/PublicListener/ECSGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceLBPublicListenerECSGroup08673A6A"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/web/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceTaskDefwebLogGroupE7D63606"
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontServiceTaskDefExecutionRoleDefaultPolicy19E52073"
+    }
+  ]
+}

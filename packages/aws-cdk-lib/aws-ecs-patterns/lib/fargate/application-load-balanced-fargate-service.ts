@@ -57,6 +57,7 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    * @default - No memory limit.
    */
   readonly containerMemoryLimitMiB?: number;
+
 }
 
 /**

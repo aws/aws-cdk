@@ -1,6 +1,8 @@
 import { Match, Template } from '../../../assertions';
 import { AutoScalingGroup } from '../../../aws-autoscaling';
 import { Certificate } from '../../../aws-certificatemanager';
+import * as cloudfront from '../../../aws-cloudfront';
+import * as origins from '../../../aws-cloudfront-origins';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
@@ -573,6 +575,51 @@ describe('ApplicationLoadBalancedEc2Service', () => {
     // THEN - Stack contains no ingress security group rules
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: Match.absent(),
+    });
+  });
+
+  test('cloudFrontDistribution adds the load balancer as an origin for all paths', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      cloudFrontDistribution: distribution,
+    });
+
+    // THEN — the EC2 variant gets the same /* behavior as the Fargate one
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            DomainName: { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceLB.*'), 'DNSName'] },
+          }),
+        ]),
+        CacheBehaviors: Match.arrayWith([
+          Match.objectLike({
+            PathPattern: '/*',
+            ViewerProtocolPolicy: 'redirect-to-https',
+          }),
+        ]),
+      }),
     });
   });
 });

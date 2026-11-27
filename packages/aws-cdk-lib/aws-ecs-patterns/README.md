@@ -422,6 +422,89 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
 });
 ```
 
+### Serve an ApplicationLoadBalancedFargateService through CloudFront
+
+You can put a CloudFront distribution in front of the load balancer by passing it as `cloudFrontDistribution`.
+The load balancer is added to the distribution as an origin, with a cache behavior that sends all requests (`/*`) to it, so the service is served through CloudFront. The `/*` behavior matches every request path, so it takes over all requests not matched by cache behaviors you added to the distribution before creating the service. The distribution's default behavior is never used for this service — the `example.com` origin in the example below is only a placeholder, it never receives traffic. A distribution can only be put in front of one service, and it must not already have a `/*` cache behavior.
+
+The origin talks to the load balancer on the listener's protocol and port — HTTP on port 80 by default, or HTTPS on port 443 when the service uses HTTPS (a certificate or `protocol: HTTPS`). The behavior redirects viewers to HTTPS, allows all HTTP methods, and disables caching, and it forwards viewer query strings, cookies and headers to the service — all of them on HTTPS with the default origin request policy, all except the Host header on HTTP — so the service behaves like a dynamic application behind CloudFront. You can override any of that with `cloudFrontBehaviorOptions`. The same props are available on `ApplicationLoadBalancedEc2Service`. For HTTPS, give the distribution `domainNames` and a certificate in us-east-1, and make sure the load balancer certificate also covers those names — otherwise CloudFront cannot verify the origin certificate and returns 502 for every request.
+
+The load balancer must be internet-facing, because the pattern creates a public origin for it. An internal load balancer can be fronted by CloudFront through a VPC origin, but this pattern does not set that up. It also stays directly reachable: with the default open listener, its security group allows 0.0.0.0/0 on the listener port, so traffic can bypass the distribution entirely. To lock it down, set `openListener: false` and allow ingress only from the `com.amazonaws.global.cloudfront.origin-facing` managed prefix list, and/or, when the load balancer uses an HTTPS listener, pass a secret header through `cloudFrontOriginOptions` (`customHeaders`) and require it in a listener rule — the header only stays secret over HTTPS; over HTTP it is sent unencrypted. If you set a custom domain on the service, the Route 53 record the pattern creates still points at the load balancer. The record already uses the domain name, so creating a second record with the same name pointing at the distribution fails at deploy — to serve the domain through CloudFront instead, set `recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.NONE` and create your own alias record pointing at the distribution, as in the HTTPS example below.
+
+```ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+declare const cluster: ecs.Cluster;
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+});
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  cloudFrontDistribution: distribution,
+});
+```
+
+Caching is off by default — the behavior above does not cache responses. If the service serves static content, override the cache policy; any key you don't pass keeps the pattern default:
+
+```ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+declare const cluster: ecs.Cluster;
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+});
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  cloudFrontDistribution: distribution,
+  cloudFrontBehaviorOptions: {
+    cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+  },
+});
+```
+
+For HTTPS, give the distribution `domainNames` and a certificate in us-east-1 — a CloudFront distribution certificate must be in us-east-1 — and make sure the load balancer certificate also covers those names. Set `recordType` to `NONE` on the service so the pattern does not create a record for the domain, and create the alias record yourself pointing at the distribution:
+
+```ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as targets from 'aws-cdk-lib/aws-route53-targets';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+
+declare const cluster: ecs.Cluster;
+const zone = route53.HostedZone.fromLookup(this, 'Zone', { domainName: 'example.com' });
+const distributionCertificate = acm.Certificate.fromCertificateArn(this, 'DistributionCert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+  domainNames: ['app.example.com'],
+  certificate: distributionCertificate,
+});
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  certificate: acm.Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012'),
+  domainName: 'app.example.com',
+  domainZone: zone,
+  recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.NONE,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  cloudFrontDistribution: distribution,
+});
+new route53.ARecord(this, 'Alias', {
+  zone,
+  recordName: 'app.example.com',
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+});
+```
+
 ### Set capacityProviderStrategies for ApplicationLoadBalancedFargateService
 
 ```ts
