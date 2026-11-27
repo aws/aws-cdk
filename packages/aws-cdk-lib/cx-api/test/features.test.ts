@@ -41,6 +41,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.ASPECT_STABILIZATION]: true,
     [feats.STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: true,
     // Add new disabling feature flags below this line
+    [feats.EC2_FLOW_LOGS_CLOUDWATCH_LOGS_TRUST_SCOPED]: false,
     [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
     [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
     [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false,
