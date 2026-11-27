@@ -19,11 +19,6 @@
       "count": 1
     }
   },
-  "lib/model.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 5
-    }
-  },
   "lib/scalable-instance-count.ts": {
     "@cdklabs/no-throw-default-error": {
       "count": 1
