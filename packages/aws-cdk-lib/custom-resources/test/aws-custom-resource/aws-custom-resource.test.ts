@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
@@ -1180,6 +1180,81 @@ test('can provide no policy if using existing role', () => {
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+});
+
+describe('role on a later instance', () => {
+  const sdkCall = {
+    service: 'service',
+    action: 'action',
+    physicalResourceId: PhysicalResourceId.of('id'),
+  };
+  const warning = Match.stringLikeRegexp('The `role` property is ignored');
+
+  test('warns when the shared provider was created without that role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    new AwsCustomResource(stack, 'First', {
+      onCreate: sdkCall,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'Second', { onCreate: sdkCall, role });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Second', warning);
+    Annotations.fromStack(stack).hasNoWarning('/Default/First', warning);
+  });
+
+  test('warns when the shared provider was created with a different role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const firstRole = iam.Role.fromRoleArn(stack, 'FirstRole', 'arn:aws:iam::123456789012:role/First');
+    const secondRole = iam.Role.fromRoleArn(stack, 'SecondRole', 'arn:aws:iam::123456789012:role/Second');
+    new AwsCustomResource(stack, 'First', { onCreate: sdkCall, role: firstRole });
+
+    // WHEN
+    new AwsCustomResource(stack, 'Second', { onCreate: sdkCall, role: secondRole });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Second', warning);
+  });
+
+  test('does not warn when every instance passes the same role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    new AwsCustomResource(stack, 'First', { onCreate: sdkCall, role });
+
+    // WHEN
+    new AwsCustomResource(stack, 'Second', { onCreate: sdkCall, role });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', warning);
+  });
+
+  test('does not warn when a later instance omits role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    new AwsCustomResource(stack, 'First', { onCreate: sdkCall, role });
+
+    // WHEN
+    new AwsCustomResource(stack, 'Second', {
+      onCreate: sdkCall,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', warning);
+  });
 });
 
 test('can specify VPC', () => {
