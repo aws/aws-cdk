@@ -104,6 +104,18 @@ class TestStack extends Stack {
         ),
       ],
     });
+
+    new lambda.NodejsFunction(this, 'entry-relative-to-cwd', {
+      runtime: STANDARD_NODEJS_RUNTIME,
+      entry: path.relative(process.cwd(), path.join(__dirname, 'integ-handlers', 'ts-handler.ts')),
+    });
+
+    new lambda.NodejsFunction(this, 'entry-relative-to-projectRoot', {
+      runtime: STANDARD_NODEJS_RUNTIME,
+      entry: 'dependencies.ts',
+      projectRoot: path.join(__dirname, 'integ-handlers/yarn'),
+      depsLockFilePath: path.join(__dirname, 'integ-handlers/yarn/yarn.lock'),
+    });
   }
 }
 
