@@ -465,7 +465,9 @@ than the pipeline, create the role in the project's stack with
 CDK grants the override role access to the pipeline artifact bucket the action uses and its
 KMS key: read, or read/write if the action has outputs. For a cross-region action this is the
 replication bucket in the action's region. A role imported with `mutable: false` gets no
-grant, so grant it the bucket yourself. CDK grants nothing else to the override role, and
+statement in its own policy: CDK then grants it through the bucket's resource policy only if
+the role is in another account or was imported with `addGrantsToResources: true`, so otherwise
+grant it the bucket yourself. CDK grants nothing else to the override role, and
 the action stops granting the project's role access to the artifact bucket, its source
 connections and CodeCommit repositories, and its environment variable secrets, so a shared
 project's role does not collect those permissions for builds it never runs. Other actions that

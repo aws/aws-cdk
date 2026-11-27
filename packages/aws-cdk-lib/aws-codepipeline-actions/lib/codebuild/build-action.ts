@@ -128,8 +128,10 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * CDK grants this role access to the pipeline artifact bucket the action uses, and
    * its KMS key: read, or read/write if the action has outputs. For a cross-region
    * action that is the replication bucket in the action's region. A role imported with
-   * `mutable: false` gets no grant, so grant it the bucket yourself. CDK grants nothing
-   * else to this role, and this action stops granting the project's role access to the
+   * `mutable: false` gets no statement in its own policy: CDK then grants it through the
+   * bucket's resource policy only if the role is in another account or was imported with
+   * `addGrantsToResources: true`, so otherwise grant it the bucket yourself. CDK grants
+   * nothing else to this role, and this action stops granting the project's role access to the
    * artifact bucket, source connections, CodeCommit repositories and environment
    * variable secrets. Grant this role everything else the build needs.
    *
