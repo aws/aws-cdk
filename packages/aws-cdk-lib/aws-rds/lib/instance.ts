@@ -7,7 +7,7 @@ import type { IInstanceEngine } from './instance-engine';
 import type { IOptionGroup } from './option-group';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateManagedPasswordCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateDatabaseName, validateManagedPasswordCredentials } from './private/util';
 import type { Credentials, EngineLifecycleSupport, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -1112,6 +1112,12 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The name of the database.
    *
+   * The name must begin with a letter and contain only alphanumeric characters
+   * (underscores are also allowed for PostgreSQL-family engines). This constraint
+   * is validated at synthesis time, so a definitively-invalid name fails fast with a
+   * descriptive error instead of failing later at deploy time with the RDS API error.
+   * The same validation applies to `DatabaseInstanceFromSnapshot` when restoring from a snapshot.
+   *
    * @default - no name
    */
   readonly databaseName?: string;
@@ -1153,6 +1159,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.engine = props.engine;
 
     const engineType = props.engine.engineType;
+
+    validateDatabaseName(this, props.databaseName, engineType);
 
     if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
       throw new ValidationError(lit`EngineLifecycleSupportSpecifiedMy`, `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
