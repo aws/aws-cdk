@@ -14,7 +14,7 @@ where a skill relies on them.
 
 - **Rest each rule** on a guide line, or on a class of findings seen across several pull requests.
 - **Follow the guide.** Where a guide is wrong or two guides disagree, fix the guide in its own change and
-  then cite it; a rule states the cases and exceptions its guide states.
+  then cite it; a rule's exceptions are the ones its guide states.
 - **Read the library and merged pull requests** for how a case is treated today before you set or raise its
   tier.
 
@@ -24,7 +24,8 @@ where a skill relies on them.
   `- **Tier:** TIER when …` (or `for …`) line under it for a second tier.
 - **State a design standard** as the standard, and a specific defect as its case.
 - **Make each condition** one the reviewer can confirm from the pull request's title, files and diff, the
-  package's `package.json`, the linked guide or the service's documentation, in words the skills define.
+  package's `package.json`, the linked guide or the service's documentation, in terms the guides, the code or
+  the principles define.
 - **Scope a rule** as its guide is scoped, for example to stable modules, and define a term several rules
   share once, in the principles.
 - **Take the tier** from the guide line the rule rests on: BLOCKING for a MUST or MUST NOT in capitals,
@@ -38,18 +39,20 @@ where a skill relies on them.
   for what a finding's comment holds; a rule states its case.
 - **Link aws-cdk files** at `https://github.com/aws/aws-cdk/blob/main/...`, which `scripts/check-skills.js`
   checks, anchors included.
-- **Give a rule the cases the build and the pull request linter pass**
-  ([`prlint/lint.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/lint.ts)). Name a linter
-  check by what it reads, the pull request's title and files, and count the checks that read those.
-- **Put each rule in the dimension that owns it**, once: its case, its tier and the link to its guide.
-- **Use plain words** at normal volume: the terms of the guides and the code, normal case for instructions,
-  `MUST` where it names a guide's level, and the noun or "either"/"neither" where a pronoun or a slash
-  could be read two ways.
+- **Split the cases with the build and the pull request linter**
+  ([`prlint/lint.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/lint.ts)): they own the
+  cases they fail, and a rule covers the cases they pass. Count a linter check as failing a case when it
+  decides from the title's type and the changed files alone.
+- **Put each rule in the dimension that owns it**, once, as its row: the case, the tier, any Tier line or fix
+  note, and the link to its guide where it has one.
+- **Use plain words** at normal volume: terms the guides, the code or the principles define, sentence case for
+  instructions, `MUST` where it names a guide's level, and the noun or "either"/"neither" where a pronoun or a
+  slash could be read two ways.
 
 ## Add a skill
 
-- **Put a skill in `skills/cdk-review/`** when it belongs with the review skills: the install commands in
-  [`skills/cdk-review/README.md`](https://github.com/aws/aws-cdk/blob/main/skills/cdk-review/README.md)
+- **Put a review skill in `skills/cdk-review/`** and any other skill in its own group folder: the install
+  commands in [`skills/cdk-review/README.md`](https://github.com/aws/aws-cdk/blob/main/skills/cdk-review/README.md)
   install every skill in that folder.
 - **Give it a folder, a `SKILL.md` and a row in its group's `README.md` index**; `scripts/check-skills.js`
   reports what the name, frontmatter and index need. Write the description to say what the skill does and
@@ -69,8 +72,8 @@ where a skill relies on them.
   ```
 
 - **Test the change** with an independent read, then with reviews of real pull requests. On pull requests
-  the wording was tuned on, count the differences where the reviewer's own text shows the rule deciding;
-  confirm the result on pull requests new to the wording, against the current skills. One review of one
-  pull request is one observation.
-- **Take a wrong outcome to its cause** when the reviewer followed the text and still reached it: the guide,
-  or what runs the skills.
+  the wording was tuned on, a difference is evidence where the reviewer's own text shows the rule deciding,
+  and is run-to-run variation elsewhere; confirm the result on pull requests new to the wording, against the
+  current skills. One review of one pull request is one observation.
+- **Take a wrong outcome to its cause** when the reviewer followed the text and still reached it: fix the
+  guide, or report it to what runs the skills, and keep the skill's text as it is.
