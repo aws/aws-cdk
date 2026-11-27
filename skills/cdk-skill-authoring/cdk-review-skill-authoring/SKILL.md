@@ -1,6 +1,6 @@
 ---
 name: cdk-review-skill-authoring
-description: "Practices for writing and editing the AWS CDK review skills in skills/cdk-review/: what backs a rule, how a rule states its case, scope, tier and ID, which cases a rule covers, where a rule sits, how to add a skill, and how to check a change before merging. Use when adding, changing or removing a review rule, adding a review skill, or editing a review skill's SKILL.md or reference files."
+description: "Practices for writing and editing the AWS CDK review skills in skills/cdk-review/: what a rule rests on, how a rule states its case, scope, tier and ID, which cases a rule covers, where a rule sits, how to add a skill, and how to check a change before merging. Use when adding, changing or removing a review rule, adding a review skill, or editing a review skill's SKILL.md or reference files."
 ---
 
 # Authoring the CDK review skills
@@ -10,7 +10,7 @@ or which case to raise, and is true of the repository. Link the shared rules in
 [`cdk-review-principles`](https://github.com/aws/aws-cdk/blob/main/skills/cdk-review/cdk-review-principles/SKILL.md)
 where a skill relies on them.
 
-## What backs a rule
+## Ground a rule
 
 - **Rest each rule** on a guide line, or on a class of findings seen across several pull requests.
 - **Follow the guide.** Where a guide is wrong or two guides disagree, fix the guide in its own change and
