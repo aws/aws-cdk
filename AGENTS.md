@@ -36,7 +36,6 @@ Principles:
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
 | Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
-| Update integ snapshots (no deploy) | `yarn integ --dry-run --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ with deploy | `yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 
 > **Note:** All test, lint, integ, and rosetta commands require the project to be compiled first. Run the build command above before any of these.
@@ -101,7 +100,7 @@ Standard constructor: `constructor(scope: Construct, id: string, props: FooProps
 |------|---------|-----------------|
 | `IFooRef` | Bare identifiers (ARN, name) — auto-generated | Default — when you only need IDs |
 | `IFoo` | Full interface + Facade properties | When you need convenience methods |
-| `FooBase` | Abstract base (exported, but treat as internal) | Never |
+| `FooBase` | Abstract base (internal by default) | Never |
 | `Foo` | Concrete class | Exceptional cases only |
 
 ### Static Type Check (never use `instanceof`)
