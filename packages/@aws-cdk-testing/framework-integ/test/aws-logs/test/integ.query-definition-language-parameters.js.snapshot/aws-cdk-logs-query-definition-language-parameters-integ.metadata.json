@@ -1,0 +1,81 @@
+{
+  "/aws-cdk-logs-query-definition-language-parameters-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-logs-query-definition-language-parameters-integ.template.json"
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/ParametersQuery": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queryDefinitionName": "*",
+        "queryString": "*",
+        "logGroups": "*"
+      }
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/PplQuery": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queryDefinitionName": "*",
+        "queryString": "*",
+        "logGroups": "*"
+      }
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/SqlQuery": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queryDefinitionName": "*",
+        "queryString": "*"
+      }
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/ParametersQuery/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParametersQuery262944FD"
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/PplQuery/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PplQuery1292683D"
+    }
+  ],
+  "/aws-cdk-logs-query-definition-language-parameters-integ/SqlQuery/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SqlQuery5ADBC358"
+    }
+  ]
+}

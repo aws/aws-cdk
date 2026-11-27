@@ -421,6 +421,62 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
 });
 ```
 
+### Query Parameters
+
+A Logs Insights QL query can refer to parameters as `{{name}}`. The values are supplied
+when the query runs, and `defaultValue` is used when no value is supplied. Parameter
+names start with a letter or underscore and contain only letters, digits and underscores.
+A query definition can have up to 20 parameters.
+
+```ts
+declare const logGroup: logs.LogGroup;
+
+new logs.QueryDefinition(this, 'ErrorsByStatus', {
+  queryDefinitionName: 'app/errors-by-status',
+  queryString: new logs.QueryString({
+    fields: ['@timestamp', '@message'],
+    filterStatements: ['status = {{status}}'],
+    sort: '@timestamp desc',
+    limit: 50,
+  }),
+  logGroups: [logGroup],
+  parameters: [
+    { name: 'status', defaultValue: '500', description: 'HTTP status code to filter on' },
+  ],
+});
+```
+
+### Query Language
+
+By default a query definition uses the Logs Insights query language. Set `queryLanguage`
+to save an OpenSearch SQL (`QueryLanguage.SQL`) or OpenSearch PPL (`QueryLanguage.PPL`)
+query. `QueryString` built from properties only produces Logs Insights QL queries, so pass
+SQL and PPL queries with `QueryString.fromString()`. `QueryString.fromString()` also works
+for Logs Insights QL queries that the properties can't express.
+
+```ts
+declare const logGroup: logs.LogGroup;
+
+new logs.QueryDefinition(this, 'PplQuery', {
+  queryDefinitionName: 'app/top-paths',
+  queryLanguage: logs.QueryLanguage.PPL,
+  queryString: logs.QueryString.fromString('fields `path` | stats count() as hits by `path` | sort - hits | head 10'),
+  logGroups: [logGroup],
+});
+
+new logs.QueryDefinition(this, 'SqlQuery', {
+  queryDefinitionName: 'app/recent-errors',
+  queryLanguage: logs.QueryLanguage.SQL,
+  queryString: logs.QueryString.fromString(
+    `SELECT \`@timestamp\`, \`@message\` FROM \`logGroups(logGroupIdentifier: ['${logGroup.logGroupName}'])\` WHERE \`@message\` LIKE '%ERROR%' LIMIT 50`,
+  ),
+});
+```
+
+For OpenSearch SQL queries, CloudWatch Logs reads the log groups from the `FROM` clause
+of the query, not from `logGroups`. Query parameters are only supported for Logs Insights
+QL queries, so `parameters` can't be used with `QueryLanguage.SQL` or `QueryLanguage.PPL`.
+
 ## Data Protection Policy
 
 Creates a data protection policy and assigns it to the log group. A data protection policy can help safeguard sensitive data that's ingested by the log group by auditing and masking the sensitive log data. When a user who does not have permission to view masked data views a log event that includes masked data, the sensitive data is replaced by asterisks.

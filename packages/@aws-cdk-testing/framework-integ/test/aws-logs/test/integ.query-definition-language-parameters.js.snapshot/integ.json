@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "logs-query-definition-language-parameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-logs-query-definition-language-parameters-integ"
+      ],
+      "assertionStack": "logs-query-definition-language-parameters/DefaultTest/DeployAssert",
+      "assertionStackName": "logsquerydefinitionlanguageparametersDefaultTestDeployAssert2ACCB93F"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
