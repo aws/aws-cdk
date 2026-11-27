@@ -5,10 +5,11 @@ import { Alias, Key } from '../../aws-kms';
 import { LogGroup } from '../../aws-logs';
 import { Bucket } from '../../aws-s3';
 import * as ssm from '../../aws-ssm';
-import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration } from '../../core';
+import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Token, Duration } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkConnectorProtocol } from '../lib/network-connector';
+import { RuntimeFamily } from '../lib/runtime';
 import { WebFunction } from '../lib/webfunction';
 import type { WebFunctionProps } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
@@ -677,11 +678,41 @@ describe('WebFunction template', () => {
     });
   });
 
-  test('throws when entryPoint is set for a non-Node.js runtime', () => {
+  test('throws when entryPoint is set for a runtime other than Node.js or Python', () => {
     expect(() => new WebFunction(stack, 'Test', minimalProps({
-      runtime: WebFunctionRuntime.of('python3.13'),
-      entryPoint: 'app.py',
-    }))).toThrow(/entryPoint is only supported for Node.js runtimes, got 'python3.13'/);
+      runtime: WebFunctionRuntime.of('java21'),
+      entryPoint: 'app.jar',
+    }))).toThrow(/entryPoint is only supported for Node.js and Python runtimes, got 'java21'/);
+  });
+
+  test('entryPoint is injected as AWS_LAMBDA_PYTHON_ENTRYPOINT for a Python runtime', () => {
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.PYTHON_3_15,
+      entryPoint: 'wsgi:app:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: {
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'wsgi:app:application',
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: Match.absent(),
+        },
+      }),
+    });
+  });
+
+  test('entryPoint is injected as AWS_LAMBDA_PYTHON_ENTRYPOINT for a Python runtime given with of()', () => {
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of('python3.16'),
+      entryPoint: 'api:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: {
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'api:application',
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: Match.absent(),
+        },
+      }),
+    });
   });
 
   test('entryPoint is accepted for a Node.js runtime given with of()', () => {
@@ -696,18 +727,101 @@ describe('WebFunction template', () => {
     });
   });
 
-  test('throws when entryPoint and AWS_LAMBDA_NODEJS_ENTRYPOINT env var are both set', () => {
+  test('entryPoint with a deploy-time Python runtime and its family is passed as AWS_LAMBDA_PYTHON_ENTRYPOINT', () => {
+    const runtimeName = new CfnParameter(stack, 'Runtime').valueAsString;
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of(runtimeName, RuntimeFamily.PYTHON),
+      entryPoint: 'api:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: Match.objectLike({ RuntimeConfig: { Runtime: { Ref: 'Runtime' } } }),
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: {
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'api:application',
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: Match.absent(),
+        },
+      }),
+    });
+    Annotations.fromStack(stack).hasNoWarning('/Default/Test', Match.stringLikeRegexp('no runtime family was given'));
+  });
+
+  test('of() rejects a family that contradicts the runtime name', () => {
+    expect(() => WebFunctionRuntime.of('python3.15', RuntimeFamily.NODEJS))
+      .toThrow(/Runtime 'python3.15' is a PYTHON runtime, but family NODEJS was given/);
+    expect(() => WebFunctionRuntime.of('nodejs26.x', RuntimeFamily.PYTHON))
+      .toThrow(/Runtime 'nodejs26.x' is a NODEJS runtime, but family PYTHON was given/);
+    expect(() => WebFunctionRuntime.of('java21', RuntimeFamily.PYTHON))
+      .toThrow(/Runtime 'java21' is not a NODEJS or PYTHON runtime, but family PYTHON was given/);
+    expect(() => WebFunctionRuntime.of('java21', RuntimeFamily.NODEJS))
+      .toThrow(/Runtime 'java21' is not a NODEJS or PYTHON runtime, but family NODEJS was given/);
+  });
+
+  test('of() accepts a family that matches the runtime name', () => {
+    expect(WebFunctionRuntime.of('python3.15', RuntimeFamily.PYTHON).family).toEqual(RuntimeFamily.PYTHON);
+    expect(WebFunctionRuntime.of('java21', RuntimeFamily.JAVA).family).toEqual(RuntimeFamily.JAVA);
+  });
+
+  test('throws when entryPoint is set for a runtime family other than Node.js or Python', () => {
+    const runtimeName = new CfnParameter(stack, 'Runtime').valueAsString;
+    expect(() => new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of(runtimeName, RuntimeFamily.JAVA),
+      entryPoint: 'app.jar',
+    }))).toThrow(/entryPoint is only supported for Node.js and Python runtimes/);
+  });
+
+  test('the built-in runtimes carry their family', () => {
+    expect(WebFunctionRuntime.NODEJS_24_X.family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.NODEJS_26_X.family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.NODEJS_LATEST.family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.PYTHON_3_15.family).toEqual(RuntimeFamily.PYTHON);
+    expect(WebFunctionRuntime.of('nodejs26.x').family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.of('python3.16').family).toEqual(RuntimeFamily.PYTHON);
+    expect(WebFunctionRuntime.of('java21').family).toBeUndefined();
+    expect(WebFunctionRuntime.of(Token.asString({ Ref: 'Runtime' })).family).toBeUndefined();
+    expect(WebFunctionRuntime.of(Token.asString({ Ref: 'Runtime' }), RuntimeFamily.PYTHON).family)
+      .toEqual(RuntimeFamily.PYTHON);
+  });
+
+  test('entryPoint with a deploy-time runtime is passed as AWS_LAMBDA_NODEJS_ENTRYPOINT', () => {
+    // The runtime family can't be determined at synthesis time, so the Node.js variable is kept
+    const runtimeName = new CfnParameter(stack, 'Runtime').valueAsString;
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of(runtimeName),
+      entryPoint: 'api:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: Match.objectLike({ RuntimeConfig: { Runtime: { Ref: 'Runtime' } } }),
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: {
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: 'api:application',
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: Match.absent(),
+        },
+      }),
+    });
+    Annotations.fromStack(stack).hasWarning('/Default/Test', Match.stringLikeRegexp(
+      'entryPoint is passed via AWS_LAMBDA_NODEJS_ENTRYPOINT because the runtime name is a deploy-time value',
+    ));
+    Annotations.fromStack(stack).hasWarning('/Default/Test', Match.stringLikeRegexp(
+      'RuntimeFamily.NODEJS\\) keeps this behavior',
+    ));
+  });
+
+  test.each([
+    [WebFunctionRuntime.NODEJS_24_X, 'AWS_LAMBDA_NODEJS_ENTRYPOINT', 'app.js'],
+    [WebFunctionRuntime.PYTHON_3_15, 'AWS_LAMBDA_PYTHON_ENTRYPOINT', 'main:app'],
+  ])('throws on %s when entryPoint and the %s env var are both set', (runtime, variable, entryPoint) => {
     expect(() => {
       new WebFunction(
         stack,
         'Test',
         minimalProps({
           webFunctionName: 'my-func',
-          entryPoint: 'app.js',
-          environment: { AWS_LAMBDA_NODEJS_ENTRYPOINT: 'other.js' },
+          runtime,
+          entryPoint,
+          environment: { [variable]: 'other' },
         }),
       );
-    }).toThrow(/entryPoint cannot be used together with an AWS_LAMBDA_NODEJS_ENTRYPOINT environment variable/);
+    }).toThrow(new RegExp(`entryPoint cannot be used together with an ${variable} environment variable`));
   });
 
   test('WebFunctionRevision includes telemetry config', () => {
