@@ -3,7 +3,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import { CfnApp } from '../../aws-pinpoint';
 import { Stack, Duration } from '../../core';
 import type { AnalyticsConfiguration } from '../lib';
-import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
+import { FeaturePlan, OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -458,6 +458,71 @@ describe('User Pool Client', () => {
         'ALLOW_REFRESH_TOKEN_AUTH',
       ],
     });
+  });
+
+  test('ExplicitAuthFlows include the token exchange flows', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool', { featurePlan: FeaturePlan.ESSENTIALS });
+
+    // WHEN
+    pool.addClient('Client', {
+      authFlows: {
+        userSrp: true,
+        tokenExchangeImpersonation: true,
+        tokenExchangeDelegation: true,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: [
+        'ALLOW_USER_SRP_AUTH',
+        'ALLOW_TOKEN_EXCHANGE_IMPERSONATION',
+        'ALLOW_TOKEN_EXCHANGE_DELEGATION',
+        'ALLOW_REFRESH_TOKEN_AUTH',
+      ],
+    });
+  });
+
+  test('ExplicitAuthFlows is ALLOW_CLIENT_TOKEN_AUTH alone when clientToken is enabled', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      generateSecret: true,
+      authFlows: { clientToken: true },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: ['ALLOW_CLIENT_TOKEN_AUTH'],
+    });
+  });
+
+  test('throws when clientToken is combined with another auth flow', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    expect(() => pool.addClient('Client', {
+      generateSecret: true,
+      authFlows: { clientToken: true, userSrp: true, tokenExchangeDelegation: true },
+    })).toThrow('authFlows.clientToken must be the only enabled auth flow, but these are also enabled: userSrp, tokenExchangeDelegation');
+  });
+
+  test('throws when clientToken is enabled without a client secret', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    expect(() => pool.addClient('Client', {
+      authFlows: { clientToken: true },
+    })).toThrow('authFlows.clientToken requires generateSecret to be true.');
   });
 
   test('AllowedOAuthFlows are correctly named', () => {
