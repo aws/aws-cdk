@@ -529,8 +529,8 @@ export abstract class DeploymentType {
    * that are added to a target organizational unit. Turn it off with
    * `autoDeployment: StackSetAutoDeployment.disabled()`.
    *
-   * This model requires you to be operating in either the AWS Organizations management account
-   * or the delegated administrator account
+   * By default a service managed StackSet is created from a delegated administrator account.
+   * Set `callAs` to `StackSetCallAs.SELF` if you deploy it from the AWS Organizations management account instead.
    *
    * Its targets must use `StackSetTarget.fromOrganizationalUnits()`.
    *
@@ -541,11 +541,8 @@ export abstract class DeploymentType {
   }
 
   /**
-   * StackSets deployed using the self managed model require you to create the necessary
-   * IAM roles in the source and target AWS accounts and to setup the required IAM permissions.
-   *
-   * Using this model you can only deploy to AWS accounts that have the necessary IAM roles/permissions
-   * pre-created.
+   * StackSets deployed using the self managed model require an execution role in each target
+   * AWS account.
    *
    * Its targets must use `StackSetTarget.fromAccounts()`.
    */
@@ -611,7 +608,7 @@ export interface StackSetProps {
   readonly template?: StackSetTemplate;
 
   /**
-   * The name of the stack set
+   * The name of the StackSet
    *
    * @default - a name generated from the construct path
    */
@@ -1184,6 +1181,10 @@ export class StackSet extends Stack implements IStackSet {
 
   /**
    * Adds a target to the StackSet.
+   *
+   * The target must match the deployment type:
+   * a self managed StackSet takes `StackSetTarget.fromAccounts()`,
+   * a service managed StackSet takes `StackSetTarget.fromOrganizationalUnits()`.
    *
    * @param target the target to add to the StackSet
    */
