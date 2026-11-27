@@ -201,6 +201,13 @@ export interface ClusterInstanceOptions {
   readonly autoMinorVersionUpgrade?: boolean;
 
   /**
+   * Specifies whether to remove automated backups immediately after the DB cluster is deleted.
+   *
+   * @default undefined - AWS RDS default is to remove automated backups immediately after the DB cluster is deleted, unless the AWS Backup policy specifies a point-in-time restore rule.
+   */
+  readonly deleteAutomatedBackups?: boolean;
+
+  /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
@@ -591,6 +598,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         monitoringRoleArn: props.monitoringRole?.roleRef.roleArn,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
+        deleteAutomatedBackups: props.deleteAutomatedBackups,
         caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),
         applyImmediately: props.applyImmediately,
       });
