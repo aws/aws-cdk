@@ -1,0 +1,101 @@
+{
+ "Resources": {
+  "ZoneA5DE4B68": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "record-set-protection.cdk-integ-test.com."
+   }
+  },
+  "Blue10BB7880": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "ZoneA5DE4B68"
+    },
+    "Name": "www.record-set-protection.cdk-integ-test.com.",
+    "ResourceRecords": [
+     "192.0.2.1"
+    ],
+    "SetIdentifier": "Blue",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 50
+   }
+  },
+  "Green9DCBBC03": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "ZoneA5DE4B68"
+    },
+    "Name": "www.record-set-protection.cdk-integ-test.com.",
+    "ResourceRecords": [
+     "192.0.2.2"
+    ],
+    "SetIdentifier": "Green",
+    "TTL": "1800",
+    "Type": "A",
+    "Weight": 50
+   }
+  },
+  "Route53RecordSetProtections163fef5247e32e6952a1b4d6ed6d1f8505225DC4": {
+   "Type": "AWS::Route53::RecordSetProtection",
+   "Properties": {
+    "Comment": "Production DNS",
+    "HostedZoneId": {
+     "Ref": "ZoneA5DE4B68"
+    },
+    "RecordName": "www.record-set-protection.cdk-integ-test.com.",
+    "RecordType": "A"
+   },
+   "DependsOn": [
+    "Blue10BB7880",
+    "Green9DCBBC03"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefZoneA5DE4B6864A9A0D8": {
+   "Value": {
+    "Ref": "ZoneA5DE4B68"
+   },
+   "Export": {
+    "Name": "RecordSetProtectionStack:ExportsOutputRefZoneA5DE4B6864A9A0D8"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

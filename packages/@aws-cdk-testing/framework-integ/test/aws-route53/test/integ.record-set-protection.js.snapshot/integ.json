@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "RecordSetProtection/DefaultTest": {
+      "stacks": [
+        "RecordSetProtectionStack"
+      ],
+      "assertionStack": "RecordSetProtection/DefaultTest/DeployAssert",
+      "assertionStackName": "RecordSetProtectionDefaultTestDeployAssert64A21658"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

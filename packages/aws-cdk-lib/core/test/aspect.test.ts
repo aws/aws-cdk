@@ -3,9 +3,10 @@ import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, CfnResource, Stack, Tag, Tags, Validations } from '../lib';
+import { App, CfnResource, Stack, Stage, Tag, Tags, Validations } from '../lib';
 import type { IAspect } from '../lib/aspect';
 import { Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
+import { currentAspectVisitation } from '../lib/private/aspect-visitation';
 import { STACK_TYPE } from '../lib/private/core-construct-finders';
 import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
 import { RemovalPolicy } from '../lib/removal-policy';
@@ -78,6 +79,29 @@ describe('aspect', () => {
     expect(root.visitCounter).toEqual(1);
     app.synth();
     expect(root.visitCounter).toEqual(1);
+  });
+
+  test.each([false, true])('runs deferred work within the originating assembly (stabilization %s)', (aspectStabilization) => {
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+    const inner = new Stack(stage, 'Inner');
+    const outer = new Stack(app, 'Outer');
+    const order: string[] = [];
+    for (const [stack, other] of [[inner, outer], [outer, inner]]) {
+      Aspects.of(stack).add({
+        visit(node) {
+          if (node !== stack) return;
+          expect(currentAspectVisitation(other)).toBeUndefined();
+          order.push(stack.node.id);
+          currentAspectVisitation(stack)!.push(() => order.push(`finish ${stack.node.id}`));
+        },
+      });
+    }
+
+    app.synth({ aspectStabilization });
+    expect(order).toEqual(['Inner', 'finish Inner', 'Outer', 'finish Outer']);
+    expect(currentAspectVisitation(inner)).toBeUndefined();
+    expect(currentAspectVisitation(outer)).toBeUndefined();
   });
 
   test('Adding the same aspect twice to the same construct only adds 1', () => {

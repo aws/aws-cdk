@@ -680,3 +680,94 @@ new route53.VpcEndpointServiceDomainName(this, 'EndpointDomain', {
   publicHostedZone: zone,
 });
 ```
+
+## Mixins
+
+### Protecting DNS records from changes
+
+Apply `RecordSetProtection` to prevent changes to a Route 53 record. If you
+provide a comment, Route 53 includes it in the error when it rejects a change.
+
+```ts
+declare const mail: route53.MxRecord;
+mail.with(new route53.mixins.RecordSetProtection({
+  comment: 'Contact the mail team before changing this endpoint',
+}));
+```
+
+You can also apply the mixin to a `CfnRecordSet` with a hosted zone ID. Set the
+zone, name, and type through the record's properties before applying the mixin.
+The mixin reads those properties directly and cannot see raw CloudFormation overrides.
+
+One protection covers every record with the same hosted zone ID, name, and type.
+For example, if blue and green are weighted A records for the same name in one
+stack, applying the mixin to blue makes CloudFormation create both records
+before enabling protection. If the records have a CloudFormation condition,
+use the same condition on every record in the group.
+
+```ts
+declare const blue: route53.ARecord;
+blue.with(new route53.mixins.RecordSetProtection());
+```
+
+To protect the records under a construct, apply the mixin after creating them.
+You can also apply it to a record from an Aspect during synthesis.
+
+```ts
+declare const endpoints: Construct;
+Mixins.of(endpoints).apply(new route53.mixins.RecordSetProtection());
+```
+
+Every `CfnRecordSet` selected by this call must specify `hostedZoneId`. If
+even one specifies only `hostedZoneName`, the call throws. Set the zone ID
+on that record or apply the mixin to individual records.
+
+CDK adds dependencies for matching `CfnRecordSet` resources in the same template.
+If an untargeted sibling specifies only a hosted zone name, CDK warns when its
+record name and type match. Set its `hostedZoneId` so CDK can check the zone
+and order creation.
+
+If the records span stacks, including nested stacks, choose one stack to own
+the protection. Deploy the records in the other stacks before enabling it.
+CDK warns when it finds a matching record in another stack in the same stage.
+Synthesis fails if two stacks in the app try to own a protection that CDK can
+identify as the same.
+
+Check deployment order yourself for records in other stages or apps. CDK can
+only compare identities available at synthesis. For example, two stacks can
+import a zone ID under the same export name, but the value depends on the
+account and Region where each is deployed. If different expressions in one
+template identify the same group only at deployment, define one
+`CfnRecordSetProtection` and call `addResourceDependency` for each record in the group.
+
+You can create new records and enable their protection in one deployment. For
+records that already exist in the stack, add protection in an update that leaves
+those records unchanged. Combining both changes can leave the stack in
+`UPDATE_ROLLBACK_FAILED` if CloudFormation needs to roll back.
+
+To change or remove a protected record, or add a record to a protected group,
+deploy each step separately.
+
+1. Remove every application of the mixin that protects the group, including any
+   on a common scope. Check that `cdk diff` shows removal of the shared protection.
+2. Update, add, or remove the record.
+3. Reapply the mixin if the remaining records need protection.
+
+Synthesis fails if a removal policy such as `RemovalPolicies.of(scope).retain()`
+gives the protection a deletion policy other than `Delete`. A retained protection
+stays in Route 53 after step 1 and blocks changes to its records, including
+deletion, until you delete it outside CloudFormation. To retain the other
+resources in the scope, pass
+`excludeResourceTypes: ['AWS::Route53::RecordSetProtection']` to `retain()`.
+
+CDK derives the protection's logical ID from the record name and type and from
+how your code identifies the hosted zone. The logical ID changes if you move the
+hosted zone to another construct or switch `hostedZoneId` between a literal ID
+and a reference to the zone, even though the records stay the same.
+CloudFormation rejects that deployment because the protection `already exists`,
+and the existing protection stays in place. Follow the steps above for these
+changes too. The records are unprotected from the deployment that removes the
+mixin until the one that reapplies it.
+
+If you change the comment, CloudFormation replaces the protection and the
+records are unprotected during replacement. [CloudFormation record set protection update rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-route53-recordsetprotection.html#aws-resource-route53-recordsetprotection--remarks)
