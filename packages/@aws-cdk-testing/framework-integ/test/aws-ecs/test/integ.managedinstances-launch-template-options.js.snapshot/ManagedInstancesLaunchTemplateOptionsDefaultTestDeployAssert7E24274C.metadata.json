@@ -1,0 +1,20 @@
+{
+  "/ManagedInstancesLaunchTemplateOptions/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ManagedInstancesLaunchTemplateOptionsDefaultTestDeployAssert7E24274C.template.json"
+    }
+  ],
+  "/ManagedInstancesLaunchTemplateOptions/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ManagedInstancesLaunchTemplateOptions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

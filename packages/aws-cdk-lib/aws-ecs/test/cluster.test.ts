@@ -3652,6 +3652,92 @@ describe('cluster', () => {
       });
     });
 
+    describe('launch template options', () => {
+      function createProvider(options: Partial<ecs.ManagedInstancesCapacityProviderProps>) {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'test');
+        acknowledgeTestValidationRules(stack);
+        // TODO: Remove this acknowledge once the bundled CFN validation schema includes NitroEnclavesEnabled
+        cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'NitroEnclavesEnabled is a newly launched property not yet in the bundled schema' });
+        const vpc = new ec2.Vpc(stack, 'Vpc');
+        const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+        const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+        const provider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
+          ...options,
+        });
+        cluster.addManagedInstancesCapacityProvider(provider);
+        return Template.fromStack(stack);
+      }
+
+      test.each([true, false])('renders fipsEnabled %p', (fipsEnabled) => {
+        createProvider({ fipsEnabled }).hasResourceProperties('AWS::ECS::CapacityProvider', {
+          ManagedInstancesProvider: {
+            InstanceLaunchTemplate: {
+              FipsEnabled: fipsEnabled,
+              InstanceMetadataTagsPropagation: Match.absent(),
+              NitroEnclavesEnabled: Match.absent(),
+            },
+          },
+        });
+      });
+
+      test.each([true, false])('renders instanceMetadataTagsPropagation %p', (instanceMetadataTagsPropagation) => {
+        createProvider({ instanceMetadataTagsPropagation }).hasResourceProperties('AWS::ECS::CapacityProvider', {
+          ManagedInstancesProvider: {
+            InstanceLaunchTemplate: {
+              FipsEnabled: Match.absent(),
+              InstanceMetadataTagsPropagation: instanceMetadataTagsPropagation,
+              NitroEnclavesEnabled: Match.absent(),
+            },
+          },
+        });
+      });
+
+      test.each([true, false])('renders nitroEnclavesEnabled %p', (nitroEnclavesEnabled) => {
+        createProvider({ nitroEnclavesEnabled }).hasResourceProperties('AWS::ECS::CapacityProvider', {
+          ManagedInstancesProvider: {
+            InstanceLaunchTemplate: {
+              FipsEnabled: Match.absent(),
+              InstanceMetadataTagsPropagation: Match.absent(),
+              NitroEnclavesEnabled: nitroEnclavesEnabled,
+            },
+          },
+        });
+      });
+
+      test('renders all three options together with other launch template settings', () => {
+        createProvider({
+          fipsEnabled: false,
+          instanceMetadataTagsPropagation: false,
+          nitroEnclavesEnabled: true,
+          monitoring: ecs.InstanceMonitoring.DETAILED,
+        }).hasResourceProperties('AWS::ECS::CapacityProvider', {
+          ManagedInstancesProvider: {
+            InstanceLaunchTemplate: {
+              FipsEnabled: false,
+              InstanceMetadataTagsPropagation: false,
+              NitroEnclavesEnabled: true,
+              Monitoring: 'DETAILED',
+            },
+          },
+        });
+      });
+
+      test('does not render the options when they are omitted', () => {
+        createProvider({}).hasResourceProperties('AWS::ECS::CapacityProvider', {
+          ManagedInstancesProvider: {
+            InstanceLaunchTemplate: {
+              FipsEnabled: Match.absent(),
+              InstanceMetadataTagsPropagation: Match.absent(),
+              NitroEnclavesEnabled: Match.absent(),
+            },
+          },
+        });
+      });
+    });
+
     test('throws when subnets are not provided', () => {
       // GIVEN
       const app = new cdk.App();
