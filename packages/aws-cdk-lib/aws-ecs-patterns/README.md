@@ -1011,6 +1011,30 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
 });
 ```
 
+### Set an IAM Role for ScheduledFargateTask
+
+By default, a new IAM role is created to run the scheduled task. You can supply
+an existing role instead — for example, to control the `ecs:RunTask`
+permissions yourself:
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+const taskRole = new iam.Role(this, 'TaskRole', {
+  assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  role: taskRole,
+});
+```
+
 ### Deploy application and metrics sidecar
 
 The following is an example of deploying an application along with a metrics sidecar container that utilizes `dockerLabels` for discovery:

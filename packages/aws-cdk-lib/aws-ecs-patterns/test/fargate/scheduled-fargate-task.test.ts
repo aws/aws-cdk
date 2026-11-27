@@ -430,6 +430,38 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
   });
 });
 
+test('Scheduled Fargate Task - with an existing role defined', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    role,
+  });
+
+  // THEN - the Events Rule targets use the provided role instead of a new one
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        RoleArn: {
+          'Fn::GetAtt': [Match.stringLikeRegexp('^TaskRole'), 'Arn'],
+        },
+      },
+    ],
+  });
+});
+
 test('Scheduled Fargate Task - exposes ECS Task', () => {
   // GIVEN
   const stack = new cdk.Stack();
