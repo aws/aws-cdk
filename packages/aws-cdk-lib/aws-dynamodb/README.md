@@ -70,6 +70,7 @@ globalTable.addReplica({ region: 'us-east-2', deletionProtection: true });
 The following properties are configurable on a per-replica basis, but will be inherited from the `TableV2` properties if not specified:
 * contributorInsightsSpecification
 * deletionProtection
+* disassociationProtection
 * pointInTimeRecoverySpecification
 * tableClass
 * readCapacity (only configurable if the `TableV2` billing mode is `PROVISIONED`)
@@ -864,6 +865,119 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   ],
 });
 ```
+
+## Global Table Disassociation
+
+Disassociating a replica stops replication to and from it and keeps it as a standalone table in the same account and Region. The table keeps its data, name, ARN, indexes, stream, TTL, backups, encryption, billing mode and table class. Removing an entry from `replicas` without disassociating deletes that replica and its data.
+
+Disassociation is supported for multi-Region eventual consistency (MREC) global tables only. It cannot be undone: the standalone table cannot rejoin the global table it left. A stack can disassociate only the replica in its own account and Region. If the global table has three or more replicas, the other replicas continue as a global table and the stack no longer manages them. If the global table has two replicas, both tables become standalone.
+
+DynamoDB rejects disassociating a replica that was the source for a new replica added in the last 24 hours. CloudFormation adds replicas from the table in the stack's Region, so run the second deployment at least 24 hours after the last replica was added.
+
+The IAM principal that CloudFormation uses to deploy the stack needs `dynamodb:UpdateTable` and `dynamodb:DisassociateTableReplica` on the table. The default CDK bootstrap execution role has these permissions. A bootstrap with custom execution policies needs them added.
+
+### Same-account global table
+
+Disassociation takes two deployments. The following examples start from a global table defined in a stack in `us-east-1`, with replicas in `us-east-2` and `us-west-2`:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  tableName: 'Music',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  replicas: [
+    { region: 'us-east-2' },
+    { region: 'us-west-2' },
+  ],
+});
+```
+
+The first deployment disables disassociation protection. DynamoDB enables disassociation protection on every global table replica, independently of `deletionProtection`. Set `disassociationProtection: false` on the table, declare `tableType: dynamodb.TableType.GLOBAL_TABLE_REPLICA`, and change nothing else. A table-level `disassociationProtection` value applies to every replica that does not set its own, so set `true` on the replicas that stay in the global table. Wait for the deployment to complete. Replication continues unchanged.
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  tableName: 'Music',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tableType: dynamodb.TableType.GLOBAL_TABLE_REPLICA,
+  disassociationProtection: false,
+  replicas: [
+    { region: 'us-east-2', disassociationProtection: true },
+    { region: 'us-west-2', disassociationProtection: true },
+  ],
+});
+```
+
+The second deployment disassociates the replica. Declare `tableType: dynamodb.TableType.REGIONAL`, remove `replicas` and `disassociationProtection`, and keep every other setting at its current value. `TableV2` renders a `NEW_AND_OLD_IMAGES` stream only while `replicas` is set, so declare `dynamoStream` to keep the stream when you remove them. CloudFormation rejects a disassociation update that changes any other property. The deployment completes when DynamoDB finishes the disassociation.
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  tableName: 'Music',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tableType: dynamodb.TableType.REGIONAL,
+  dynamoStream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+});
+```
+
+`TableV2` rejects `replicas`, `witnessRegion`, `multiRegionConsistency` and `globalTableSettingsReplicationMode` together with `TableType.REGIONAL`, and warns when `disassociationProtection` is declared or `dynamoStream` is not. Deploy this change on its own, with no changes to other resources in the stack.
+
+The stack continues to manage the `us-east-1` table as a standalone table. The `us-east-2` and `us-west-2` tables continue as a global table that the stack no longer manages. To manage them with CloudFormation, import them into a stack in one of their Regions. To disassociate a replica in a Region other than the stack's Region, first import that replica into a stack in its own Region (`cdk import`) as a `TableV2` that lists every other replica in `replicas` and declares `tableType: dynamodb.TableType.GLOBAL_TABLE_REPLICA`, and then run the two deployments in that stack. After the second deployment, remove that Region from `replicas` in the stack that manages the rest of the global table. CloudFormation finds the table already standalone and deletes nothing.
+
+### Multi-account global table
+
+Each account disassociates its own replica from its own stack. In the replica account, the first deployment disables disassociation protection on the `TableV2MultiAccountReplica`:
+
+```ts
+declare const sourceTable: dynamodb.ITableV2;
+
+const replica = new dynamodb.TableV2MultiAccountReplica(this, 'ReplicaTable', {
+  tableName: 'Music',
+  replicaSourceTable: sourceTable,
+  disassociationProtection: false,
+});
+```
+
+`TableV2MultiAccountReplica` always declares the source table, so it cannot declare `TableType.REGIONAL`. The second deployment replaces it with a `TableV2` that has the same construct ID and `tableName`, declares `tableType: dynamodb.TableType.REGIONAL`, and declares the settings the replica inherited from the source table (key schema, billing mode, stream view type, and any indexes, TTL or encryption) with their current values. The construct ID is unchanged, so CloudFormation updates the existing table instead of replacing it. Grant the replication permissions that `TableV2MultiAccountReplica` granted, so that the resource policies on both tables stay unchanged in this deployment:
+
+```ts
+declare const sourceTable: dynamodb.TableV2;
+
+const table = new dynamodb.TableV2(this, 'ReplicaTable', {
+  tableName: 'Music',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tableType: dynamodb.TableType.REGIONAL,
+  dynamoStream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+});
+table.grants.multiAccountReplicationFrom(sourceTable.tableArn);
+// Only when the source table is defined in the same CDK app.
+sourceTable.grants.multiAccountReplicationTo(table.tableArn);
+```
+
+A multi-account source table models only its own replica, so CloudFormation classifies it as a regional table unless it declares `tableType: dynamodb.TableType.GLOBAL_TABLE_REPLICA`. Deploy that declaration before the source account changes the type to `TableType.REGIONAL`. A source table that changes from no declared type to `TableType.REGIONAL` in one deployment records the type and stays in the global table. If the global table has two replicas, the source table becomes standalone when the replica account disassociates, and the source stack can then declare `TableType.REGIONAL`. CloudFormation finds the table already standalone and makes no change to it.
+
+### Protection settings
+
+`disassociationProtection` is configurable on the table and per replica, with the same propagation rules as `deletionProtection`. When it is not set, CDK does not render it and the current setting is unchanged.
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  disassociationProtection: true,
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2', disassociationProtection: false },
+  ],
+});
+```
+
+### Failures and later changes
+
+If DynamoDB rejects or rolls back the disassociation, the table remains a replica and the stack update rolls back. Fix the cause and run the second deployment again. If the disassociation completes and the stack update then rolls back because another resource failed, CloudFormation cannot make the table a replica again and the stack enters the `UPDATE_ROLLBACK_FAILED` state. Continue the rollback and skip the table resource, then run the second deployment again. The table and its data are not affected.
+
+If the table becomes standalone outside the stack, for example through the AWS CLI or because the other account of a two-replica global table disassociated its replica, run the second deployment. CloudFormation recognizes that the table is already standalone and deletes nothing.
+
+`removalPolicy` does not affect disassociation. It still determines what happens to the table when the stack is deleted or the table is removed from the stack. To add replicas to the standalone table later, set `replicas` and change `tableType` to `TableType.GLOBAL_TABLE_REPLICA` or remove it.
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables-disassociate.html
 
 ## Point-in-Time Recovery
 

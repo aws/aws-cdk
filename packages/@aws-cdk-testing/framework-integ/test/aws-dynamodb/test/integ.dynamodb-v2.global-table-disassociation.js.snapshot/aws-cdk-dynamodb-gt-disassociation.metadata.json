@@ -1,0 +1,67 @@
+{
+  "/aws-cdk-dynamodb-gt-disassociation/GlobalTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "tableName": "*",
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "replicas": [
+          {
+            "region": "*"
+          },
+          {
+            "region": "*"
+          }
+        ],
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "GlobalTable89F068B2"
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-gt-disassociation/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-gt-disassociation/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-gt-disassociation/GlobalTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GlobalTable89F068B2"
+    }
+  ]
+}
