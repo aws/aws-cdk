@@ -36,8 +36,15 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   const assemblies = getAssemblies(root, assembly);
   const stacksByPlugin: Map<IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>> = new Map();
 
-  // The default plugin is configured at root level, but is auto-added to the list per stage.
-  const addDefaultPlugin = defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root);
+  // Skip the built-in validator while context lookups are unresolved.
+  // User-registered validation plugins must continue to run.
+  const hasMissingContext = Array.from(assemblies.values()).some(
+    stageAssembly => (stageAssembly.manifest.missing?.length ?? 0) > 0,
+  );
+
+  const addDefaultPlugin = defaultValidationEnabled(root)
+    && !hasUserRegisteredCloudFormationValidatePlugin(root)
+    && !hasMissingContext;
 
   for (const stage of iterateAssembliesPostorder(root)) {
     const stageAssembly = assemblies.get(stage.artifactId);
