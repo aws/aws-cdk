@@ -477,6 +477,24 @@ new batch.FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
 
 You can specify a `priority` on your `JobDefinition`s to tell the scheduler to prioritize certain jobs that share the same share identifier.
 
+### Quota Share Scheduling
+
+As an alternative to Fairshare Scheduling, you can use a Quota Share Scheduling Policy.
+A Quota Share Scheduling Policy controls how idle resources are assigned to jobs in the queue.
+
+Note: A scheduling policy can use either a Fairshare Policy or a Quota Share Policy, but not both.
+See [AWS::Batch::SchedulingPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-schedulingpolicy.html) for more details.
+
+```ts
+const quotaSharePolicy = new batch.QuotaShareSchedulingPolicy(this, 'myQuotaSharePolicy', {
+  idleResourceAssignmentStrategy: batch.IdleResourceAssignmentStrategy.FIFO,
+});
+
+new batch.JobQueue(this, 'JobQueue', {
+  schedulingPolicy: quotaSharePolicy,
+});
+```
+
 ### Configuring Job Retry Policies
 
 Certain workflows may result in Jobs failing due to intermittent issues.
