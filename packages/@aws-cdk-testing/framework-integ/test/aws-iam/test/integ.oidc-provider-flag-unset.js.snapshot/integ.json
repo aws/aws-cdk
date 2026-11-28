@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "oidc-provider-flag-unset-test/DefaultTest": {
+      "stacks": [
+        "oidc-provider-flag-unset-integ-test"
+      ],
+      "diffAssets": true,
+      "assertionStack": "oidc-provider-flag-unset-test/DefaultTest/DeployAssert",
+      "assertionStackName": "oidcproviderflagunsettestDefaultTestDeployAssert808D8B88"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1149.0"
+}

@@ -181,7 +181,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
-    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
     "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
@@ -274,6 +273,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | new default |  | `false` | `true` |
 | [@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask](#aws-cdkaws-stepfunctions-tasksusenews3uriparametersforbedrockinvokemodeltask) | When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model. | fix |  | `false` | `true` |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | config |  | `false` | `true` |
+| [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | fix |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
@@ -1844,14 +1844,16 @@ Flag type: Backwards incompatible bugfix
 When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
 default to reject unauthorized connections when downloading CA Certificates.
 
-When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
-thumbprints from unsecure connections.
+When this feature flag is disabled, the custom resource handler skips certificate verification when
+downloading thumbprints, and the construct emits a warning at synth time.
+
+Apps that do not set this flag verify the certificate.
 
 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.177.0 | `false` | `true` |
+| 2.177.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to allow unsecure OIDC connection.
 

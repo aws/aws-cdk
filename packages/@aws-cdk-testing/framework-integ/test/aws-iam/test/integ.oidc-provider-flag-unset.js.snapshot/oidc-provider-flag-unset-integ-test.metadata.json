@@ -1,0 +1,118 @@
+{
+  "/oidc-provider-flag-unset-integ-test": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "oidc-provider-flag-unset-integ-test.template.json"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/NoClientsNoThumbprint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*"
+      }
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Clients": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*",
+        "clientIds": "*"
+      }
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Thumbprints": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*",
+        "thumbprints": "*"
+      }
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/NoClientsNoThumbprint/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Clients/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Thumbprints/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Exports/Output{\"Ref\":\"NoClientsNoThumbprint8BF1533F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefNoClientsNoThumbprint8BF1533F338C49EF"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Exports/Output{\"Ref\":\"Clients67031123\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefClients6703112386C3EDFE"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Exports/Output{\"Ref\":\"Thumbprints9CD6AB02\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefThumbprints9CD6AB021BB7B370"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/NoClientsNoThumbprint/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoClientsNoThumbprint8BF1533F"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Clients/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Clients67031123"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Thumbprints/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Thumbprints9CD6AB02"
+    }
+  ]
+}

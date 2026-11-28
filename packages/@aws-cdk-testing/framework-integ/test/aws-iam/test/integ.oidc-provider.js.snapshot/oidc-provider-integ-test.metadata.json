@@ -11,6 +11,24 @@
       "data": {
         "url": "*"
       }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "The @aws-cdk/aws-iam:oidcRejectUnauthorizedConnections feature flag is set to false, so the issuer certificate is not verified when the thumbprint is downloaded. Pass \"thumbprints\" or remove the flag to verify it. [ack: @aws-cdk/aws-iam:oidcProviderSkipsCertificateVerification]",
+      "trace": [
+        "Annotations.addMessage (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "new OpenIdConnectProvider (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:148:47)",
+        "new OpenIdConnectProvider (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/youssef/ISSUES/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider.js:46:19)",
+        "Module._compile (node:internal/modules/cjs/loader:1934:14)",
+        "Object..js (node:internal/modules/cjs/loader:2074:10)",
+        "Module.load (node:internal/modules/cjs/loader:1656:32)",
+        "Module._load (node:internal/modules/cjs/loader:1448:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
@@ -26,6 +44,24 @@
         "url": "*",
         "clientIds": "*"
       }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "The @aws-cdk/aws-iam:oidcRejectUnauthorizedConnections feature flag is set to false, so the issuer certificate is not verified when the thumbprint is downloaded. Pass \"thumbprints\" or remove the flag to verify it. [ack: @aws-cdk/aws-iam:oidcProviderSkipsCertificateVerification]",
+      "trace": [
+        "Annotations.addMessage (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "new OpenIdConnectProvider (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:148:47)",
+        "new OpenIdConnectProvider (/Users/youssef/ISSUES/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/youssef/ISSUES/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider.js:49:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1934:14)",
+        "Object..js (node:internal/modules/cjs/loader:2074:10)",
+        "Module.load (node:internal/modules/cjs/loader:1656:32)",
+        "Module._load (node:internal/modules/cjs/loader:1448:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/oidc-provider-integ-test/Thumbprints": [

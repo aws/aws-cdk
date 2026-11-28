@@ -1,0 +1,243 @@
+{
+ "Resources": {
+  "AwsApiCallIAMgetOpenIDConnectProviderffbf5565cbf13d6e602e01caa84913a0": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetOpenIDConnectProvider",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getOpenIDConnectProvider",
+    "expected": "{\"$ObjectLike\":{\"ThumbprintList\":{\"$ArrayWith\":[{\"$StringLike\":\"^[0-9a-fA-F]{40}$\"}]}}}",
+    "parameters": {
+     "OpenIDConnectProviderArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "oidc-provider-flag-unset-integ-test:ExportsOutputRefNoClientsNoThumbprint8BF1533F338C49EF"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795891706690"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "iam:GetOpenIDConnectProvider"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:GetOpenIDConnectProvider"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:GetOpenIDConnectProvider"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "0cfb97b2df8b7c9f8ef30d4d6971f245bfc5dbb0517b5cce18668f416bff0464.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallIAMgetOpenIDConnectProvider634ffba1b16fde1616fdf932bff7efb2": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetOpenIDConnectProvider",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getOpenIDConnectProvider",
+    "expected": "{\"$ObjectLike\":{\"ThumbprintList\":{\"$ArrayWith\":[{\"$StringLike\":\"^[0-9a-fA-F]{40}$\"}]}}}",
+    "parameters": {
+     "OpenIDConnectProviderArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "oidc-provider-flag-unset-integ-test:ExportsOutputRefClients6703112386C3EDFE"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795891706691"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallIAMgetOpenIDConnectProvider58c2e5436d4159408e0db3e93fa76d09": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetOpenIDConnectProvider",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getOpenIDConnectProvider",
+    "expected": "{\"$ObjectLike\":{\"ThumbprintList\":{\"$ArrayWith\":[\"aa00aa1122aa00aa1122aa00aa1122aa00aa1111\",\"aa00aa1122aa00aa1122aa00aa1122aa00aa1122\"]}}}",
+    "parameters": {
+     "OpenIDConnectProviderArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "oidc-provider-flag-unset-integ-test:ExportsOutputRefThumbprints9CD6AB021BB7B370"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795891706692"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallIAMgetOpenIDConnectProviderffbf5565cbf13d6e602e01caa84913a0": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetOpenIDConnectProviderffbf5565cbf13d6e602e01caa84913a0",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMgetOpenIDConnectProvider634ffba1b16fde1616fdf932bff7efb2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetOpenIDConnectProvider634ffba1b16fde1616fdf932bff7efb2",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMgetOpenIDConnectProvider58c2e5436d4159408e0db3e93fa76d09": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetOpenIDConnectProvider58c2e5436d4159408e0db3e93fa76d09",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

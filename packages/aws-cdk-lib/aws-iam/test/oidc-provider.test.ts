@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import { App, Stack, Token } from '../../core';
 import * as iam from '../lib';
 
@@ -52,8 +52,63 @@ describe('OpenIdConnectProvider resource', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
       Url: 'https://my-issuer',
-      RejectUnauthorized: flag ?? false,
+      RejectUnauthorized: flag ?? true,
     });
+  });
+
+  test('warns when the flag is set to false and the thumbprint is downloaded', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections': false,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://my-issuer',
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/MyProvider', Match.stringLikeRegexp('the issuer certificate is not verified'));
+  });
+
+  test.each([true, undefined])('does not warn when the flag is %s', (flag) => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections': flag,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://my-issuer',
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('the issuer certificate is not verified'));
+  });
+
+  test('does not warn when the flag is false and thumbprints are given', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections': false,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://my-issuer',
+      thumbprints: ['aa00aa1122aa00aa1122aa00aa1122aa00aa1122'],
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('the issuer certificate is not verified'));
   });
 
   test('static fromOpenIdConnectProviderArn can be used to import a provider', () => {
