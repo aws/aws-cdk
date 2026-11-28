@@ -125,28 +125,28 @@
   }
  },
  "Outputs": {
-  "NoClientsThumbprints": {
+  "ExportsOutputRefNoClientsNoThumbprint8BF1533F338C49EF": {
    "Value": {
-    "Fn::GetAtt": [
-     "NoClientsNoThumbprint8BF1533F",
-     "Thumbprints"
-    ]
+    "Ref": "NoClientsNoThumbprint8BF1533F"
+   },
+   "Export": {
+    "Name": "oidc-provider-flag-unset-integ-test:ExportsOutputRefNoClientsNoThumbprint8BF1533F338C49EF"
    }
   },
-  "ClientsThumbprints": {
+  "ExportsOutputRefClients6703112386C3EDFE": {
    "Value": {
-    "Fn::GetAtt": [
-     "Clients67031123",
-     "Thumbprints"
-    ]
+    "Ref": "Clients67031123"
+   },
+   "Export": {
+    "Name": "oidc-provider-flag-unset-integ-test:ExportsOutputRefClients6703112386C3EDFE"
    }
   },
-  "ThumbprintsThumbprints": {
+  "ExportsOutputRefThumbprints9CD6AB021BB7B370": {
    "Value": {
-    "Fn::GetAtt": [
-     "Thumbprints9CD6AB02",
-     "Thumbprints"
-    ]
+    "Ref": "Thumbprints9CD6AB02"
+   },
+   "Export": {
+    "Name": "oidc-provider-flag-unset-integ-test:ExportsOutputRefThumbprints9CD6AB021BB7B370"
    }
   }
  },

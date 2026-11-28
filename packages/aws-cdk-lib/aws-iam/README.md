@@ -773,9 +773,12 @@ By default, the custom resource enforces strict security practices by rejecting
 any unauthorized connections when downloading CA thumbprints from the issuer URL.
 If you need to connect to an unauthorized OIDC identity provider and understand the
 implications, you can disable this behavior by setting the feature flag
-`IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS` to `false` in your `cdk.context.json`
+`@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections` to `false` in your `cdk.context.json`
 or `cdk.json`. Visit [CDK Feature Flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html)
-for more information on how to configure feature flags.
+for more information on how to configure feature flags. When the flag is `false` and no
+`thumbprints` are given, synthesis emits the warning
+`@aws-cdk/aws-iam:oidcProviderSkipsCertificateVerification`, because the thumbprint is then
+downloaded without verifying the issuer certificate.
 
 Once you define an OpenID connect provider, you can use it with AWS services
 that expect an IAM OIDC provider. For example, when you define an [Amazon

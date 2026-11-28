@@ -1,5 +1,5 @@
-import { App, Stack, CfnOutput } from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, Stack } from 'aws-cdk-lib';
+import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 
@@ -27,19 +27,28 @@ const thumbprints = new iam.OpenIdConnectProvider(stack, 'Thumbprints', {
   ],
 });
 
-new CfnOutput(stack, 'NoClientsThumbprints', {
-  value: `${noClients.openIdConnectProviderthumbprints}`,
-});
-
-new CfnOutput(stack, 'ClientsThumbprints', {
-  value: `${clients.openIdConnectProviderthumbprints}`,
-});
-
-new CfnOutput(stack, 'ThumbprintsThumbprints', {
-  value: `${thumbprints.openIdConnectProviderthumbprints}`,
-});
-
-new IntegTest(app, 'oidc-provider-flag-unset-test', {
+const integ = new IntegTest(app, 'oidc-provider-flag-unset-test', {
   testCases: [stack],
   diffAssets: true,
 });
+
+integ.assertions.awsApiCall('IAM', 'getOpenIDConnectProvider', {
+  OpenIDConnectProviderArn: noClients.openIdConnectProviderArn,
+}).expect(ExpectedResult.objectLike({
+  ThumbprintList: Match.arrayWith([Match.stringLikeRegexp('^[0-9a-fA-F]{40}$')]),
+}));
+
+integ.assertions.awsApiCall('IAM', 'getOpenIDConnectProvider', {
+  OpenIDConnectProviderArn: clients.openIdConnectProviderArn,
+}).expect(ExpectedResult.objectLike({
+  ThumbprintList: Match.arrayWith([Match.stringLikeRegexp('^[0-9a-fA-F]{40}$')]),
+}));
+
+integ.assertions.awsApiCall('IAM', 'getOpenIDConnectProvider', {
+  OpenIDConnectProviderArn: thumbprints.openIdConnectProviderArn,
+}).expect(ExpectedResult.objectLike({
+  ThumbprintList: Match.arrayWith([
+    'aa00aa1122aa00aa1122aa00aa1122aa00aa1111',
+    'aa00aa1122aa00aa1122aa00aa1122aa00aa1122',
+  ]),
+}));

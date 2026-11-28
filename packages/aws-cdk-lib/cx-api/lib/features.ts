@@ -1460,10 +1460,13 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
       default to reject unauthorized connections when downloading CA Certificates.
 
-      When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
-      thumbprints from unsecure connections.`,
+      When this feature flag is disabled, the custom resource handler skips certificate verification when
+      downloading thumbprints, and the construct emits a warning at synth time.
+
+      Apps that do not set this flag verify the certificate.`,
     introducedIn: { v2: '2.177.0' },
     recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
   },
 

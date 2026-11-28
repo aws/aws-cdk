@@ -470,7 +470,10 @@
           "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": {
             "userValue": false,
             "recommendedValue": true,
-            "explanation": "When enabled, the default behaviour of OIDC provider will reject unauthorized connections"
+            "explanation": "When enabled, the default behaviour of OIDC provider will reject unauthorized connections",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/core:enableAdditionalMetadataCollection": {
             "userValue": true,

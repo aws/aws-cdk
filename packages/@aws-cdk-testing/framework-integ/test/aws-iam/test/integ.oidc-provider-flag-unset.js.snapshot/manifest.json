@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ac9bbdbf5d13b7d915345eebc1bd76cfd70ee0d3f4654911a6b564042d14dda.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f3dc59273040c812e2101fdb09aa165b96609e7d9f9426626723ae4629efe971.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c3dcbf775a9d697b637ff9ea4e84603fe9b997b8aea171f3ef6f4adfdf9b694.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -66,6 +66,7 @@
         }
       },
       "dependencies": [
+        "oidc-provider-flag-unset-integ-test",
         "oidcproviderflagunsettestDefaultTestDeployAssert808D8B88.assets"
       ],
       "additionalMetadataFile": "oidcproviderflagunsettestDefaultTestDeployAssert808D8B88.metadata.json",
@@ -469,7 +470,10 @@
           },
           "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": {
             "recommendedValue": true,
-            "explanation": "When enabled, the default behaviour of OIDC provider will reject unauthorized connections"
+            "explanation": "When enabled, the default behaviour of OIDC provider will reject unauthorized connections",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           },
           "@aws-cdk/core:enableAdditionalMetadataCollection": {
             "userValue": true,

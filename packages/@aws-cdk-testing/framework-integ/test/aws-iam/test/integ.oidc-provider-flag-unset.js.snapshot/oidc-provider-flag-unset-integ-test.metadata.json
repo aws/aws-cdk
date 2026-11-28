@@ -37,24 +37,6 @@
       }
     }
   ],
-  "/oidc-provider-flag-unset-integ-test/NoClientsThumbprints": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "NoClientsThumbprints"
-    }
-  ],
-  "/oidc-provider-flag-unset-integ-test/ClientsThumbprints": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ClientsThumbprints"
-    }
-  ],
-  "/oidc-provider-flag-unset-integ-test/ThumbprintsThumbprints": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ThumbprintsThumbprints"
-    }
-  ],
   "/oidc-provider-flag-unset-integ-test/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -70,10 +52,6 @@
   "/oidc-provider-flag-unset-integ-test/NoClientsNoThumbprint/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
       "data": "*"
     }
   ],
@@ -93,20 +71,30 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
     }
   ],
   "/oidc-provider-flag-unset-integ-test/Thumbprints/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
-    },
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Exports/Output{\"Ref\":\"NoClientsNoThumbprint8BF1533F\"}": [
     {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefNoClientsNoThumbprint8BF1533F338C49EF"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Exports/Output{\"Ref\":\"Clients67031123\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefClients6703112386C3EDFE"
+    }
+  ],
+  "/oidc-provider-flag-unset-integ-test/Exports/Output{\"Ref\":\"Thumbprints9CD6AB02\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefThumbprints9CD6AB021BB7B370"
     }
   ],
   "/oidc-provider-flag-unset-integ-test/NoClientsNoThumbprint/Resource/Default": [

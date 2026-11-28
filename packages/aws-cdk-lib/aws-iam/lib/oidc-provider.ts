@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import type { IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
 import type { IResource, RemovalPolicy } from '../../core';
-import { Arn, CustomResource, FeatureFlags, Resource, Token } from '../../core';
+import { Annotations, Arn, CustomResource, FeatureFlags, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
@@ -162,10 +162,11 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // The handler used to ignore RejectUnauthorized: false, so apps that never set the flag have been
-    // verifying the issuer certificate. Keep that and only skip verification when the flag is set to false.
-    const rejectUnauthorized = this.node.tryGetContext(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) === undefined
-      || FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) === true;
+    const rejectUnauthorized = FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) ?? true;
+    if (!rejectUnauthorized && (props.thumbprints ?? []).length === 0) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:oidcProviderSkipsCertificateVerification',
+        `The ${IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS} feature flag is set to false, so the issuer certificate is not verified when the thumbprint is downloaded. Pass "thumbprints" or remove the flag to verify it.`);
+    }
 
     const provider = this.getOrCreateProvider();
     this.resource = new CustomResource(this, 'Resource', {
