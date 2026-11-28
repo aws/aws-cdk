@@ -1,0 +1,405 @@
+{
+ "Resources": {
+  "ZoneIdTestVpc3230D79C": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.3.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-subnet-v2-zone-id-test/ZoneIdTestVpc"
+     }
+    ]
+   }
+  },
+  "SubnetWithHardcodedZoneIdSubnet3FA53E1C": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZoneId": "use1-az4",
+    "CidrBlock": "10.3.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetWithHardcodedZoneIdRouteTableF1967017": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetWithHardcodedZoneIdRouteTableAssociation038A3E3E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetWithHardcodedZoneIdRouteTableF1967017",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithHardcodedZoneIdSubnet3FA53E1C"
+    }
+   }
+  },
+  "SubnetWithMappedZoneIdSubnet065F00FB": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZoneId": {
+     "Fn::FindInMap": [
+      "AZIdMapping",
+      {
+       "Ref": "AWS::Region"
+      },
+      "az2"
+     ]
+    },
+    "CidrBlock": "10.3.1.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetWithMappedZoneIdRouteTable23FF0FA3": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetWithMappedZoneIdRouteTableAssociationEB66B699": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetWithMappedZoneIdRouteTable23FF0FA3",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithMappedZoneIdSubnet065F00FB"
+    }
+   }
+  },
+  "SubnetWithContextZoneIdSubnet6EB340EC": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZoneId": {
+     "Fn::FindInMap": [
+      "AZIdMapping",
+      {
+       "Ref": "AWS::Region"
+      },
+      "az3"
+     ]
+    },
+    "CidrBlock": "10.3.2.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetWithContextZoneIdRouteTableFE55A260": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetWithContextZoneIdRouteTableAssociation1B1D1405": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetWithContextZoneIdRouteTableFE55A260",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetWithContextZoneIdSubnet6EB340EC"
+    }
+   }
+  },
+  "MultiZoneSubnet1Subnet84620AF3": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZoneId": {
+     "Fn::FindInMap": [
+      "AZIdMapping",
+      {
+       "Ref": "AWS::Region"
+      },
+      "az1"
+     ]
+    },
+    "CidrBlock": "10.3.10.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "MultiZoneSubnet1RouteTable748A78C8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "MultiZoneSubnet1RouteTableAssociation9FD3D76D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "MultiZoneSubnet1RouteTable748A78C8",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "MultiZoneSubnet1Subnet84620AF3"
+    }
+   }
+  },
+  "MultiZoneSubnet2Subnet7069D8FA": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZoneId": {
+     "Fn::FindInMap": [
+      "AZIdMapping",
+      {
+       "Ref": "AWS::Region"
+      },
+      "az2"
+     ]
+    },
+    "CidrBlock": "10.3.11.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "MultiZoneSubnet2RouteTable73005963": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "MultiZoneSubnet2RouteTableAssociationD104A03D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "MultiZoneSubnet2RouteTable73005963",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "MultiZoneSubnet2Subnet7069D8FA"
+    }
+   }
+  },
+  "MultiZoneSubnet3Subnet8A3BFB58": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZoneId": {
+     "Fn::FindInMap": [
+      "AZIdMapping",
+      {
+       "Ref": "AWS::Region"
+      },
+      "az3"
+     ]
+    },
+    "CidrBlock": "10.3.12.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "MultiZoneSubnet3RouteTable5C1A17E6": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "ZoneIdTestVpc3230D79C",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "MultiZoneSubnet3RouteTableAssociation1679C5C7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "MultiZoneSubnet3RouteTable5C1A17E6",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "MultiZoneSubnet3Subnet8A3BFB58"
+    }
+   }
+  }
+ },
+ "Mappings": {
+  "AZIdMapping": {
+   "us-east-1": {
+    "az1": "use1-az4",
+    "az2": "use1-az6",
+    "az3": "use1-az1",
+    "az4": "use1-az2",
+    "az5": "use1-az3",
+    "az6": "use1-az5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
