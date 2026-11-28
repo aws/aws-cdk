@@ -76,3 +76,19 @@ export function renderEventPattern(eventPattern: EventPattern): any {
 
   return out;
 }
+
+/**
+ * Validate an eventPattern object and return a list of error messages.
+ *
+ * EventBridge rejects top-level fields whose value is an empty array, so
+ * these are reported using the `EventPattern` property name the user wrote.
+ */
+export function validateEventPattern(eventPattern: EventPattern): string[] {
+  const errors: string[] = [];
+  for (const [key, value] of Object.entries(eventPattern)) {
+    if (Array.isArray(value) && value.length === 0) {
+      errors.push(`invalid event pattern field '${key}': empty arrays are not allowed, specify at least one value or omit the field`);
+    }
+  }
+  return errors;
+}
