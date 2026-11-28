@@ -68,6 +68,9 @@ export function renderEventPattern(eventPattern: EventPattern): any {
   const out: any = {};
   for (let key of Object.keys(eventPattern)) {
     const value = (eventPattern as any)[key];
+    if (Array.isArray(value) && value.length === 0) {
+      throw new UnscopedValidationError(lit`EventPatternEmptyArray`, `Invalid event pattern field '${key}': empty arrays are not allowed. EventBridge does not accept empty arrays in event patterns.`);
+    }
     if (key === 'detailType') {
       key = 'detail-type';
     }

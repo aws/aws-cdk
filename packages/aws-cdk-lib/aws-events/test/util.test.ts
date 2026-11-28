@@ -1,5 +1,5 @@
 import { assertNoPrototypePollution } from '../../core/test/prototype-pollution';
-import { mergeEventPattern } from '../lib/util';
+import { mergeEventPattern, renderEventPattern } from '../lib/util';
 
 describe('util', () => {
   describe('mergeEventPattern', () => {
@@ -93,6 +93,25 @@ describe('util', () => {
       assertNoPrototypePollution(() => {
         mergeEventPattern({}, { __proto__: { name: 'evil' } });
       });
+    });
+  });
+
+  describe('renderEventPattern', () => {
+    test('throws on empty array fields', () => {
+      expect(() => renderEventPattern({ source: ['my.source'], detailType: [] }))
+        .toThrow(/Invalid event pattern field 'detailType': empty arrays are not allowed/);
+    });
+
+    test('allows non-empty array fields', () => {
+      expect(renderEventPattern({ source: ['my.source'] })).toEqual({ source: ['my.source'] });
+    });
+
+    test('renames detailType to detail-type', () => {
+      expect(renderEventPattern({ detailType: ['foo'] })).toEqual({ 'detail-type': ['foo'] });
+    });
+
+    test('returns undefined for empty pattern', () => {
+      expect(renderEventPattern({})).toBeUndefined();
     });
   });
 });
