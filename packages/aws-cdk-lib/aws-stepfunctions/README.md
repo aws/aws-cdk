@@ -1027,7 +1027,7 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   });
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
-  * If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via state input:
+  * If the bucket name or object key is only known at execution time, use `JsonPath.stringAt()` to read it from the JSON state input in a JSONPath workflow:
   ```ts
   /**
    * JSON state input:
@@ -1044,6 +1044,20 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   });
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
+
+  The `key` property accepts both a literal object key, such as `'input.json'`, and an encoded JSONPath, such as `sfn.JsonPath.stringAt('$.key')`.
+  A plain string `'$.key'` is a literal S3 object key; it does not read the `key` field from the state input.
+  The same distinction applies to `bucketNamePath`: use `sfn.JsonPath.stringAt('$.bucketName')` for a dynamic bucket name.
+  These encoded paths produce `"Key.$": "$.key"` and `"Bucket.$": "$.bucketName"` in the ItemReader's `Parameters`.
+  For a known bucket and a dynamic key, set `bucket` to the bucket construct and `key` to `sfn.JsonPath.stringAt('$.key')`.
+  Specify either `bucket` or `bucketNamePath`, but not both.
+
+  When using `bucketNamePath`, grant the state machine's execution role read access to the S3 objects that the input can select; CDK cannot infer these permissions from a dynamic bucket name.
+  See [IAM policies for Distributed Map](https://docs.aws.amazon.com/step-functions/latest/dg/iam-policies-eg-dist-map.html) for how to scope permissions to the source data.
+
+  This key behavior also applies to `S3JsonLItemReader`, `S3CsvItemReader`, and `S3ManifestItemReader`.
+  In JSONata workflows, use an expression such as `'{% $states.input.key %}'` for `key` instead.
+
 * CSV file stored in S3
 * S3 inventory manifest stored in S3
 

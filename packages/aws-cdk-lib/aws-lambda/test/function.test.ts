@@ -5652,7 +5652,7 @@ describe('L1 Relationships', () => {
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
     const codeToken = cdk.Token.asAny({
-      resolve: () => ({ s3Bucket: bucket.bucketName }),
+      resolve: () => ({ s3Bucket: bucket.bucketName, s3Key: 'code.zip' }),
     });
 
     const fsConfigToken = cdk.Token.asAny({
@@ -5667,7 +5667,7 @@ describe('L1 Relationships', () => {
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
         Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
+        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' }, S3Key: 'code.zip' },
         FileSystemConfigs: [{ Arn: 'TestArn', LocalMountPath: '/mnt' }],
       },
     });

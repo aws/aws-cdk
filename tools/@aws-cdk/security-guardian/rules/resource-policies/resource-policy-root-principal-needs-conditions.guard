@@ -4,6 +4,7 @@
 #####################################
 # Rule: RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS
 # Coverage: All resource-based policies with :root principals
+# Also fails an Allow statement that uses NotPrincipal, whatever it lists: IAM supports NotPrincipal only with Deny.
 #
 # This rule ensures that ANY resource policy using :root principals (account-level delegation)
 # has STRICT conditions to scope down who can actually access the resource.
@@ -59,6 +60,11 @@ rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_polici
         when Properties.PolicyDocument exists {
             Properties.PolicyDocument.Statement[*] {
                 when Effect == "Allow" {
+                    # IAM supports NotPrincipal only with Deny, so an Allow statement with NotPrincipal fails whatever it lists
+                    when NotPrincipal exists {
+                        NotPrincipal not exists
+                        <<##ERROR:Resource policy must not use NotPrincipal in an Allow statement. Replace NotPrincipal with a Principal that names specific accounts or roles.##>>
+                    }
                     when Principal.AWS exists {
                         when Principal.AWS is_string {
                             when Principal.AWS == /(?i):root$/ {
@@ -97,6 +103,11 @@ rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_polici
         when Properties.Policy exists {
             Properties.Policy.Statement[*] {
                 when Effect == "Allow" {
+                    # IAM supports NotPrincipal only with Deny, so an Allow statement with NotPrincipal fails whatever it lists
+                    when NotPrincipal exists {
+                        NotPrincipal not exists
+                        <<##ERROR:Resource policy must not use NotPrincipal in an Allow statement. Replace NotPrincipal with a Principal that names specific accounts or roles.##>>
+                    }
                     when Principal.AWS exists {
                         when Principal.AWS is_string {
                             when Principal.AWS == /(?i):root$/ {
@@ -135,6 +146,11 @@ rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_polici
         when Properties.ResourcePolicy exists {
             Properties.ResourcePolicy.Statement[*] {
                 when Effect == "Allow" {
+                    # IAM supports NotPrincipal only with Deny, so an Allow statement with NotPrincipal fails whatever it lists
+                    when NotPrincipal exists {
+                        NotPrincipal not exists
+                        <<##ERROR:Resource policy must not use NotPrincipal in an Allow statement. Replace NotPrincipal with a Principal that names specific accounts or roles.##>>
+                    }
                     when Principal.AWS exists {
                         when Principal.AWS is_string {
                             when Principal.AWS == /(?i):root$/ {

@@ -4,6 +4,8 @@ on:
     paths:
       - "packages/aws-cdk-lib/aws-lambda/lib/runtime.ts"
 
+cache-mode: read
+
 jobs:
   update-lambda-tests:
     if: github.repository == 'aws/aws-cdk' && github.actor == 'aws-cdk-automation'
@@ -18,7 +20,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: "*"
+          node-version: "24"
         env:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 

@@ -24,7 +24,7 @@ class TestStack extends Stack {
           image: lambda.Runtime.PYTHON_3_10.bundlingImage,
           command: [
             'bash', '-c', [
-              'cp -au . /asset-output',
+              'cp -au * /asset-output',
               'cd /asset-output',
               'pip install -r requirements.txt -t .',
             ].join(' && '),

@@ -6,6 +6,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     'scripts',
     '\\.generated\\.[jt]s$',
-    '.warnings.jsii.js$'
+    '.warnings.jsii.js$',
+    '/analytics-data-source/',
   ],
 };

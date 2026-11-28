@@ -1,4 +1,10 @@
 {
+  "/cross-account-support-stack-234567890123": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cross-account-support-stack-234567890123.template.json"
+    }
+  ],
   "/cross-account-support-stack-234567890123/CdkPipelineCfnActionStackCrossAccountCloudformationPipelineBE629958-CFN-CFNDeploy-ActionRole": [
     {
       "type": "aws:cdk:analytics:construct",

@@ -372,7 +372,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -401,18 +401,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "DeploySchemaAwsCliLayerD0D0BA6E": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeploySchemaCustomResource277E9836": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -429,9 +417,6 @@
     ],
     "SourceObjectKeys": [
      "049f5de90fd9c8b8d2580a7b668c1c5368e67ef5bd0397322e3a90349b740e8f.zip"
-    ],
-    "SourceMarkers": [
-     {}
     ],
     "DestinationBucketName": {
      "Ref": "SchemaBucket79EE2269"
@@ -578,7 +563,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
+     "S3Key": "5892cb75b4e8ca5480d8803341312ee1e05d11f586916822e03c4be9ce3618a8.zip"
     },
     "Environment": {
      "Variables": {
@@ -586,11 +571,6 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "DeploySchemaAwsCliLayerD0D0BA6E"
-     }
-    ],
     "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
@@ -598,7 +578,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -672,7 +652,6 @@
     "RoleName": "agent-awscdkbedrockapisca1-apischemaagent-b0e9b051-bedrockagent"
    },
    "DependsOn": [
-    "DeploySchemaAwsCliLayerD0D0BA6E",
     "DeploySchemaCustomResource277E9836"
    ]
   },
@@ -853,7 +832,6 @@
     ]
    },
    "DependsOn": [
-    "DeploySchemaAwsCliLayerD0D0BA6E",
     "DeploySchemaCustomResource277E9836"
    ]
   },
@@ -966,7 +944,6 @@
    },
    "DependsOn": [
     "ApiSchemaAgentRoleDefaultPolicy343EA6FE",
-    "DeploySchemaAwsCliLayerD0D0BA6E",
     "DeploySchemaCustomResource277E9836"
    ]
   }
