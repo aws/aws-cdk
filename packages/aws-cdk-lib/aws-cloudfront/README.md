@@ -759,6 +759,84 @@ new cloudfront.Distribution(this, 'Dist', {
 });
 ```
 
+### Trust Store
+
+A Trust Store contains CA certificates that CloudFront uses to authenticate client certificates
+during mutual TLS (mTLS) handshakes. The CA certificates bundle must be stored in an S3 bucket
+in PEM format.
+
+```ts
+declare const certsBucket: s3.Bucket;
+
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: certsBucket,
+    key: 'ca-bundle.pem',
+  },
+});
+```
+
+CloudFront reads the bundle from the region of `bucket`. If that region is not known to the
+bucket reference, for example for a bucket imported from another region, set `region` explicitly.
+You can also have CloudFront check the revocation status of client certificates with OCSP, and
+tag the trust store:
+
+```ts
+const importedBucket = s3.Bucket.fromBucketName(this, 'CertsBucket', 'my-certs-bucket');
+
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: importedBucket,
+    key: 'ca-bundle.pem',
+    region: 'eu-west-1',
+  },
+  useClientCertificateOcspEndpoint: true,
+  tags: { team: 'platform' },
+});
+```
+
+
+### Mutual TLS (mTLS) Authentication
+
+You can configure CloudFront to require mutual TLS (mTLS) authentication between viewers and CloudFront.
+With mTLS, CloudFront authenticates viewers using client certificates. To enable mTLS, create a TrustStore
+containing CA certificates and configure the `viewerMtlsConfig` property.
+
+**Note:** mTLS requires HTTPS. When `viewerMtlsConfig` is specified, behaviors without an explicit
+`viewerProtocolPolicy` default to `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`, and an explicit
+`ViewerProtocolPolicy.ALLOW_ALL` is rejected.
+**Note:** mTLS is not supported with HTTP/3. You cannot use `HttpVersion.HTTP3` or `HttpVersion.HTTP2_AND_3` with mTLS.
+
+```ts
+declare const bucket: s3.Bucket;
+declare const certsBucket: s3.Bucket;
+
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: certsBucket,
+    key: 'ca-bundle.pem',
+  },
+});
+
+new cloudfront.Distribution(this, 'Dist', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+    // Defaults to REDIRECT_TO_HTTPS when mTLS is enabled
+    viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+  },
+  viewerMtlsConfig: {
+    mode: cloudfront.MtlsMode.REQUIRED, // or MtlsMode.OPTIONAL to allow requests without certificates
+    trustStore: trustStore,
+    // Optional: advertise CA names during TLS handshake
+    advertiseTrustStoreCaNames: true,
+    // Optional: accept expired certificates (use with caution)
+    ignoreCertificateExpiry: false,
+  },
+});
+```
+
+See [Configuring mutual TLS authentication](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html) in the CloudFront User Guide.
+
 ### Lambda@Edge
 
 Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute
