@@ -1,4 +1,10 @@
 {
+  "/test-bucket-deployment-cloudfront": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "test-bucket-deployment-cloudfront.template.json"
+    }
+  ],
   "/test-bucket-deployment-cloudfront/Destination": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -28,9 +34,8 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -58,9 +63,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -69,7 +72,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/test-bucket-deployment-cloudfront/BootstrapVersion": [
@@ -128,20 +131,13 @@
       "data": "Distribution830FAC52"
     }
   ],
-  "/test-bucket-deployment-cloudfront/DeployWithInvalidation/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployment-cloudfront/DeployWithInvalidation/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -269,12 +265,6 @@
       "data": "*"
     }
   ],
-  "/test-bucket-deployment-cloudfront/DeployWithInvalidation/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithInvalidationAwsCliLayerDEDD5787"
-    }
-  ],
   "/test-bucket-deployment-cloudfront/DeployWithInvalidation/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -349,12 +339,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DistributionOrigin1S3OriginAccessControlEB606076"
-    }
-  ],
-  "/test-bucket-deployment-cloudfront/DeployWithInvalidation/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/test-bucket-deployment-cloudfront/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [

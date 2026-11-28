@@ -1,0 +1,20 @@
+{
+  "/integ-test-custom-resource-config-undefined-log/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestcustomresourceconfigundefinedlogDefaultTestDeployAssertE1DBC36D.template.json"
+    }
+  ],
+  "/integ-test-custom-resource-config-undefined-log/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-test-custom-resource-config-undefined-log/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

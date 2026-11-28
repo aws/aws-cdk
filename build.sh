@@ -114,7 +114,7 @@ fi
 
 flags=""
 if [ "$ci" == "true" ]; then
-  flags="--stream --no-progress --skip-nx-cache"
+  flags="--no-progress --skip-nx-cache"
   export FORCE_COLOR=false
 fi
 

@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 test('selecting stacks exclusively does not change the selected function asset', () => {
-  jest.spyOn(DockerImage, 'fromBuild').mockReturnValue(new DockerImage('python-bundling-test'));
+  jest.spyOn(DockerImage, 'fromBuildV2').mockReturnValue(new DockerImage('python-bundling-test'));
   // Stub only the container execution; asset staging and hashing remain real.
   jest.spyOn(DockerImage.prototype, 'run').mockImplementation((options) => {
     const output = options?.volumes?.find(volume => volume.containerPath === AssetStaging.BUNDLING_OUTPUT_DIR)?.hostPath;

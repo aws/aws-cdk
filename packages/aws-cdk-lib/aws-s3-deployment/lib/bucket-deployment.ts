@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import type { ISource, SourceConfig } from './source';
+import type { ISource, MarkersConfig, SourceConfig } from './source';
 import { Source } from './source';
 import type * as cloudfront from '../../aws-cloudfront';
 import type * as ec2 from '../../aws-ec2';
@@ -19,6 +19,8 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
   BucketDeploymentSingletonFunction,
 } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import { BucketDeploymentTsSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-ts-provider.generated';
+import { BUCKET_DEPLOYMENT_MODERN_RESOURCE } from '../../cx-api/lib/features';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -206,6 +208,20 @@ export interface BucketDeploymentProps {
   readonly contentDisposition?: string;
   /**
    * System-defined content-encoding metadata to be set on all objects in the deployment.
+   *
+   * This constrols the HTTP `Content-Encoding` header when S3 serves the file.
+   *
+   * The only correct use is on a deployment where all the files are already
+   * compressed with the indicated encoding (`gzip`, `br`, `deflate`, `zstd`).
+   *
+   * If unset, `Content-Type` will be guessed from the second extension, so
+   * files uploaded as `app.js.gz` will be served with:
+   *
+   * ```
+   * Content-Type: text/javascript
+   * Content-Encoding: gzip
+   * ```
+   *
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
@@ -218,7 +234,10 @@ export interface BucketDeploymentProps {
   readonly contentLanguage?: string;
   /**
    * System-defined content-type metadata to be set on all objects in the deployment.
-   * @default - Not set.
+   *
+   * If not set, `Content-Type` will be guessed from the file extension.
+   *
+   * @default - Guessed from the file extension.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentType?: string;
@@ -285,6 +304,15 @@ export interface BucketDeploymentProps {
   /**
    * If set to true, uploads will precompute the value of `x-amz-content-sha256`
    * and include it in the signed S3 request headers.
+   *
+   * Use this if the bucket has been configured to require file content
+   * to be part of the SigV4 signature.
+   *
+   * `BucketDeployment` does not currently support signed streaming
+   * (`STREAMING-AWS4-HMAC-SHA256-PAYLOAD`), so switching this on requires
+   * in-memory buffering of every file that is being copied, which increases
+   * memory usage and upload latency.
+   *
    *
    * @default - `x-amz-content-sha256` will not be computed
    */
@@ -387,17 +415,28 @@ export class BucketDeployment extends Construct {
       this.node.addDependency(props.vpc);
     }
 
+    // Pick between the two BucketDeployment implementations based on the feature flag. Read at
+    // stack scope: the handler is a per-stack singleton, so all deployments in a stack must agree.
+    let customResourceConstructor: typeof BucketDeploymentSingletonFunction | typeof BucketDeploymentTsSingletonFunction;
+    let layers: lambda.ILayerVersion[] = [];
+    const useModernBucketDeployment = cdk.FeatureFlags.of(cdk.Stack.of(this)).isEnabled(BUCKET_DEPLOYMENT_MODERN_RESOURCE);
+    if (useModernBucketDeployment) {
+      // The modern BucketDeployment resource has no dependencies.
+      customResourceConstructor = BucketDeploymentTsSingletonFunction;
+      layers = [];
+    } else {
+      // The original BucketDeployment resource uses the AWS CLI v1 layer.
+      customResourceConstructor = BucketDeploymentSingletonFunction;
+      layers.push(new AwsCliLayer(this, 'AwsCliLayer'));
+    }
+
     const mountPath = `/mnt${accessPointPath}`;
-    const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
+    const handler = new customResourceConstructor(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
       // The deployment handler is CDK-managed internal code, not user code, so the architecture is
-      // fixed rather than configurable. Both the handler and the bundled AWS CLI v1 layer are
-      // architecture-independent Python: the layer's only native extension is PyYAML's optional C
-      // accelerator, which is built for a different Python ABI than this runtime and is therefore
-      // never loaded (PyYAML falls back to its pure-Python implementation). So we always run the
-      // handler on ARM_64 (Graviton), which costs less per millisecond of execution.
+      // fixed rather than configurable. We pick ARM because it's cheaper to run for customers.
       architecture: lambda.Architecture.ARM_64,
-      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
+      layers,
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
         // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
@@ -462,23 +501,19 @@ export class BucketDeployment extends Construct {
       properties: {
         SourceBucketNames: this.sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: this.sources.map(source => source.zipObjectKey),
-        SourceMarkers: sanitize(this.sources.map((source) => {
-          if (source.markers) {
-            return source.markers;
-            // if there are more than 1 source, then all sources
-            // require markers (custom resource will throw an error otherwise)
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+        SourceMarkers: removeTrailingEmptyObjects(this.sources.map((source) => {
+          return source.markers ?? {};
         })),
-        SourceMarkersConfig: sanitize(this.sources.map((source) => {
-          if (source.markersConfig) {
-            return source.markersConfig;
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+        SourceMarkersConfig: removeTrailingEmptyObjects(this.sources.map((source): MarkersConfig => {
+          // Normalize to an object with only defined properties
+          return {
+            ...dropEmpty({
+              // Only render a 'true', omit if falsy
+              ...source.markersConfig?.jsonEscape ? { jsonEscape: true } : {},
+              // Make the list of encodings undefined if it ends up empty
+              markerEncodings: dropEmpty(source.markersConfig?.markerEncodings),
+            } satisfies MarkersConfig),
+          };
         })),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
@@ -1045,7 +1080,35 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
     && a.markers === undefined && b.markers === undefined);
 }
 
-function sanitize<A>(box: IReadableBox<Array<A>>) {
-  return box.derive(arr => arr.filter(Boolean))
-    .derive(arr => arr.length === 0 ? undefined : arr);
+/**
+ * Remove trailing empty objects from an array box, returning `undefined` if the array ends up empty
+ */
+function removeTrailingEmptyObjects<A extends object>(box: IReadableBox<Array<A>>) {
+  return box.derive(arr => {
+    const ret = [...arr];
+    while (ret.length > 0 && Object.keys(ret[ret.length - 1]).length === 0) {
+      ret.pop();
+    }
+    return ret.length > 0 ? ret : undefined;
+  });
+}
+
+/**
+ * Drop `undefined` values from the object, drop the object entirely if it is empty after that
+ */
+function dropEmpty<A extends object>(obj: A | undefined): A | undefined {
+  if (obj === undefined) {
+    return undefined;
+  }
+
+  const ret: any = {};
+  for (const key of Object.keys(obj)) {
+    if (!obj.hasOwnProperty(key)) { continue; }
+
+    const value = (obj as any)[key];
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return Object.keys(ret).length === 0 ? undefined : ret;
 }

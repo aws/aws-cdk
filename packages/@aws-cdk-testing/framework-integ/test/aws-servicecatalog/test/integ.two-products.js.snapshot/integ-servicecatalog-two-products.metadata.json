@@ -1,4 +1,10 @@
 {
+  "/integ-servicecatalog-two-products": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-servicecatalog-two-products.template.json"
+    }
+  ],
   "/integ-servicecatalog-two-products/TestPortfolio": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -26,13 +32,18 @@
       "data": true
     }
   ],
+  "/integ-servicecatalog-two-products/MyProductStack1": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integservicecatalogtwoproductsMyProductStack16958D9C5.product.template.json"
+    }
+  ],
   "/integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -60,9 +71,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -71,7 +80,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/integ-servicecatalog-two-products/Product1": [
@@ -87,6 +96,12 @@
           }
         ]
       }
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack2": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integservicecatalogtwoproductsMyProductStack25090BCC2.product.template.json"
     }
   ],
   "/integ-servicecatalog-two-products/Product2": [
@@ -178,6 +193,22 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
+  "/integ-servicecatalog-two-products/MyProductStack1/HelloHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack1/ParentAssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -254,6 +285,22 @@
       "data": "Product133E85955"
     }
   ],
+  "/integ-servicecatalog-two-products/MyProductStack2/HelloHandler2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack2/ParentAssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/integ-servicecatalog-two-products/Product2/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -278,20 +325,13 @@
       "data": "TestAssetBucketAutoDeleteObjectsCustomResource5A0F8F22"
     }
   ],
-  "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -331,6 +371,28 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack1/HelloHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack1/HelloHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HelloHandler2E4FBA4D"
     }
   ],
   "/integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/Resource": [
@@ -399,10 +461,26 @@
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Resource": [
+  "/integ-servicecatalog-two-products/MyProductStack2/HelloHandler2/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack2/HelloHandler2/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
+      "data": "HelloHandler2109B0120"
     }
   ],
   "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResource-256MiB/Default": [
@@ -411,13 +489,31 @@
       "data": "TestAssetBucketProductAssetsDeploymentCustomResource256MiBB5A849A6"
     }
   ],
+  "/integ-servicecatalog-two-products/MyProductStack1/HelloHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HelloHandlerServiceRole11EF7C63"
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack1/HelloHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiBServiceRoleDefaultPolicyE5468F0E"
     }
   ],
-  "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Code/AssetBucket": [
+  "/integ-servicecatalog-two-products/MyProductStack2/HelloHandler2/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HelloHandler2ServiceRole37B1402D"
+    }
+  ],
+  "/integ-servicecatalog-two-products/MyProductStack2/HelloHandler2/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

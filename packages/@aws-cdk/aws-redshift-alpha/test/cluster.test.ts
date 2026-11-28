@@ -446,7 +446,13 @@ test('publicly accessible cluster', () => {
   });
 });
 
-test('availability zone relocation enabled', () => {
+test.each([
+  NodeType.RA3_XLPLUS,
+  NodeType.RG_LARGE,
+  NodeType.RG_XLARGE,
+  NodeType.RG_4XLARGE,
+  NodeType.RG_12XLARGE,
+])('availability zone relocation enabled for node type %s', (nodeType) => {
   // WHEN
   new Cluster(stack, 'Redshift', {
     masterUser: {
@@ -454,12 +460,13 @@ test('availability zone relocation enabled', () => {
     },
     vpc,
     availabilityZoneRelocation: true,
-    nodeType: NodeType.RA3_XLPLUS,
+    nodeType,
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     AvailabilityZoneRelocation: true,
+    NodeType: nodeType,
   });
 });
 
@@ -476,7 +483,7 @@ test.each([
       availabilityZoneRelocation: true,
       nodeType,
     });
-  }).toThrow(`Availability zone relocation is supported for only RA3 node types, got: ${nodeType}`);
+  }).toThrow(`Availability zone relocation is supported for only RA3 and RG node types, got: ${nodeType}`);
 });
 
 test('imported cluster with imported security group honors allowAllOutbound', () => {
@@ -1034,6 +1041,29 @@ describe('multi AZ cluster', () => {
     });
   });
 
+  test.each([
+    NodeType.RG_LARGE,
+    NodeType.RG_XLARGE,
+    NodeType.RG_4XLARGE,
+    NodeType.RG_12XLARGE,
+  ])('create a multi AZ cluster with RG node type %s', (nodeType) => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      nodeType,
+      multiAz: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      NodeType: nodeType,
+      MultiAZ: true,
+    });
+  });
+
   test('throw error for invalid node type', () => {
     expect(() => {
       new Cluster(stack, 'Redshift', {
@@ -1044,7 +1074,7 @@ describe('multi AZ cluster', () => {
         nodeType: NodeType.DS2_XLARGE,
         multiAz: true,
       });
-    }).toThrow('Multi-AZ cluster is only supported for RA3 node types, got: ds2.xlarge');
+    }).toThrow('Multi-AZ cluster is only supported for RA3 and RG node types, got: ds2.xlarge');
   });
 
   test('throw error for single node cluster', () => {

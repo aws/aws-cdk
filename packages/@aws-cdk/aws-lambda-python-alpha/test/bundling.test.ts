@@ -1,15 +1,18 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { BundlingFileAccess, DockerImage } from 'aws-cdk-lib';
+import { AssetHashType, AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
 import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
-// Stub `DockerImage.fromBuild` so these unit tests never run a real `docker build`.
-// (The `child_process` mock below is bypassed intermittently in CI.) The spy still
-// records calls, so the argument/call-count assertions below are unaffected.
+// Stub `DockerImage.fromBuild` for the tests that build a custom bundling image with it, and
+// `buildImage()` for the bundling image that PythonFunction builds on demand, so these unit
+// tests never run a real `docker build`. (The `child_process` mock below is bypassed
+// intermittently in CI.) The spies still record calls, so the assertions below are unaffected.
 jest.spyOn(DockerImage, 'fromBuild').mockReturnValue(new DockerImage('cdk-bundling-image-stub'));
+jest.spyOn(DockerImage, 'fromBuildV2');
+const buildImage = jest.spyOn(DockerImage.prototype, 'buildImage').mockImplementation(() => {});
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
@@ -28,20 +31,30 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test.each([false, true])('asset exclusions with skip=%s', (skip) => {
+test.each<[boolean, AssetHashType | undefined]>([
+  [false, undefined], [true, undefined],
+  [false, AssetHashType.SOURCE], [true, AssetHashType.SOURCE],
+  [false, AssetHashType.OUTPUT], [true, AssetHashType.OUTPUT],
+  [false, AssetHashType.CUSTOM], [true, AssetHashType.CUSTOM],
+])('asset exclusions with skip=%s and hash type=%s', (skip, assetHashType) => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
   Bundling.bundle({
     entry,
     runtime: Runtime.PYTHON_3_12,
     assetExcludes: ['*.egg-info'],
+    assetHashType,
+    assetHash: assetHashType === AssetHashType.CUSTOM ? 'custom-hash' : undefined,
     skip,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
     // Bundled assets continue to exclude via rsync, preserving their source hashes.
-    exclude: skip ? ['*.pyc', '*.egg-info'] : ['*.pyc'],
+    exclude: [
+      ...assetHashType === undefined || assetHashType === AssetHashType.SOURCE ? ['*.pyc'] : [],
+      ...skip ? ['*.egg-info'] : [],
+    ],
   }));
-  expect(DockerImage.fromBuild).toHaveBeenCalledTimes(skip ? 0 : 1);
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledTimes(skip ? 0 : 1);
 });
 
 test('Bundling a function without dependencies', () => {
@@ -63,7 +76,7 @@ test('Bundling a function without dependencies', () => {
     }),
   }));
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-python/),
     }),
@@ -493,7 +506,7 @@ test('Bundling with custom build args', () => {
     buildArgs: { PIP_INDEX_URL: testPypi },
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       PIP_INDEX_URL: testPypi,
     }),
@@ -633,10 +646,10 @@ test('Do not build docker image when skipping bundling', () => {
     skip: true,
   });
 
-  expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+  expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
 });
 
-test('Build docker image when bundling is not skipped', () => {
+test('Does not build the docker image when the bundling options are created', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
@@ -644,7 +657,28 @@ test('Build docker image when bundling is not skipped', () => {
     skip: false,
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalled();
+  expect(DockerImage.fromBuildV2).toHaveBeenCalled();
+  expect(buildImage).not.toHaveBeenCalled();
+});
+
+test('Builds the docker image when the asset is bundled', () => {
+  const run = jest.spyOn(DockerImage.prototype, 'run').mockImplementation((options) => {
+    const output = options?.volumes?.find(v => v.containerPath === AssetStaging.BUNDLING_OUTPUT_DIR);
+    if (!output) {
+      throw new Error('Expected an output volume');
+    }
+    fs.writeFileSync(path.join(output.hostPath, 'index.py'), '');
+  });
+
+  const code = Bundling.bundle({
+    entry: path.join(__dirname, 'lambda-handler'),
+    runtime: Runtime.PYTHON_3_12,
+    skip: false,
+  });
+  code.bind(new Stack());
+
+  expect(buildImage).toHaveBeenCalled();
+  run.mockRestore();
 });
 
 test('with command hooks', () => {
