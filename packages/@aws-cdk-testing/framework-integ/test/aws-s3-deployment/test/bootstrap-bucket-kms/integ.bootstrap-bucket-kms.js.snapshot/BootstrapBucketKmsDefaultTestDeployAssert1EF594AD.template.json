@@ -31,7 +31,7 @@
      "Key": "\"index.html\""
     },
     "flattenResponse": "false",
-    "salt": "1792558517179"
+    "salt": "1795851509918"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -196,6 +196,70 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:GetBucketEncryption"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "bootstrap-bucket-kms:ExportsOutputFnGetAttDestination920A3C57Arn59D2810D"
+             },
+             "/index.html"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetEncryptionConfiguration"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":s3:::cdk-botfix28-assets-",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             "-",
+             {
+              "Ref": "AWS::Region"
+             }
+            ]
+           ]
+          }
+         ]
         }
        ]
       }
@@ -209,7 +273,7 @@
     "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+      "Fn::Sub": "cdk-botfix28-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "683fe8d2ca75bad59343e025148cd7633037932ff6481c984a6d3b2186e4758b.zip"
     },
@@ -261,6 +325,61 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:GetBucketEncryption"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "bootstrap-bucket-kms:ExportsOutputFnGetAttDestination920A3C57Arn59D2810D"
+             },
+             "/index.html"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetEncryptionConfiguration"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":s3:::cdk-botfix28-assets-",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             "-",
+             {
+              "Ref": "AWS::Region"
+             }
+            ]
+           ]
+          }
+         ]
         }
        ]
       }
@@ -274,7 +393,7 @@
     "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+      "Fn::Sub": "cdk-botfix28-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "683fe8d2ca75bad59343e025148cd7633037932ff6481c984a6d3b2186e4758b.zip"
     },
@@ -320,7 +439,7 @@
     "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+      "Fn::Sub": "cdk-botfix28-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "683fe8d2ca75bad59343e025148cd7633037932ff6481c984a6d3b2186e4758b.zip"
     },
@@ -337,6 +456,162 @@
      "ApplicationLogLevel": "FATAL"
     }
    }
+  },
+  "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57": {
+   "Type": "Custom::DeployAssert@SdkCallS3getBucketEncryption",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getBucketEncryption",
+    "expected": "{\"$ObjectLike\":{\"ServerSideEncryptionConfiguration\":{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"aws:kms\",\"KMSMasterKeyID\":\"arn:aws:kms:ap-south-1:024848438529:key/41d662b6-4d77-4290-850c-44820a493f8e\"}}]}}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForEB1A46ED"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"cdk-botfix28-assets-",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        "-",
+        {
+         "Ref": "AWS::Region"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795851509919"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForIsCompleteProviderInvokeD5CB2F76": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForRole21E78CA8",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForTimeoutProviderInvokeB8C36CF8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForRole21E78CA8",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForRole21E78CA8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForEB1A46ED": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForRole21E78CA8",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57WaitForRole21E78CA8"
+   ]
   }
  },
  "Outputs": {
@@ -347,12 +622,20 @@
      "assertion"
     ]
    }
+  },
+  "AssertionResultsAwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getBucketEncryption21a38abd1f78b62686ed13faf8077c57",
+     "assertion"
+    ]
+   }
   }
  },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Default": "/cdk-bootstrap/botfix28/version",
    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },

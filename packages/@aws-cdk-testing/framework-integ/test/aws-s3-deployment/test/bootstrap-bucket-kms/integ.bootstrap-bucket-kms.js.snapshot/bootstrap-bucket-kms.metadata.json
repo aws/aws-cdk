@@ -251,6 +251,12 @@
       "data": "ExportsOutputRefDestination920A3C5768120A9A"
     }
   ],
+  "/bootstrap-bucket-kms/Exports/Output{\"Fn::GetAtt\":[\"Destination920A3C57\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDestination920A3C57Arn59D2810D"
+    }
+  ],
   "/bootstrap-bucket-kms/Destination/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
