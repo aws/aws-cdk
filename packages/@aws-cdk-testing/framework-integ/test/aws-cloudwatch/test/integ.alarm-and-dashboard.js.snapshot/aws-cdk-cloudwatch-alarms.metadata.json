@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-cloudwatch-alarms": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-cloudwatch-alarms.template.json"
+    }
+  ],
   "/aws-cdk-cloudwatch-alarms/queue": [
     {
       "type": "aws:cdk:logicalId",

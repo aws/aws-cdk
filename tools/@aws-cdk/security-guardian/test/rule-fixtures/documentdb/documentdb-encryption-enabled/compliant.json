@@ -1,0 +1,11 @@
+{
+  "Description": "DOCUMENTDB_ENCRYPTION_ENABLED passes: the cluster enables storage encryption",
+  "Resources": {
+    "EncryptedCluster": {
+      "Type": "AWS::DocDB::DBCluster",
+      "Properties": {
+        "StorageEncrypted": true
+      }
+    }
+  }
+}

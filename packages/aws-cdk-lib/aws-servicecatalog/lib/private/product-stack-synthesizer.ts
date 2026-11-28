@@ -121,16 +121,37 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     return { bucketName, objectKey, httpUrl, s3ObjectUrl, s3Url: httpUrl };
   }
 
+  /**
+   * Return the configured physical name of the bucket.
+   *
+   * We do this to simplify referencing the assets from INSIDE the ProductStack when
+   * that eventually gets deployed; we don't know what account it will be deployed into,
+   * so publishing a generated name will become tricky: Exports? SSM? Only in the same
+   * account. And we don't really have another mechanism.
+   *
+   * Solution: we force the user to have specified a known physical name for the bucket and use that.
+   * This is not allowed to have any tokens in it (technically speaking we could
+   * allow specifically `${AWS::Partition}` and `${AWS::Region}`, but we just don't for the moment).
+   */
   private physicalNameOfBucket(bucket: IBucket) {
-    let resolvedName;
-    if (cdk.Resource.isOwnedResource(bucket)) {
-      resolvedName = cdk.Stack.of(bucket).resolve((bucket.node.defaultChild as CfnBucket).bucketName);
-    } else {
-      resolvedName = bucket.bucketName;
-    }
+    const candidateName = cdk.Resource.isOwnedResource(bucket)
+      // This is an `s3.Bucket`, grab the configured name of the underlying CfnBucket resource.
+      ? (bucket.node.defaultChild as CfnBucket).bucketName
+      : bucket.bucketName;
+
+    // For `s3.Bucket`, `cfnBucket.bucketName` attribute starts out as a Token that may eventually
+    // turn into a concrete physical name or remain `undefined`. To be able to
+    // tell the difference, we need to resolve it first.
+    const resolvedName = cdk.Stack.of(bucket).resolve(candidateName);
     if (resolvedName === undefined) {
-      throw new UnscopedValidationError(lit`BucketNameRequiredForAssets`, 'A bucketName must be provided to use Assets');
+      throw new cdk.ValidationError(lit`BucketNameRequiredForAssets`, 'A ProductStack\'s assetBucket must have a physical name', bucket);
     }
+    // `resolve()` will produce a non-string expression if there were tokens in the original string
+    // This is the simplest way to disallow this for now.
+    if (typeof resolvedName !== 'string') {
+      throw new cdk.ValidationError(lit`ProductStackBucketNameError`, `The ProductStack\'s assetBucket may not have Tokens in its physical name (got '${candidateName}')`, bucket);
+    }
+
     return resolvedName;
   }
 

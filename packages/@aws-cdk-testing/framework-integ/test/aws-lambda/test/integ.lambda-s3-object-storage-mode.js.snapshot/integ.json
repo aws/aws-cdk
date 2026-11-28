@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "testCases": {
     "LambdaS3ObjectStorageMode/DefaultTest": {
       "stacks": [
@@ -9,6 +9,5 @@
       "assertionStackName": "LambdaS3ObjectStorageModeDefaultTestDeployAssert1436D810"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1131.0"
+  "enableLookups": true
 }

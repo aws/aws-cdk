@@ -36,11 +36,14 @@ class TestBucketDeployment extends cdk.Stack {
         principals: [new iam.AnyPrincipal()],
         actions: ['s3:PutObject'],
         resources: [`${bucket.bucketArn}/*`],
+        // Deny the unsigned values rather than allow-listing signed ones: IAM `StringLike` has
+        // no regex to match a hex hash, and a `STREAMING-*` wildcard would also admit
+        // `STREAMING-UNSIGNED-PAYLOAD-TRAILER`.
         conditions: {
-          StringNotLike: {
+          StringEquals: {
             's3:x-amz-content-sha256': [
-              '[A-Fa-f0-9]{64}', // Regular SHA256 hash
-              'STREAMING-*', // Streaming upload format
+              'UNSIGNED-PAYLOAD',
+              'STREAMING-UNSIGNED-PAYLOAD-TRAILER',
             ],
           },
         },

@@ -1,4 +1,10 @@
 {
+  "/CdkPipelineCfnActionStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CdkPipelineCfnActionStack.template.json"
+    }
+  ],
   "/CdkPipelineCfnActionStack/SourceBucketKey": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -26,9 +32,8 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -56,9 +61,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -67,7 +70,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/CdkPipelineCfnActionStack/ArtifactBucket": [
@@ -191,20 +194,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/CdkPipelineCfnActionStack/BucketDeployment/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/CdkPipelineCfnActionStack/BucketDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
-        "layers": [
-          "*"
-        ],
+        "architecture": "*",
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -513,12 +509,6 @@
       "data": "SourceBucketAutoDeleteObjectsCustomResourceC68FC040"
     }
   ],
-  "/CdkPipelineCfnActionStack/BucketDeployment/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "BucketDeploymentAwsCliLayerB018DCE1"
-    }
-  ],
   "/CdkPipelineCfnActionStack/BucketDeployment/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -747,12 +737,6 @@
           {}
         ]
       }
-    }
-  ],
-  "/CdkPipelineCfnActionStack/BucketDeployment/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
