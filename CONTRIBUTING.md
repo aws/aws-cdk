@@ -45,6 +45,7 @@ Any code that you submit will be released under that license.
       - [Adding construct runtime dependencies](#adding-construct-runtime-dependencies)
       - [Adding new unconventional dependencies](#adding-new-unconventional-dependencies)
     - [Addressing Code Coverage Gaps](#addressing-code-coverage-gaps)
+    - [What Happens After You Submit Your PR](#what-happens-after-you-submit-your-pr)
     - [Step 5: Merge](#step-5-merge)
   - [Breaking Changes](#breaking-changes)
     - [API surface changes](#api-surface-changes)
@@ -436,7 +437,7 @@ graph TD
     F --->|Yes| I[Please do. This will help get traction on your PR.]
     F -->|No| J[Try to garner community support on the issue you are <br/> trying to solve. With 20 +1s, the issue will be relabeled as P1.]
     E --->|Yes| G[We will review your PR as soon as we can]
-    E -->|No| H[If the build is failing for more than 4 weeks <br/> without any work on it, we will close the PR.]
+    E -->|No| H[If the build is failing for 3 weeks without any work on it, <br/> we will warn you and close the PR 14 days later.]
 ```
 
 Note that, if we do not have time to review your PR, it is not the end of the road. We are asking
@@ -749,7 +750,8 @@ CDK integration tests.
 * Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
 * If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
-  from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
+  from maintainers if your build is failing. After 3 weeks of staleness your PR gets a warning, and it is automatically
+  closed 14 days later.
 
 * Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to main. The commit messages should be hints
@@ -761,19 +763,12 @@ CDK integration tests.
 #### Getting a review from a maintainer
 
 We get A LOT of pull requests, which is a great thing! To help us prioritize
-which pull requests to review we first make sure that the pull request is in a
-mergeable state. This means that the pull request:
-
-1. Is ready for review (not a draft)
-2. Does not have any merge conflicts
-3. Has a passing build
-4. Does not have any requested changes by a maintainer
-5. Has a passing `PR Linter` workflow **OR** the contributor has requested
-   an exemption/clarification.
-
-To make this easier we have a `pr/needs-review` label that we can add to each
-PR. If you do not see this label on your PR then it means that something needs
-to be fixed before it can be reviewed.
+which pull requests to review, we only review pull requests that are in a
+mergeable state. Our automation labels a ready pull request with
+`pr/needs-community-review` or `pr/needs-maintainer-review`. If your PR has
+neither label, something needs to be fixed before it can be reviewed. See
+[What Happens After You Submit Your PR](#what-happens-after-you-submit-your-pr)
+for what "ready" means and how a PR moves between the review queues.
 
 > [!NOTE]  
 > The `aws-cdk` repository is frequently updated, so PR branches may quickly become out-of-date, showing "This branch is out-of-date with the base branch." This is not an issue as long as there are no conflicts with the newly merged commits. Once the PR is approved, our automation will update it with the latest `main` branch and handle the merge. No action is needed on your part.
@@ -858,6 +853,74 @@ To disable coverage of specific lines, you can use:
 /* istanbul ignore next */
 console.log('This cannot be covered')
 ```
+
+### What Happens After You Submit Your PR
+
+After you submit your pull request, here's what to expect:
+
+#### 1. CodeBuild CI Validation
+
+Your PR will automatically trigger a CodeBuild CI pipeline that runs tests and validation checks. You are responsible for ensuring these checks pass:
+
+* **Monitor the build status** - Check the PR status checks to see if CodeBuild passes or fails.
+* **If the build fails** - You need to:
+  1. Click on the "Details" link next to the failed CodeBuild check to view the build logs
+  2. Identify the error message in the build log
+  3. Address the issue locally in your development environment
+  4. Commit and push the fixes to your PR branch
+  5. Repeat until the CodeBuild CI passes successfully
+
+> [!IMPORTANT]
+> Your PR cannot proceed to review until the CodeBuild CI check passes, the PR linter is satisfied, and any merge conflicts are resolved.
+> If your PR has a failing CodeBuild check, changes requested by a maintainer, or unresolved merge conflicts, and it stays that way with no new work for 3 weeks,
+> it gets a staleness warning. It is closed 14 days after the warning.
+> If you are blocked, comment `Exemption Request: <justification>` or `Clarification Request: <question>` on the PR.
+> This adds the `pr-linter/exemption-requested` or `pr/reviewer-clarification-requested` label, and PRs with either label are not closed for staleness.
+
+* **Resolve merge conflicts** - After CI passes, check if your PR has any merge conflicts with the base branch. If conflicts exist, you must resolve them either:
+  - From the GitHub web UI using the conflict resolution tool, or
+  - Locally in your IDE by pulling the latest changes from the base branch and resolving conflicts manually
+
+#### 2. PR Linter
+
+The `PR Linter` workflow runs on every change to your PR. If it finds problems, the `aws-cdk-automation` account leaves a "Request changes" review that lists them.
+It checks, among other things, that the PR title follows the [conventional commit](#step-4-pull-request) format,
+that `feat` and `fix` PRs include unit test and integration test changes, and that `feat` PRs include a README change.
+
+* **If the linter requests changes** - Push fixes to your branch. The linter runs again and dismisses its review once all checks pass.
+* **If you believe a rule should not apply** - Comment `Exemption Request: <justification>` on the PR. A maintainer will decide whether to grant the exemption.
+  The request also lets your PR be labeled for review while the linter is still requesting changes.
+* **If a rule is unclear** - Comment `Clarification Request: <question>` on the PR to ask a maintainer.
+
+#### 3. Review Queues
+
+When CodeBuild passes, the PR linter checks whether your PR is ready for review. Your PR is ready when:
+
+1. It is not a draft
+2. It has no merge conflicts
+3. The PR linter passes, **OR** you have made an exemption or clarification request
+4. No maintainer has requested changes
+5. For PRs that are not `p1`, no [trusted community reviewer](https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews)'s latest review requests changes
+
+A ready PR is labeled with one of two queues:
+
+* [pending-maintainer-review](https://github.com/aws/aws-cdk/pulls?q=is%3Apr+is%3Aopen+label%3Apr%2Fneeds-maintainer-review) (`pr/needs-maintainer-review`) - if it is labeled
+  `p1` or `contribution/core`, has an approving review from a trusted community reviewer, or has timed out of community review (see below)
+* [pending-community-review](https://github.com/aws/aws-cdk/pulls?q=is%3Apr+is%3Aopen+label%3Apr%2Fneeds-community-review) (`pr/needs-community-review`) - otherwise
+
+In the community review queue:
+
+* [Trusted community reviewers](https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews) can review and provide feedback on your changes.
+  Reviews from other people are welcome, but they do not move your PR between queues.
+* **One approving review from a trusted community reviewer** moves your PR to the maintainer review queue the next time the PR linter runs.
+  The linter runs again whenever a review is submitted.
+* If your PR has been waiting for community review for 30 days, it gets the `pr/community-review-timeout` label and moves to the maintainer review queue automatically.
+
+Once in the maintainer review queue:
+
+* A CDK maintainer will perform a final review
+* The maintainer may request additional changes or approve your PR for merge
+* After a maintainer approves your PR, the review queue label is removed
 
 ### Step 5: Merge
 
