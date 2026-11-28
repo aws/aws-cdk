@@ -63,10 +63,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
     }));
     adminUser.grantRead(handler);
 
-    const provider = new customresources.Provider(this, 'Provider', {
-      onEventHandler: handler,
-      role: this.getOrCreateInvokerRole(handler),
-    });
+    const provider = this.getOrCreateProvider(handler, props.shareQueryProvider ?? false);
 
     const queryHandlerProps: DatabaseQueryHandlerProps & HandlerProps = {
       handler: props.handler,
@@ -96,6 +93,18 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
   public getAttString(attributeName: string): string {
     return this.resource.getAttString(attributeName);
+  }
+
+  private getOrCreateProvider(handler: lambda.SingletonFunction, isSingletonProvider: boolean): customresources.Provider {
+    const scope = isSingletonProvider ? cdk.Stack.of(this) : this;
+    const id = isSingletonProvider ? handler.constructName + 'Provider' : 'Provider';
+    const existing = scope.node.tryFindChild(id);
+    return existing != null
+      ? existing as customresources.Provider
+      : new customresources.Provider(scope, id, {
+        onEventHandler: handler,
+        role: this.getOrCreateInvokerRole(handler),
+      });
   }
 
   private getAdminUser(props: DatabaseOptions): secretsmanager.ISecret {

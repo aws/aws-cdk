@@ -374,6 +374,25 @@ new Table(this, 'Table', {
 });
 ```
 
+### Sharing database query providers
+
+Set `shareQueryProvider: true` on new `Table` and `User` constructs to share one
+custom resource provider per stack. A user's table privilege queries inherit that
+user's setting. This reduces the number of Lambda functions for those queries.
+
+The default is `false`. Existing tables and users can keep their providers while
+new resources opt in individually. Set the option before the resource's first
+deployment: changing it later changes its service token, which CloudFormation
+cannot update in place.
+
+```ts fixture=cluster
+new User(this, 'SharedProviderUser', {
+  cluster,
+  databaseName: 'databaseName',
+  shareQueryProvider: true,
+});
+```
+
 ### Granting Privileges
 
 You can give a user privileges to perform certain actions on a table by using the
