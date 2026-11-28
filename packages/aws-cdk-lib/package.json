@@ -217,7 +217,6 @@
     "./alexa-ask": "./alexa-ask/index.js",
     "./assertions": "./assertions/index.js",
     "./assertions/lib/helpers-internal": "./assertions/lib/helpers-internal/index.js",
-    "./assertions/lib/helpers-internal/matchers": "./assertions/lib/helpers-internal/matchers.js",
     "./assets": "./assets/index.js",
     "./aws-accessanalyzer": "./aws-accessanalyzer/index.js",
     "./aws-accountaccess": "./aws-accountaccess/index.js",

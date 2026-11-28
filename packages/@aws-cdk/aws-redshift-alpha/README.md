@@ -376,15 +376,22 @@ new Table(this, 'Table', {
 
 ### Sharing database query providers
 
-Tables, users and privilege grants use custom resources to execute database queries.
-Set the `@aws-cdk/aws-redshift:singletonProvider` context flag to `true` before their
-first deployment to share one provider per stack and reduce the number of Lambda
-functions. The query handler and its permissions are already shared per stack.
+Set `shareQueryProvider: true` on new `Table` and `User` constructs to share one
+custom resource provider per stack. A user's table privilege queries inherit that
+user's setting. This reduces the number of Lambda functions for those queries.
 
-Existing applications keep one provider per query when the flag is unset or `false`.
-Keep that setting for deployed query resources: enabling the flag changes their
-service tokens, and CloudFormation cannot update a custom resource's service token
-in place. The flag does not change table, user or privilege custom resource IDs.
+The default is `false`. Existing tables and users can keep their providers while
+new resources opt in individually. Set the option before the resource's first
+deployment: changing it later changes its service token, which CloudFormation
+cannot update in place.
+
+```ts fixture=cluster
+new User(this, 'SharedProviderUser', {
+  cluster,
+  databaseName: 'databaseName',
+  shareQueryProvider: true,
+});
+```
 
 ### Granting Privileges
 

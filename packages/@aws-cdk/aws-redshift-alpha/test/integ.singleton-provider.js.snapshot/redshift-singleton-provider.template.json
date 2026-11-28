@@ -684,7 +684,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f317b0068b0b7fc3f4062a01d3e6b1d81b10ec15ba1628db68ef736d99bd8cce.zip"
+     "S3Key": "afffdfe08646fe3b5f18451fb874449a6fa77b349a85f9ac4adf75dce47edef6.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -991,7 +991,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n    const { RedshiftDataClient, ExecuteStatementCommand, DescribeStatementCommand,\n      GetStatementResultCommand } = require('@aws-sdk/client-redshift-data');\n    const client = new RedshiftDataClient({});\n    exports.handler = async (parameters, context) => {\n      const { Id } = await client.send(new ExecuteStatementCommand(parameters));\n      while (context.getRemainingTimeInMillis() > 5000) {\n        const statement = await client.send(new DescribeStatementCommand({ Id }));\n        if (statement.Status === 'FINISHED') {\n          const result = await client.send(new GetStatementResultCommand({ Id }));\n          return { Records: result.Records };\n        }\n        if (statement.Status === 'FAILED' || statement.Status === 'ABORTED') {\n          throw new Error(statement.Error || statement.Status);\n        }\n        await new Promise(resolve => setTimeout(resolve, 1000));\n      }\n      throw new Error('Timed out waiting for the privilege query');\n    };\n  "
+     "ZipFile": "\n    const { RedshiftDataClient, ExecuteStatementCommand, DescribeStatementCommand,\n      GetStatementResultCommand } = require('@aws-sdk/client-redshift-data');\n    const client = new RedshiftDataClient({});\n    exports.handler = async (event, context) => {\n      if (event.RequestType === 'Delete') {\n        return { PhysicalResourceId: 'PrivilegeVerified' };\n      }\n      const parameters = event.ResourceProperties.parameters;\n      const { Id } = await client.send(new ExecuteStatementCommand(parameters));\n      while (context.getRemainingTimeInMillis() > 5000) {\n        const statement = await client.send(new DescribeStatementCommand({ Id }));\n        if (statement.Status === 'FINISHED') {\n          const result = await client.send(new GetStatementResultCommand({ Id }));\n          if (result.Records?.[0]?.[0]?.booleanValue !== true) {\n            throw new Error('Expected SELECT privilege to be granted');\n          }\n          return { PhysicalResourceId: 'PrivilegeVerified' };\n        }\n        if (statement.Status === 'FAILED' || statement.Status === 'ABORTED') {\n          throw new Error(statement.Error || statement.Status);\n        }\n        await new Promise(resolve => setTimeout(resolve, 1000));\n      }\n      throw new Error('Timed out waiting for the privilege query');\n    };\n  "
     },
     "Handler": "index.handler",
     "Role": {
@@ -1026,32 +1026,177 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
-  }
- },
- "Outputs": {
-  "ExportsOutputRefVerifyPrivilege7973161AC717593B": {
-   "Value": {
-    "Ref": "VerifyPrivilege7973161A"
-   },
-   "Export": {
-    "Name": "redshift-singleton-provider:ExportsOutputRefVerifyPrivilege7973161AC717593B"
+  },
+  "PrivilegeVerifierProviderframeworkonEventServiceRole5587F986": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
    }
   },
-  "ExportsOutputRefClusterEB0386A796A0E3FE": {
-   "Value": {
-    "Ref": "ClusterEB0386A7"
-   },
-   "Export": {
-    "Name": "redshift-singleton-provider:ExportsOutputRefClusterEB0386A796A0E3FE"
+  "PrivilegeVerifierProviderframeworkonEventServiceRoleDefaultPolicyDEF6B323": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "VerifyPrivilege7973161A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VerifyPrivilege7973161A",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "VerifyPrivilege7973161A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PrivilegeVerifierProviderframeworkonEventServiceRoleDefaultPolicyDEF6B323",
+    "Roles": [
+     {
+      "Ref": "PrivilegeVerifierProviderframeworkonEventServiceRole5587F986"
+     }
+    ]
    }
   },
-  "ExportsOutputRefClusterSecretAttachment769E62587134F379": {
-   "Value": {
-    "Ref": "ClusterSecretAttachment769E6258"
+  "PrivilegeVerifierProviderframeworkonEvent15E30C05": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (redshift-singleton-provider/PrivilegeVerifierProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "VerifyPrivilege7973161A",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "PrivilegeVerifierProviderframeworkonEventServiceRole5587F986",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
    },
-   "Export": {
-    "Name": "redshift-singleton-provider:ExportsOutputRefClusterSecretAttachment769E62587134F379"
-   }
+   "DependsOn": [
+    "PrivilegeVerifierProviderframeworkonEventServiceRoleDefaultPolicyDEF6B323",
+    "PrivilegeVerifierProviderframeworkonEventServiceRole5587F986"
+   ]
+  },
+  "PrivilegeVerifierProviderframeworkonEventLogGroupEBADD782": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "PrivilegeVerifierProviderframeworkonEvent15E30C05"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AssertPrivilege": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "PrivilegeVerifierProviderframeworkonEvent15E30C05",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "ClusterIdentifier": {
+      "Ref": "ClusterEB0386A7"
+     },
+     "Database": "integ",
+     "SecretArn": {
+      "Ref": "ClusterSecretAttachment769E6258"
+     },
+     "Sql": "SELECT has_table_privilege('integ_user', 'integ_table', 'select') AS granted"
+    }
+   },
+   "DependsOn": [
+    "Table7ABB320E",
+    "UserFDDCDD17",
+    "UserSecretAttachment02022609",
+    "UserSecretE2C04A69",
+    "UserTablePrivileges3829D614"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

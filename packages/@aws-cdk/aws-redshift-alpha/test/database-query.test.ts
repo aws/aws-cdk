@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { REDSHIFT_SINGLETON_PROVIDER } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import * as redshift from '../lib';
 import type { DatabaseQueryProps } from '../lib/private/database-query';
@@ -16,9 +15,6 @@ describe('database query', () => {
 
   function setup(isSingletonProvider?: boolean) {
     stack = new cdk.Stack();
-    if (isSingletonProvider !== undefined) {
-      stack.node.setContext(REDSHIFT_SINGLETON_PROVIDER, isSingletonProvider);
-    }
     vpc = new ec2.Vpc(stack, 'VPC');
     cluster = new redshift.Cluster(stack, 'Cluster', {
       vpc: vpc,
@@ -29,6 +25,7 @@ describe('database query', () => {
     minimalProps = {
       cluster: cluster,
       databaseName: 'databaseName',
+      shareQueryProvider: isSingletonProvider,
       handler: 'handler',
       properties: {},
     };
@@ -239,7 +236,7 @@ describe('database query', () => {
   });
 
   describe('provider sharing', () => {
-    test.each([undefined, false])('preserves existing providers when the flag is %s', (flag) => {
+    test.each([undefined, false])('preserves existing providers when sharing is %s', (flag) => {
       setup(flag);
       new DatabaseQuery(stack, 'First', minimalProps);
       new DatabaseQuery(stack, 'Second', minimalProps);
@@ -252,6 +249,41 @@ describe('database query', () => {
       template.hasResourceProperties('Custom::RedshiftDatabaseQuery', {
         ServiceToken: { 'Fn::GetAtt': ['SecondProviderframeworkonEventB1AAB06B', 'Arn'] },
       });
+    });
+
+    test('lets new queries opt in without changing an existing provider', () => {
+      new DatabaseQuery(stack, 'Existing', minimalProps);
+      new DatabaseQuery(stack, 'SharedFirst', { ...minimalProps, shareQueryProvider: true });
+      new DatabaseQuery(stack, 'SharedSecond', { ...minimalProps, shareQueryProvider: true });
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::Lambda::Function', 3);
+      const queries = template.findResources('Custom::RedshiftDatabaseQuery');
+      const existing = Object.entries(queries).find(([id]) => id.startsWith('Existing'))![1];
+      const shared = Object.entries(queries).filter(([id]) => id.startsWith('Shared')).map(([, query]) => query);
+      expect(existing.Properties.ServiceToken).not.toEqual(shared[0].Properties.ServiceToken);
+      expect(shared[0].Properties.ServiceToken).toEqual(shared[1].Properties.ServiceToken);
+      template.hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        ServiceToken: { 'Fn::GetAtt': [Match.stringLikeRegexp('^ExistingProviderframeworkonEvent'), 'Arn'] },
+      });
+    });
+
+    test('shares the provider for a table, user and the user table privileges', () => {
+      const options = { cluster, databaseName: 'databaseName', shareQueryProvider: true };
+      const user = new redshift.User(stack, 'User', options);
+      const table = new redshift.Table(stack, 'Table', {
+        ...options,
+        tableColumns: [{ name: 'id', dataType: 'integer' }],
+      });
+      table.grant(user, redshift.TableAction.SELECT);
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::Lambda::Function', 2);
+      const queries = Object.values(template.findResources('Custom::RedshiftDatabaseQuery'));
+      expect(queries).toHaveLength(3);
+      expect(queries.map(query => query.Properties.ServiceToken)).toEqual([
+        queries[0].Properties.ServiceToken, queries[0].Properties.ServiceToken, queries[0].Properties.ServiceToken,
+      ]);
     });
 
     test('shares one provider across different construct scopes', () => {
@@ -274,15 +306,14 @@ describe('database query', () => {
 
     test('creates a separate provider in each stack', () => {
       for (const targetStack of [new cdk.Stack(), new cdk.Stack()]) {
-        targetStack.node.setContext(REDSHIFT_SINGLETON_PROVIDER, true);
         const importedCluster = redshift.Cluster.fromClusterAttributes(targetStack, 'ImportedCluster', {
           clusterName: 'imported-cluster',
           clusterEndpointAddress: 'imported-cluster.example.com',
           clusterEndpointPort: 5439,
         });
         const adminUser = secretsmanager.Secret.fromSecretNameV2(targetStack, 'Admin', 'admin');
-        new DatabaseQuery(targetStack, 'First', { ...minimalProps, cluster: importedCluster, adminUser });
-        new DatabaseQuery(targetStack, 'Second', { ...minimalProps, cluster: importedCluster, adminUser });
+        new DatabaseQuery(targetStack, 'First', { ...minimalProps, cluster: importedCluster, adminUser, shareQueryProvider: true });
+        new DatabaseQuery(targetStack, 'Second', { ...minimalProps, cluster: importedCluster, adminUser, shareQueryProvider: true });
         Template.fromStack(targetStack).resourceCountIs('AWS::Lambda::Function', 2);
       }
     });
@@ -311,7 +342,6 @@ describe('database query', () => {
     test('keeps the shared service token when the first query is removed', () => {
       const tokens = [true, false].map(includeFirst => {
         const targetStack = new cdk.Stack();
-        targetStack.node.setContext(REDSHIFT_SINGLETON_PROVIDER, true);
         const importedCluster = redshift.Cluster.fromClusterAttributes(targetStack, 'ImportedCluster', {
           clusterName: 'imported-cluster',
           clusterEndpointAddress: 'imported-cluster.example.com',
@@ -319,9 +349,9 @@ describe('database query', () => {
         });
         const adminUser = secretsmanager.Secret.fromSecretNameV2(targetStack, 'Admin', 'admin');
         if (includeFirst) {
-          new DatabaseQuery(targetStack, 'First', { ...minimalProps, cluster: importedCluster, adminUser });
+          new DatabaseQuery(targetStack, 'First', { ...minimalProps, cluster: importedCluster, adminUser, shareQueryProvider: true });
         }
-        new DatabaseQuery(targetStack, 'Second', { ...minimalProps, cluster: importedCluster, adminUser });
+        new DatabaseQuery(targetStack, 'Second', { ...minimalProps, cluster: importedCluster, adminUser, shareQueryProvider: true });
         const queries = Template.fromStack(targetStack).findResources('Custom::RedshiftDatabaseQuery');
         return Object.values(queries).map(query => query.Properties.ServiceToken).pop();
       });

@@ -1,7 +1,7 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
 /* eslint-disable no-console */
 
-import { Match, Matcher } from 'aws-cdk-lib/assertions/lib/helpers-internal/matchers';
+import { Match, Matcher } from 'aws-cdk-lib/assertions/lib/helpers-internal';
 import { CustomResourceHandler } from './base';
 import type { AssertionResult, AssertionRequest } from './types';
 

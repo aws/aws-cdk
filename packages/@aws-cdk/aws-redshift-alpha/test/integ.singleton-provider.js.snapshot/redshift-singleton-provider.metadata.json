@@ -6,8 +6,11 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    ...new Vpc in aws-cdk-lib...",
-        "    at <anonymous> (/Users/vidit/Documents/ChatGPT/AWS HERO/cdk-pr-39448-work/packages/@aws-cdk/aws-redshift-alpha/test/integ.singleton-provider.js:45:13)",
+        "    at Validations.acknowledge (/Users/vidit/Documents/cdk-pr-39448-review/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/vidit/Documents/cdk-pr-39448-review/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/vidit/Documents/cdk-pr-39448-review/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/Users/vidit/Documents/cdk-pr-39448-review/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/Users/vidit/Documents/cdk-pr-39448-review/packages/@aws-cdk/aws-redshift-alpha/test/integ.singleton-provider.js:45:13)",
         "    ...node internals..."
       ]
     },
@@ -105,6 +108,12 @@
         "timeout": "*",
         "code": "*"
       }
+    }
+  ],
+  "/redshift-singleton-provider/AssertPrivilege": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/redshift-singleton-provider/BootstrapVersion": [
@@ -277,21 +286,11 @@
   "/redshift-singleton-provider/Cluster/Secret": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryptionKey": "*",
-        "generateSecretString": {
-          "passwordLength": "*",
-          "secretStringTemplate": "*",
-          "generateStringKey": "*",
-          "excludeCharacters": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryptionKey": "*"
-      }
+      "data": "*"
     }
   ],
   "/redshift-singleton-provider/Cluster/Resource": [
@@ -303,21 +302,11 @@
   "/redshift-singleton-provider/User/Secret": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryptionKey": "*",
-        "generateSecretString": {
-          "passwordLength": "*",
-          "secretStringTemplate": "*",
-          "generateStringKey": "*",
-          "excludeCharacters": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryptionKey": "*"
-      }
+      "data": "*"
     }
   ],
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole": [
@@ -566,22 +555,40 @@
       }
     }
   ],
-  "/redshift-singleton-provider/Exports/Output{\"Ref\":\"VerifyPrivilege7973161A\"}": [
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefVerifyPrivilege7973161AC717593B"
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
     }
   ],
-  "/redshift-singleton-provider/Exports/Output{\"Ref\":\"ClusterEB0386A7\"}": [
+  "/redshift-singleton-provider/AssertPrivilege/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefClusterEB0386A796A0E3FE"
-    }
-  ],
-  "/redshift-singleton-provider/Exports/Output{\"Ref\":\"ClusterSecretAttachment769E6258\"}": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefClusterSecretAttachment769E62587134F379"
+      "data": "AssertPrivilege"
     }
   ],
   "/redshift-singleton-provider/Vpc/PublicSubnet1/Subnet": [
@@ -936,6 +943,68 @@
       "data": "VerifyPrivilegeLogGroupE893F0DD"
     }
   ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeVerifierProviderframeworkonEvent15E30C05"
+    }
+  ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
   "/redshift-singleton-provider/Cluster/Secret/Attachment/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1003,10 +1072,72 @@
       "data": "VerifyPrivilegeServiceRoleDefaultPolicyC27A878F"
     }
   ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeVerifierProviderframeworkonEventServiceRole5587F986"
+    }
+  ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeVerifierProviderframeworkonEventLogGroupEBADD782"
+    }
+  ],
   "/redshift-singleton-provider/User/TablePrivileges/Resource/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "UserTablePrivileges3829D614"
+    }
+  ],
+  "/redshift-singleton-provider/PrivilegeVerifierProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeVerifierProviderframeworkonEventServiceRoleDefaultPolicyDEF6B323"
     }
   ]
 }

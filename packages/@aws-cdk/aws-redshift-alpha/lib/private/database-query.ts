@@ -5,7 +5,6 @@ import type * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as cdk from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as customresources from 'aws-cdk-lib/custom-resources';
-import { REDSHIFT_SINGLETON_PROVIDER } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import type { DatabaseQueryHandlerProps } from './handler-props';
 import { Cluster } from '../cluster';
@@ -64,7 +63,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
     }));
     adminUser.grantRead(handler);
 
-    const provider = this.getOrCreateProvider(handler);
+    const provider = this.getOrCreateProvider(handler, props.shareQueryProvider ?? false);
 
     const queryHandlerProps: DatabaseQueryHandlerProps & HandlerProps = {
       handler: props.handler,
@@ -96,8 +95,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
     return this.resource.getAttString(attributeName);
   }
 
-  private getOrCreateProvider(handler: lambda.SingletonFunction): customresources.Provider {
-    const isSingletonProvider = cdk.FeatureFlags.of(this).isEnabled(REDSHIFT_SINGLETON_PROVIDER);
+  private getOrCreateProvider(handler: lambda.SingletonFunction, isSingletonProvider: boolean): customresources.Provider {
     const scope = isSingletonProvider ? cdk.Stack.of(this) : this;
     const id = isSingletonProvider ? handler.constructName + 'Provider' : 'Provider';
     const existing = scope.node.tryFindChild(id);
