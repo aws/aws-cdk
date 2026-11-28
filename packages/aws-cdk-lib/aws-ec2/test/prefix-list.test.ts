@@ -252,4 +252,56 @@ describe('prefix list', () => {
       });
     }).toThrow('Unexpected response received from the context provider.');
   });
+
+  test('prefixlist allows tokenized IPv4 cidr entries', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const param = new CfnParameter(stack, 'CidrParam');
+
+    // WHEN
+    new PrefixList(stack, 'prefix-list', {
+      entries: [
+        { cidr: vpc.vpcCidrBlock },
+        { cidr: param.valueAsString, description: 'param cidr' },
+        { cidr: '10.0.0.1/32' },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::PrefixList', {
+      AddressFamily: 'IPv4',
+      MaxEntries: 3,
+      Entries: [
+        { Cidr: { 'Fn::GetAtt': ['Vpc8378EB38', 'CidrBlock'] } },
+        { Cidr: { Ref: 'CidrParam' }, Description: 'param cidr' },
+        { Cidr: '10.0.0.1/32' },
+      ],
+    });
+  });
+
+  test('prefixlist allows tokenized IPv6 cidr entries', () => {
+    // GIVEN
+    const stack = new Stack();
+    const param = new CfnParameter(stack, 'Ipv6CidrParam');
+
+    // WHEN
+    new PrefixList(stack, 'prefix-list', {
+      addressFamily: AddressFamily.IP_V6,
+      entries: [
+        { cidr: param.valueAsString },
+        { cidr: '::/0' },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::PrefixList', {
+      AddressFamily: 'IPv6',
+      MaxEntries: 2,
+      Entries: [
+        { Cidr: { Ref: 'Ipv6CidrParam' } },
+        { Cidr: '::/0' },
+      ],
+    });
+  });
 });
