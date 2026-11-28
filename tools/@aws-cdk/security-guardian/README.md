@@ -77,6 +77,39 @@ rules/
 - **Individual rule control**: Enable/disable specific rules per service
 - **Metadata-based suppression**: Use CDK metadata to suppress specific rules
 
+### Conditions on `"*"` principals
+
+S3_NO_WORLD_READABLE, S3_NO_WORLD_WRITABLE, SNS_NO_WORLD_ACCESSIBLE, SNS_NO_WORLD_ACCESSIBLE_INLINE, SQS_NO_WORLD_ACCESSIBLE and SQS_NO_WORLD_ACCESSIBLE_INLINE fail every `Allow` statement with a `"*"` principal. The tool reads each statement's `Condition` in the committed template, before intrinsics are resolved. Both reports show such a rule as passed for a template when every failed check of the rule is on the `Principal` of a statement whose `Condition` limits it to fixed values. Any other failure stays in the reports.
+
+A statement of an `AWS::S3::BucketPolicy`, `AWS::SNS::TopicPolicy`, `AWS::SNS::TopicInlinePolicy`, `AWS::SQS::QueuePolicy` or `AWS::SQS::QueueInlinePolicy` is limited when it has `Effect: Allow`, a `Principal`, no `NotPrincipal`, and at least one `Condition` entry where all of these hold:
+
+- **Operator:** `StringEquals`, `StringEqualsIgnoreCase`, `StringLike`, `ArnEquals` or `ArnLike`, alone or after `ForAnyValue:`, in this letter case. The `...IfExists` forms, `ForAllValues:`, negated operators, `Null`, `Bool` and `IpAddress` do not count.
+- **Key:** one of `aws:PrincipalOrgID`, `aws:SourceArn`, `aws:SourceVpc`, `aws:SourceVpce`, `aws:SourceOwner`, `aws:SourceAccount`, `aws:userid`, `s3:DataAccessPointArn` and `s3:DataAccessPointAccount`, in any letter case. The list follows the bucket policy section of [The meaning of "public"](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html#access-control-block-public-access-policy-status) in the Amazon S3 User Guide, without `aws:SourceIp` and with `aws:PrincipalOrgID` as its one principal key.
+- **Value:** one value or a non-empty list, where every string that any element can produce is fixed: not empty, at most 65,536 characters long, and without `*`, `?`, `${` or `{{resolve:`. For `aws:userid`, a string is fixed only as literal text, without any of the deploy-time values below, and `anonymous` in any letter case is not fixed.
+
+Other entries of the `Condition` do not change the result, since IAM combines operators and keys with AND.
+
+Intrinsic functions produce these values:
+
+- `Fn::If` produces both branches. `Fn::FindInMap` produces every entry of the template's map that its keys can select (a literal key selects one entry, any other key selects all), and its `DefaultValue`. `Fn::Select` produces every element of its list, whatever the index. `Fn::Split`, `Fn::Join` and `Fn::Sub` produce every string their arguments can give; `${!Name}` in `Fn::Sub` writes the text `${Name}`.
+- A `Ref` to a parameter produces its `AllowedValues`. A parameter without `AllowedValues` is not fixed, whatever its `Default`, and neither is one whose `Type` starts with `AWS::SSM::Parameter::`.
+- Not fixed: `Ref` to `AWS::NoValue` or to a name the template does not define, an `Fn::Sub` variable the template does not define, any other intrinsic function or object, numbers, booleans, `null`, a list inside the list, a value that produces more than 256 strings, and any value judged once the template has used up its fixed amount of judging work (one million steps), which a value that expands far beyond its size in the template uses up.
+
+Except for `aws:userid`, these deploy-time values are taken as fixed without being checked: a `Ref` to a resource of the template, `Fn::GetAtt` of such a resource, `Fn::ImportValue`, and the pseudo parameters `AWS::AccountId`, `AWS::Partition`, `AWS::Region`, `AWS::StackId`, `AWS::StackName` and `AWS::URLSuffix`. Inside `Fn::Join` and `Fn::Sub` they stand for text without `*`, `?` or `${`, and each counts as 4,096 characters, the largest a parameter value or a custom resource response can be, toward the 65,536-character limit.
+
+These still fail:
+
+- `aws:SourceIp` and keys outside the list, such as `aws:SourceVpcArn`, `aws:PrincipalAccount` and `aws:PrincipalArn`.
+- A wildcard access point name in `s3:DataAccessPointArn`, and an `aws:userid` value `<role ID>:*`.
+- A `Ref` to a Systems Manager parameter type, and a `{{resolve:…}}` dynamic reference.
+- A number or boolean value, such as an unquoted account ID.
+- An `Fn::If` with a wildcard in either branch: CloudFormation `Conditions` are not evaluated.
+- An `Allow` statement with `NotPrincipal`, whatever its `Condition`.
+
+The template is read as `JSON.parse` reads it, which keeps the last of duplicate keys. A template that `JSON.parse` rejects, that has a logical ID that is not alphanumeric, or that the preprocessor cannot write a resolved copy of, gets no verdicts. When a test case still fails, its failure text can also quote checks of a limited statement in the same policy.
+
+The locations of failed checks come from a second cfn-guard run with structured JSON output. The workflows install cfn-guard `releases/latest`; if that output changes form, the failures stay in the reports, and the tests, written against cfn-guard 3.2.1, fail.
+
 ---
 
 ## Inputs (GitHub Action)

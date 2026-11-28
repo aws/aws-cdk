@@ -1,8 +1,7 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { detectChangedTemplates } from './get-changed-files';
-import { preprocessTemplates } from './template-preprocessor';
-import { runCfnGuardValidation } from './cfn-guard-runner';
+import { scanChangedTemplates } from './scan';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -76,25 +75,20 @@ async function run(): Promise<void> {
 
     if (!ruleSetPath) throw new Error("Input 'rule_set_path' must be provided.");
 
-    // Preprocess templates (resolve intrinsics and normalize policies)
-    core.info('Preprocessing templates (resolving intrinsics and normalizing policies)');
-    const { files: processedFiles, mapping: resolvedMapping } = preprocessTemplates(workingDir, resolvedDir);
-    core.info(`Processed ${processedFiles.length} template(s)`);
-
     // Generate XML output files
     const staticXmlFile = path.join(testResultsDir, 'cfn-guard-static.xml');
     const resolvedXmlFile = path.join(testResultsDir, 'cfn-guard-resolved.xml');
 
-    //Combine file mappings
-    const combinedMapping = new Map([...fileMapping, ...resolvedMapping]);
-
-
-    // Run CFN-Guard validation and generate XML
-    core.info(`Running cfn-guard (static) with rule set: ${ruleSetPath}`);
-    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static', combinedMapping, enhanceXml);
-
-    core.info(`Running cfn-guard (resolved) with rule set: ${ruleSetPath}`);
-    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved', combinedMapping, enhanceXml);
+    // Preprocess templates (resolve intrinsics and normalize policies), then run CFN-Guard validation and generate XML
+    const { staticPassed, resolvedPassed } = await scanChangedTemplates({
+      changedDir: workingDir,
+      resolvedDir,
+      ruleSetPath,
+      staticReport: staticXmlFile,
+      resolvedReport: resolvedXmlFile,
+      fileMapping,
+      enhanceXml,
+    });
 
     // Generate Summary Report
     core.info('\n' + '='.repeat(60));
