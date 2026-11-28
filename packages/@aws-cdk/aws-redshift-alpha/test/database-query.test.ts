@@ -286,6 +286,34 @@ describe('database query', () => {
       ]);
     });
 
+    test.each([false, true])('privileges follow shared user=%s when the table setting differs', sharedUser => {
+      const user = new redshift.User(stack, 'User', {
+        cluster,
+        databaseName: 'databaseName',
+        ...(sharedUser ? { shareQueryProvider: true } : {}),
+      });
+      const table = new redshift.Table(stack, 'Table', {
+        cluster,
+        databaseName: 'databaseName',
+        shareQueryProvider: !sharedUser,
+        tableColumns: [{ name: 'id', dataType: 'integer' }],
+      });
+      table.grant(user, redshift.TableAction.SELECT);
+
+      const queries = Template.fromStack(stack).findResources('Custom::RedshiftDatabaseQuery');
+      const token = (handler: string) => Object.values(queries).find(query => query.Properties.handler === handler)!.Properties.ServiceToken;
+      const shared = /^QueryRedshiftDatabase3de5bea727da479686625efb56431b5fProviderframeworkonEvent/;
+      expect(token('user-table-privileges')).toEqual({
+        'Fn::GetAtt': [expect.stringMatching(sharedUser ? shared : /^UserTablePrivilegesProviderframeworkonEvent/), 'Arn'],
+      });
+      expect(token('table')).toEqual({
+        'Fn::GetAtt': [expect.stringMatching(sharedUser ? /^TableProviderframeworkonEvent/ : shared), 'Arn'],
+      });
+      expect(token('user')).toEqual({
+        'Fn::GetAtt': [expect.stringMatching(sharedUser ? shared : /^UserProviderframeworkonEvent/), 'Arn'],
+      });
+    });
+
     test('shares one provider across different construct scopes', () => {
       setup(true);
       new DatabaseQuery(new Construct(stack, 'FirstScope'), 'Query', minimalProps);
