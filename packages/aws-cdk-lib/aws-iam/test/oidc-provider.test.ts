@@ -52,7 +52,7 @@ describe('OpenIdConnectProvider resource', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
       Url: 'https://my-issuer',
-      RejectUnauthorized: flag ?? false,
+      RejectUnauthorized: flag ?? true,
     });
   });
 

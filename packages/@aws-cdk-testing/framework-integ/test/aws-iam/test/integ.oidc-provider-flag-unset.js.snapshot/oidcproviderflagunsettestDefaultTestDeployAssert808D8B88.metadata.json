@@ -1,0 +1,20 @@
+{
+  "/oidc-provider-flag-unset-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "oidcproviderflagunsettestDefaultTestDeployAssert808D8B88.template.json"
+    }
+  ],
+  "/oidc-provider-flag-unset-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/oidc-provider-flag-unset-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

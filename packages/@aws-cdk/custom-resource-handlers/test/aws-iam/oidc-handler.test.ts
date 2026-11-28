@@ -192,6 +192,26 @@ describe('custom resource provider handler', () => {
     sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://my-urlx', false);
   });
 
+  test('update with RejectUnauthorized true passed as a string by CloudFormation', async () => {
+    // WHEN
+    await invokeHandler({
+      RequestType: 'Update',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        Url: 'https://my-urlx',
+        RejectUnauthorized: 'true',
+      },
+      OldResourceProperties: {
+        ServiceToken: 'Foo',
+        Url: 'https://my-urlx',
+        RejectUnauthorized: 'true',
+      },
+    });
+
+    // THEN
+    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://my-urlx', true);
+  });
+
   test('update url with no thumbprint with reject unauthorized', async () => {
     // WHEN
     const response = await invokeHandler({

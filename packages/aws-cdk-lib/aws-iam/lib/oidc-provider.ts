@@ -162,7 +162,10 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const rejectUnauthorized = FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) ?? false;
+    // The handler used to ignore RejectUnauthorized: false, so apps that never set the flag have been
+    // verifying the issuer certificate. Keep that and only skip verification when the flag is set to false.
+    const rejectUnauthorized = this.node.tryGetContext(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) === undefined
+      || FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) === true;
 
     const provider = this.getOrCreateProvider();
     this.resource = new CustomResource(this, 'Resource', {
