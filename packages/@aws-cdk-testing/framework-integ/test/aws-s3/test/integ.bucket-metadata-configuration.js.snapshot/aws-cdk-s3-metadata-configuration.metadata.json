@@ -1,0 +1,165 @@
+{
+  "/aws-cdk-s3-metadata-configuration/MetadataKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/DefaultsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/AnnotationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/FullBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/MetadataKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MetadataKey159764F6"
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/DefaultsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultsBucketB310ECDE"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketMetadataConfiguration"
+      }
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/AnnotationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AnnotationRole9407A285"
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/AnnotationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/FullBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FullBucket05AD2891"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketMetadataConfiguration"
+      }
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/Exports/Output{\"Ref\":\"DefaultsBucketB310ECDE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDefaultsBucketB310ECDE598AC1BC"
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/Exports/Output{\"Ref\":\"FullBucket05AD2891\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFullBucket05AD28916E101951"
+    }
+  ],
+  "/aws-cdk-s3-metadata-configuration/AnnotationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AnnotationRoleDefaultPolicyE96E482D"
+    }
+  ]
+}

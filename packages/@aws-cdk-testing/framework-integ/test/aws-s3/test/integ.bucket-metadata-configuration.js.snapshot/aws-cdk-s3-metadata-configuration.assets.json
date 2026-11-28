@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "b242f67cd15a0e3f148da3b94dd47676355219ed9b1d564e02f539d67c66be0e": {
+      "displayName": "aws-cdk-s3-metadata-configuration Template",
+      "source": {
+        "path": "aws-cdk-s3-metadata-configuration.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b4392783": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b242f67cd15a0e3f148da3b94dd47676355219ed9b1d564e02f539d67c66be0e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
