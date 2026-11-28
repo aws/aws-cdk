@@ -1,0 +1,20 @@
+{
+  "/integ-test-custom-resource-config-lambda-runtime/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestcustomresourceconfiglambdaruntimeDefaultTestDeployAssert9F45C998.template.json"
+    }
+  ],
+  "/integ-test-custom-resource-config-lambda-runtime/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-test-custom-resource-config-lambda-runtime/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

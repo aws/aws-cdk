@@ -1,4 +1,10 @@
 {
+  "/LambdaS3ObjectStorageModeStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LambdaS3ObjectStorageModeStack.template.json"
+    }
+  ],
   "/LambdaS3ObjectStorageModeStack/CodeKey": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -30,9 +36,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -60,9 +64,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -71,7 +73,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/LambdaS3ObjectStorageModeStack/AWS679f53fac002430cb0da5b7982bd2287": [
@@ -176,21 +178,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/LambdaS3ObjectStorageModeStack/DeployLambdaCode/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/LambdaS3ObjectStorageModeStack/DeployLambdaCode/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -471,12 +465,6 @@
       "data": "CodeBucketAutoDeleteObjectsCustomResourceA4EDF0CF"
     }
   ],
-  "/LambdaS3ObjectStorageModeStack/DeployLambdaCode/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployLambdaCodeAwsCliLayer8743C498"
-    }
-  ],
   "/LambdaS3ObjectStorageModeStack/DeployLambdaCode/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -575,12 +563,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "FunctionServiceRole675BB04A"
-    }
-  ],
-  "/LambdaS3ObjectStorageModeStack/DeployLambdaCode/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/LambdaS3ObjectStorageModeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [

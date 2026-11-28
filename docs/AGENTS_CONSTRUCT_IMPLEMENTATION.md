@@ -84,14 +84,14 @@
 ## Abstract Base Class
 
 - You SHOULD implement an abstract `FooBase` for each resource that implements the full construct interface with resource attributes as abstract properties
-- Keep it internal (not exported)
+- Keep it internal: no `export`, or `export` with `@internal` when another file in the module needs it
 - Use it to implement `from{Attribute}` import methods via ad-hoc local classes
 
 ---
 
 ## Import Method Implementation
 
-- You MUST validate that input does not contain unresolved tokens (via `Token.isUnresolved`) before parsing in `from*` methods
+- A `from*` method that parses its input MUST use the Arn helpers (`Arn.split`, `Stack.of(scope).splitArn`), which accept tokens, or check `Token.isUnresolved` before parsing the string another way
 - When implementing `fromLookup` methods via context providers, prefer `fromResourceAttributes()` over `fromResourceName()` to avoid reconstructing ARNs with the wrong environment
 
 ---

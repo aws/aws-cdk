@@ -1,0 +1,43 @@
+{
+  "/size-rounding": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "size-rounding.template.json"
+    }
+  ],
+  "/size-rounding/FunctionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/size-rounding/Function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function"
+    }
+  ],
+  "/size-rounding/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/size-rounding/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/size-rounding/FunctionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionRole111A5701"
+    }
+  ]
+}

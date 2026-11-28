@@ -21,18 +21,6 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "s3deployAwsCliLayerD0CD1E6B": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "s3deployCustomResourceDB97D82D": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -50,11 +38,10 @@
     "SourceObjectKeys": [
      "561a8b95d6d62d87513e3607a2de271376251555ee83cf7b93534b0e85c500c8.zip"
     ],
-    "SourceMarkers": [
-     {}
-    ],
     "SourceMarkersConfig": [
-     {}
+     {
+      "jsonEscape": true
+     }
     ],
     "DestinationBucketName": {
      "Ref": "WebsiteBucket75C24D94"
@@ -201,7 +188,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
+     "S3Key": "a99a19974707f69ec1fcc8c3de916795ee4cf5b9d411eafa6690c09ccef25dec.zip"
     },
     "Environment": {
      "Variables": {
@@ -209,25 +196,20 @@
      }
     },
     "Handler": "index.handler",
-    "Layers": [
-     {
-      "Ref": "s3deployAwsCliLayerD0CD1E6B"
-     }
-    ],
     "LoggingConfig": {
      "LogGroup": {
       "Ref": "LogGroupF5B46931"
      }
     },
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
       "Arn"
      ]
     },
-    "Runtime": "python3.13",
-    "Timeout": 900,
-    "MemorySize": 1024
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
    },
    "DependsOn": [
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",

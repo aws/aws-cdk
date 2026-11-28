@@ -1,4 +1,10 @@
 {
+  "/integrationtest-codepipeline-start-pipeline-execution/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integrationtestcodepipelinestartpipelineexecutionDefaultTestDeployAssert922B4892.template.json"
+    }
+  ],
   "/integrationtest-codepipeline-start-pipeline-execution/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

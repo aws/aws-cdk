@@ -10,6 +10,5 @@
       "assertionStackName": "iodcprovidertestDefaultTestDeployAssert2D70E37E"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1146.1"
+  "enableLookups": true
 }
