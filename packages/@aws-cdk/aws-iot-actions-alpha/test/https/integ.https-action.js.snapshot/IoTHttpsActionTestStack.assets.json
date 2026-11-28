@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "73a34547796ec05beb2db1181fbfb7928719dc7a9cde8ac7f901453d4e42d4e5": {
+    "561604730f24089da65ce5673febbacef705cda1c11158c331c1c927e988a270": {
       "displayName": "IoTHttpsActionTestStack Template",
       "source": {
         "path": "IoTHttpsActionTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-3ca793f1": {
+        "current_account-current_region-0c195360": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "73a34547796ec05beb2db1181fbfb7928719dc7a9cde8ac7f901453d4e42d4e5.json",
+          "objectKey": "561604730f24089da65ce5673febbacef705cda1c11158c331c1c927e988a270.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
