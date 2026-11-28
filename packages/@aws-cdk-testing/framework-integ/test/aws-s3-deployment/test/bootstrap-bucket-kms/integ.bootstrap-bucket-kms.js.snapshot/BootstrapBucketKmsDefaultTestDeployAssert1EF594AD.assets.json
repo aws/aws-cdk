@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "683fe8d2ca75bad59343e025148cd7633037932ff6481c984a6d3b2186e4758b": {
+      "source": {
+        "path": "asset.683fe8d2ca75bad59343e025148cd7633037932ff6481c984a6d3b2186e4758b.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9799eee7": {
+          "bucketName": "cdk-botfix28-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "683fe8d2ca75bad59343e025148cd7633037932ff6481c984a6d3b2186e4758b.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-botfix28-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3f11b4a192e4a869526bb86806950674d92c8bd50e898f35fbf2ce47159c34cc": {
+      "displayName": "BootstrapBucketKmsDefaultTestDeployAssert1EF594AD Template",
+      "source": {
+        "path": "BootstrapBucketKmsDefaultTestDeployAssert1EF594AD.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-cbc859e3": {
+          "bucketName": "cdk-botfix28-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3f11b4a192e4a869526bb86806950674d92c8bd50e898f35fbf2ce47159c34cc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-botfix28-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
