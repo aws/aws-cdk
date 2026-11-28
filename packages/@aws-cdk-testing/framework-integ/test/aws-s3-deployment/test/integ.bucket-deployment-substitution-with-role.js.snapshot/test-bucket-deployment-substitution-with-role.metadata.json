@@ -68,9 +68,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -98,9 +96,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -109,7 +105,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/test-bucket-deployment-substitution-with-role/BootstrapVersion": [
@@ -206,21 +202,13 @@
       }
     }
   ],
-  "/test-bucket-deployment-substitution-with-role/DeployWithCustomRole/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployment-substitution-with-role/DeployWithCustomRole/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -292,12 +280,6 @@
       "data": "ExecutionRoleDefaultPolicyA5B92313"
     }
   ],
-  "/test-bucket-deployment-substitution-with-role/DeployWithCustomRole/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithCustomRoleAwsCliLayer20263124"
-    }
-  ],
   "/test-bucket-deployment-substitution-with-role/DeployWithCustomRole/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -311,12 +293,6 @@
     }
   ],
   "/test-bucket-deployment-substitution-with-role/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/test-bucket-deployment-substitution-with-role/DeployWithCustomRole/AwsCliLayer/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

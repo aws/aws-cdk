@@ -458,6 +458,22 @@ export class Runtime {
 
   /**
    * The bundling Docker image for this runtime.
+   *
+   * Unless the runtime was created with the `bundlingDockerImage` prop of
+   * `LambdaRuntimeProps`, this is an
+   * untagged AWS SAM build image. Its contents can change independently of the
+   * AWS CDK version. To pin a specific image version when bundling with
+   * `Code.fromAsset()`, pass `DockerImage.fromRegistry('<image>:<tag>')` as
+   * `bundling.image`. Constructs that build their own bundling image on top of
+   * this runtime's image (for example `NodejsFunction`) do not run it directly;
+   * when bundling runs in Docker (for example with `forceDockerBundling: true`),
+   * pin the base image for them by creating a runtime with a pinned image, e.g.
+   * `new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true,
+   * bundlingDockerImage: 'public.ecr.aws/sam/build-nodejs20.x:<tag>' })`. Copy
+   * any other props the predefined runtime sets, such as `supportsSnapStart`,
+   * so that the custom runtime stays equivalent to it.
+   *
+   * @see https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
    */
   public readonly bundlingImage: DockerImage;
 

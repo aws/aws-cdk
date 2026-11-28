@@ -154,7 +154,7 @@ const cluster = new Cluster(this, 'Redshift', {
 });
 ```
 
-**Note**: The `availabilityZoneRelocation` property is only available for RA3 node types.
+**Note**: The `availabilityZoneRelocation` property is only available for RA3 and RG node types.
 
 ## Connecting
 
@@ -736,7 +736,7 @@ cluster.addIamRole(role);
 
 ## Multi-AZ
 
-Amazon Redshift supports [multiple Availability Zones (Multi-AZ) deployments]((https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)) for provisioned RA3 clusters.
+Amazon Redshift supports [multiple Availability Zones (Multi-AZ) deployments]((https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)) for provisioned RA3 and RG clusters.
 By using Multi-AZ deployments, your Amazon Redshift data warehouse can continue operating in failure scenarios when an unexpected event happens in an Availability Zone.
 
 To create a Multi-AZ cluster, set the `multiAz` property to `true` when creating the cluster.
@@ -749,7 +749,7 @@ new redshift.Cluster(stack, 'Cluster', {
     masterUsername: 'admin',
   },
   vpc, // 3 AZs are required for Multi-AZ
-  nodeType: redshift.NodeType.RA3_XLPLUS, // must be RA3 node type
+  nodeType: redshift.NodeType.RA3_XLPLUS, // must be RA3 or RG node type
   clusterType: redshift.ClusterType.MULTI_NODE, // must be MULTI_NODE
   numberOfNodes: 2, // must be 2 or more
   multiAz: true,

@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1793975530364"
+    "salt": "1795422022314"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -109,7 +109,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0c27302dd127441f84341af708066b603946169453a79140d9f0031e15377670.zip"
+     "S3Key": "a1a7782bde446a33ee1b19060f7d138247779fab71451714ce317fb757b934df.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -153,7 +153,7 @@
      "Key": "\"deploy/here/my-json/config-with-null.json\""
     },
     "flattenResponse": "false",
-    "salt": "1793975530365"
+    "salt": "1795422022315"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -186,7 +186,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1793975530365"
+    "salt": "1795422022315"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -202,7 +202,7 @@
     },
     "service": "S3",
     "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"numbersList\\\":[\\\"80\\\", \\\"443\\\"]}\"}}",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"numbersList\\\":[\\\"80\\\",\\\"443\\\"]}\"}}",
     "parameters": {
      "Bucket": {
       "Fn::Join": [
@@ -219,7 +219,7 @@
      "Key": "\"deploy/here/my-json/numbers-list.json\""
     },
     "flattenResponse": "false",
-    "salt": "1793975530365"
+    "salt": "1795422022316"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

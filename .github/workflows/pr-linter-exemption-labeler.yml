@@ -6,6 +6,8 @@ on:
       - edited
       - deleted
 
+cache-mode: read
+
 jobs:
   pr_commented:
     name: PR Comment

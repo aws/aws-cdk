@@ -5,6 +5,7 @@
 # Rule: S3_NO_CONFUSED_DEPUTY
 # Service: Amazon Simple Storage Service (S3)
 # Coverage: Confused Deputy
+# Also fails an Allow statement that uses NotPrincipal, whatever it lists: IAM supports NotPrincipal only with Deny.
 
 let s3_bucket_policies = Resources.*[
   Type == 'AWS::S3::BucketPolicy'
@@ -17,6 +18,11 @@ rule S3_NO_CONFUSED_DEPUTY when %s3_bucket_policies !empty {
     %s3_bucket_policies {
         Properties.PolicyDocument.Statement[*] {
             when Effect == "Allow" {
+                # IAM supports NotPrincipal only with Deny, so an Allow statement with NotPrincipal fails whatever it lists
+                when NotPrincipal exists {
+                    NotPrincipal not exists
+                        <<##ERROR:S3 bucket policy must not use NotPrincipal in an Allow statement. Replace NotPrincipal with a Principal that names specific services, accounts or roles.##>>
+                }
                 when Principal.Service exists {
                     when Condition exists {
                         Condition.StringEquals exists or

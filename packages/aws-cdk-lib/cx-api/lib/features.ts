@@ -162,6 +162,7 @@ export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackRe
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const BUCKET_DEPLOYMENT_MODERN_RESOURCE = '@aws-cdk/aws-s3-deployment:modernResource';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 export const IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName';
 
@@ -2020,6 +2021,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
   },
+  [BUCKET_DEPLOYMENT_MODERN_RESOURCE]: {
+    type: FlagType.Temporary,
+    summary: 'Use the new BucketDeployment resource',
+    detailsMd: `
+      When this flag is enabled, bucket deployments use the modern resource implementation.
+
+      The modern resource implementation is smaller and faster. Once it has been proven
+      in practice, the old implementation will be removed and all users will be automatically
+      switched over to the new implementation.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to use the legacy bucket deployment resource.',
+  },
 
   //////////////////////////////////////////////////////////////////////
   [STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: {
@@ -2054,7 +2070,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
       policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
       that stack is deployed too.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.278.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },

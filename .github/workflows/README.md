@@ -104,6 +104,11 @@ Owner: Core CDK team
 [update-contributors.yml](update-contributors.yml): GitHub action that runs monthly to create a pull request for updating a CONTRIBUTORS file with the top contributors.
 Owner: Core CDK team
 
+### Pending Maintainer Action Check
+
+[pending-maintainer-action-check.yml](pending-maintainer-action-check.yml): GitHub action that runs daily to track beginning-contributor PRs that need maintainer CI action (pending workflow approval, or no build CI activity). Creates a weekly tracking issue (labeled `ci-pending-tracking`, with a week key in the title combining the ISO week number and the week's start date) listing the PRs that entered the pending state during that week, and keeps it updated throughout the week.
+Owner: Core CDK team
+
 ### Issue sync
 
 [issue-sync.yml](issue-sync.yml): Github action that syncs issue metadata with the project board. More details can be found on the [project-sync](../../tools/@aws-cdk/project-sync) package.
