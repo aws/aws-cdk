@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "a7f84bd370c4d9568196c8c40206589ea98bc04b6d6ad9a4bf032e7840d7f37c": {
+      "displayName": "integ-managedinstances-capacity-provider-local-storage Template",
+      "source": {
+        "path": "integ-managedinstances-capacity-provider-local-storage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f1008aab": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a7f84bd370c4d9568196c8c40206589ea98bc04b6d6ad9a4bf032e7840d7f37c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
