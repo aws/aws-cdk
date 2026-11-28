@@ -1,0 +1,72 @@
+{
+  "/python-skipped-bundling-excludes": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "python-skipped-bundling-excludes.template.json"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/python-skipped-bundling-excludes/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/python-skipped-bundling-excludes/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Handler886CB40B"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Handler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Exports/Output{\"Ref\":\"Handler886CB40B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHandler886CB40BD176DC16"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlerServiceRoleFCDC14AE"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/python-skipped-bundling-excludes/Handler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlerLogGroup50A7B41D"
+    }
+  ]
+}

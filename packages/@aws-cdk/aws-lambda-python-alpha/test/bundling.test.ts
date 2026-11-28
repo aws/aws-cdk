@@ -1,7 +1,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
+import { AssetHashType, AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
 import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 
@@ -29,6 +29,32 @@ jest.mock('child_process', () => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+test.each<[boolean, AssetHashType | undefined]>([
+  [false, undefined], [true, undefined],
+  [false, AssetHashType.SOURCE], [true, AssetHashType.SOURCE],
+  [false, AssetHashType.OUTPUT], [true, AssetHashType.OUTPUT],
+  [false, AssetHashType.CUSTOM], [true, AssetHashType.CUSTOM],
+])('asset exclusions with skip=%s and hash type=%s', (skip, assetHashType) => {
+  const entry = path.join(__dirname, 'lambda-handler-nodeps');
+  Bundling.bundle({
+    entry,
+    runtime: Runtime.PYTHON_3_12,
+    assetExcludes: ['*.egg-info'],
+    assetHashType,
+    assetHash: assetHashType === AssetHashType.CUSTOM ? 'custom-hash' : undefined,
+    skip,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    // Bundled assets continue to exclude via rsync, preserving their source hashes.
+    exclude: [
+      ...assetHashType === undefined || assetHashType === AssetHashType.SOURCE ? ['*.pyc'] : [],
+      ...skip ? ['*.egg-info'] : [],
+    ],
+  }));
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledTimes(skip ? 0 : 1);
 });
 
 test('Bundling a function without dependencies', () => {

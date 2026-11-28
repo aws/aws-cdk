@@ -66,6 +66,9 @@ export class Bundling implements CdkBundlingOptions {
     }
 
     if (options.skip) {
+      // Without bundling, source files are staged directly instead of being filtered by rsync.
+      // Keep bundled source hashes unchanged by applying user exclusions only when skipping.
+      exclude.push(...options.assetExcludes ?? []);
       // Skipped assets are staged without bundling options, so asset staging can't count them
       recordPerformanceEntry('bundle:PythonFunction:skipped', { telemetry: true });
     }
